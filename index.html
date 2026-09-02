@@ -484,15 +484,101 @@
   /* ─── DIVIDER ─── */
   .divider { height: 1px; background: var(--border); margin: 20px 0; }
 
+  /* ─── HAMBURGER ─── */
+  .hamburger {
+    display: none;
+    flex-direction: column; justify-content: center; align-items: center;
+    gap: 5px; width: 36px; height: 36px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); cursor: pointer; flex-shrink: 0;
+  }
+  .hamburger span {
+    display: block; width: 18px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+    transition: all 0.2s ease;
+  }
+  .sidebar-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(15,23,50,0.45);
+    backdrop-filter: blur(4px);
+    z-index: 99;
+  }
+  .sidebar-overlay.open { display: block; }
+
   /* ─── RESPONSIVE ─── */
   @media (max-width: 768px) {
+    /* Sidebar slides in/out */
     .sidebar { transform: translateX(-100%); }
-    .sidebar.open { transform: translateX(0); }
+    .sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(37,99,235,0.12); }
     .main { margin-left: 0; }
+
+    /* Topbar */
+    .topbar { padding: 0 14px; gap: 10px; }
+    .topbar-title { font-size: 15px; }
+    .hamburger { display: flex; }
+
+    /* Page padding */
+    .page { padding: 14px; }
+
+    /* Forms */
     .form-row { grid-template-columns: 1fr; }
+
+    /* Stats */
     .stats-row { grid-template-columns: repeat(2, 1fr); }
-    .topbar { padding: 0 16px; }
-    .page { padding: 16px; }
+    .stat-value { font-size: 22px; }
+
+    /* Budget — stack vertically on small screens */
+    .budget-hero-row { flex-direction: column; align-items: stretch; gap: 12px; }
+    .budget-stat { min-width: unset; }
+    .budget-stat-value { font-size: 20px; }
+
+    /* Expense table — horizontal scroll */
+    .expense-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    /* Card grid single column */
+    .card-grid { grid-template-columns: 1fr; }
+
+    /* Section header wrap */
+    .section-header { flex-direction: column; align-items: flex-start; }
+    .section-header .btn { width: 100%; justify-content: center; }
+
+    /* Countdown units shrink */
+    .countdown-unit { padding: 10px 12px; min-width: 60px; }
+    .countdown-num { font-size: 28px; }
+
+    /* Overview sections */
+    .overview-2col { grid-template-columns: 1fr !important; }
+
+    /* Modal full-screen on mobile */
+    .modal-overlay { padding: 0; align-items: flex-end; }
+    .modal {
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      max-height: 92vh;
+      animation: modal-slide-up 0.25s ease;
+    }
+    @keyframes modal-slide-up {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    /* Toast bottom-left on mobile so it doesn't hide content */
+    .toast-container { bottom: 16px; right: 16px; left: 16px; }
+    .toast { max-width: 100%; }
+
+    /* Activity card actions */
+    .activity-actions { flex-direction: column; gap: 4px; }
+
+    /* Quarter tabs scroll */
+    .quarter-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+    .quarter-tabs::-webkit-scrollbar { display: none; }
+  }
+
+  @media (max-width: 400px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .countdown-unit { padding: 8px 8px; min-width: 52px; }
+    .countdown-num { font-size: 22px; }
+    .budget-stat-value { font-size: 17px; }
   }
 
   /* ─── GLOW LINE ─── */
@@ -1040,10 +1126,16 @@
     </div>
   </aside>
 
+  <!-- Sidebar overlay (mobile tap-to-close) -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
   <!-- MAIN -->
   <div class="main">
     <!-- TOPBAR -->
     <header class="topbar">
+      <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
       <div class="topbar-title" id="topbar-title">Dashboard</div>
       <div class="topbar-actions">
         <button class="btn btn-primary" id="topbar-add-btn" onclick="handleTopbarAdd()">
@@ -2085,11 +2177,30 @@ function navigate(page) {
   const [label] = ADD_LABELS[page] || ['New', null];
   document.getElementById('topbar-add-btn').textContent = `＋ ${label}`;
   renderPage(page);
+  closeSidebar(); // auto-close on mobile after navigation
 }
 
 document.querySelectorAll('.nav-item').forEach(el => {
   el.addEventListener('click', () => navigate(el.dataset.page));
 });
+
+// ── Mobile sidebar toggle ──
+function toggleSidebar() {
+  const sidebar  = document.getElementById('sidebar');
+  const overlay  = document.getElementById('sidebar-overlay');
+  const isOpen   = sidebar.classList.contains('open');
+  if (isOpen) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+  } else {
+    sidebar.classList.add('open');
+    overlay.classList.add('open');
+  }
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
 
 function handleTopbarAdd() {
   const [, modal] = ADD_LABELS[currentPage] || [null, 'modal-activity'];
