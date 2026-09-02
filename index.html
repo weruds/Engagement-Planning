@@ -1,0 +1,3571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Engagement Planner</title>
+<!-- Firebase SDK (compat v10) — Firestore -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  :root {
+    /* ── Light Mode Palette ── */
+    --bg:           #f0f4ff;
+    --surface:      #ffffff;
+    --surface2:     #f5f7ff;
+    --surface3:     #eaedfa;
+    --border:       #dde2f0;
+    --border2:      #c5cce8;
+    --accent:       #2563eb;
+    --accent2:      #3b82f6;
+    --accent3:      #93c5fd;
+    --accent-glow:  rgba(37,99,235,0.12);
+    --accent-glow2: rgba(37,99,235,0.06);
+    --white:        #1a1f36;          /* main text – dark navy */
+    --muted:        #6272a4;
+    --muted2:       #8896b8;
+    --success:      #059669;
+    --warning:      #d97706;
+    --danger:       #dc2626;
+    --purple:       #7c3aed;
+    --cyan:         #0891b2;
+    --font: 'Space Grotesk', 'Inter', sans-serif;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-lg: 20px;
+    --shadow: 0 2px 16px rgba(37,99,235,0.10);
+    --shadow-accent: 0 0 20px rgba(37,99,235,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* No noise overlay in light mode */
+  body::before { display: none; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* ─── LAYOUT ─── */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo .logo-mark {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(37,99,235,0.3);
+  }
+  .logo-text { font-size: 15px; font-weight: 700; color: var(--white); line-height: 1.2; }
+  .logo-sub { font-size: 11px; color: var(--muted); font-weight: 400; }
+
+  .sidebar-date {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .date-chip {
+    background: var(--accent-glow2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+  .date-main { font-size: 13px; font-weight: 600; color: var(--accent2); }
+  .date-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .quarter-badge {
+    display: inline-block;
+    margin-top: 6px;
+    background: linear-gradient(90deg, var(--accent), var(--purple));
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+
+  .nav-section { padding: 0 12px; margin-bottom: 4px; }
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 8px 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    border: 1px solid transparent;
+    margin-bottom: 2px;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--accent); }
+  .nav-item.active {
+    background: var(--accent-glow);
+    color: var(--accent);
+    border-color: rgba(37,99,235,0.25);
+  }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-count {
+    margin-left: auto;
+    background: var(--surface3);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 10px;
+    color: var(--muted);
+  }
+  .nav-item.active .nav-count { background: rgba(37,99,235,0.15); color: var(--accent); }
+
+  /* ─── MAIN ─── */
+  .main {
+    flex: 1;
+    margin-left: 240px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ─── TOPBAR ─── */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-title { font-size: 18px; font-weight: 700; color: var(--white); }
+  .topbar-actions { display: flex; gap: 10px; align-items: center; }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all 0.18s ease;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+  }
+  .btn-primary:hover { background: #1d4ed8; box-shadow: 0 4px 16px rgba(37,99,235,0.35); transform: translateY(-1px); }
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--white);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--surface3); border-color: var(--border2); }
+  .btn-danger { background: rgba(220,38,38,0.08); color: var(--danger); border: 1px solid rgba(220,38,38,0.2); }
+  .btn-danger:hover { background: rgba(220,38,38,0.15); }
+  .btn-sm { padding: 5px 10px; font-size: 11px; }
+  .btn-icon { padding: 7px; border-radius: var(--radius-sm); }
+
+  /* ─── PAGE CONTENT ─── */
+  .page { display: none; flex: 1; padding: 28px; }
+  .page.active { display: block; }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 24px; gap: 12px;
+    flex-wrap: wrap;
+  }
+  .section-title { font-size: 22px; font-weight: 700; color: var(--white); }
+  .section-subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .card:hover { border-color: var(--border2); }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--white); }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+
+  /* ─── STAT CARDS ─── */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--purple));
+  }
+  .stat-icon { font-size: 22px; margin-bottom: 10px; }
+  .stat-value { font-size: 26px; font-weight: 800; color: var(--white); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 500; }
+
+  /* ─── ACTIVITY ITEMS ─── */
+  .activity-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex; align-items: flex-start; gap: 14px;
+    transition: all 0.18s;
+    cursor: pointer;
+  }
+  .activity-card:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .activity-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+    background: var(--surface3);
+  }
+  .activity-info { flex: 1; min-width: 0; }
+  .activity-name { font-size: 14px; font-weight: 600; color: var(--white); }
+  .activity-meta { font-size: 12px; color: var(--muted); margin-top: 3px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .activity-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .tag {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+    border: 1px solid transparent;
+  }
+  .tag-blue   { background: rgba(37,99,235,0.10);  color: #1d4ed8;           border-color: rgba(37,99,235,0.22); }
+  .tag-purple { background: rgba(124,58,237,0.10); color: var(--purple);     border-color: rgba(124,58,237,0.22); }
+  .tag-green  { background: rgba(5,150,105,0.10);  color: var(--success);    border-color: rgba(5,150,105,0.22); }
+  .tag-yellow { background: rgba(217,119,6,0.10);  color: var(--warning);    border-color: rgba(217,119,6,0.22); }
+  .tag-cyan   { background: rgba(8,145,178,0.10);  color: var(--cyan);       border-color: rgba(8,145,178,0.22); }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(30,50,100,0.35);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    width: 100%; max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow), var(--shadow-accent);
+    animation: modal-in 0.2s ease;
+  }
+  .modal-lg { max-width: 720px; }
+  @keyframes modal-in {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-header {
+    padding: 22px 24px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .modal-title { font-size: 17px; font-weight: 700; color: var(--white); }
+  .modal-close {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--surface3); color: var(--white); }
+  .modal-body { padding: 0 24px 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* ─── FORMS ─── */
+  .form-group { margin-bottom: 16px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px; display: block; letter-spacing: 0.3px; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  }
+  .form-select option { background: var(--surface); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  /* ─── SEAT GRID ─── */
+  .seat-grid-wrapper { overflow-x: auto; }
+  .seat-grid {
+    display: inline-grid;
+    gap: 8px;
+    min-width: max-content;
+  }
+  .seat-cell {
+    width: 52px; height: 52px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 10px; font-weight: 600;
+    transition: all 0.15s;
+    background: var(--surface2);
+    color: var(--muted);
+    text-align: center;
+    padding: 4px;
+    line-height: 1.2;
+  }
+  .seat-cell:hover { border-color: var(--accent); color: var(--accent2); }
+  .seat-cell.occupied { background: var(--accent-glow); border-color: var(--accent); color: var(--accent2); }
+  .seat-cell.empty-slot { background: var(--surface); border-style: dashed; }
+  .seat-label { font-size: 9px; color: var(--muted); }
+
+  /* ─── BED GRID ─── */
+  .bed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+  .bed-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: center;
+  }
+  .bed-card:hover { border-color: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
+  .bed-card.assigned { border-color: var(--success); background: rgba(5,150,105,0.06); }
+  .bed-icon { font-size: 28px; margin-bottom: 8px; }
+  .bed-num { font-size: 12px; font-weight: 700; color: var(--white); }
+  .bed-person { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ─── QUARTER TABS ─── */
+  .quarter-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .q-tab {
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .q-tab:hover { border-color: var(--border2); color: var(--white); }
+  .q-tab.active {
+    background: linear-gradient(90deg, var(--accent), var(--purple));
+    color: #fff; border-color: transparent;
+    box-shadow: 0 2px 10px rgba(37,99,235,0.25);
+  }
+
+  /* ─── GAMES ─── */
+  .game-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    transition: all 0.18s;
+  }
+  .game-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .game-emoji { font-size: 32px; margin-bottom: 10px; }
+  .game-name { font-size: 14px; font-weight: 600; color: var(--white); }
+  .game-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  .game-meta { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* ─── LOCATION CARD ─── */
+  .location-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.18s;
+  }
+  .location-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .location-banner {
+    height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    background: linear-gradient(135deg, var(--surface2), var(--surface3));
+  }
+  .location-body { padding: 14px; }
+  .location-name { font-size: 14px; font-weight: 600; color: var(--white); }
+  .location-addr { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .location-footer { padding: 10px 14px; border-top: 1px solid var(--border); display: flex; gap: 6px; align-items: center; justify-content: space-between; }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state {
+    text-align: center; padding: 48px 20px;
+    color: var(--muted);
+    /* span full width when inside a grid */
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+  .empty-title { font-size: 16px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  .empty-sub { font-size: 13px; }
+
+  /* ─── TOAST ─── */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9998; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 13px; font-weight: 500;
+    color: var(--white);
+    box-shadow: var(--shadow);
+    animation: toast-in 0.25s ease;
+    max-width: 300px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  @keyframes toast-in { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+  .toast-icon { font-size: 16px; }
+
+  /* ─── DIVIDER ─── */
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-left: 0; }
+    .form-row { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .topbar { padding: 0 16px; }
+    .page { padding: 16px; }
+  }
+
+  /* ─── GLOW LINE ─── */
+  .glow-line {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--purple));
+    margin-bottom: 24px;
+    border-radius: 2px;
+    opacity: 0.35;
+  }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content:''; position:absolute; left:6px; top:4px; bottom:4px; width:2px; background: linear-gradient(180deg, var(--accent), var(--purple)); border-radius:1px; opacity:0.4; }
+  .timeline-item { position: relative; margin-bottom: 20px; }
+  .timeline-dot { position:absolute; left:-21px; top:4px; width:10px; height:10px; border-radius:50%; background: var(--accent); border: 2px solid var(--surface); box-shadow: 0 0 6px rgba(37,99,235,0.4); }
+  .timeline-date { font-size:11px; color:var(--muted); font-weight:600; margin-bottom:4px; }
+  .timeline-content { font-size:13px; color:var(--white); }
+  .timeline-sub { font-size:12px; color:var(--muted); }
+
+  /* ─── COUNTDOWN ─── */
+  .countdown-hero {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .countdown-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.07), transparent 60%);
+    pointer-events: none;
+  }
+  .countdown-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .countdown-event-name {
+    font-size: 22px; font-weight: 800; color: var(--white);
+    margin-bottom: 6px;
+  }
+  .countdown-event-date {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .countdown-units {
+    display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+  }
+  .countdown-unit {
+    display: flex; flex-direction: column; align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    min-width: 72px;
+  }
+  .countdown-num {
+    font-size: 36px; font-weight: 900; line-height: 1;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .countdown-unit-label {
+    font-size: 10px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-top: 4px;
+  }
+  .countdown-done {
+    font-size: 28px; font-weight: 900;
+    background: linear-gradient(90deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .countdown-set-btn {
+    margin-top: 20px;
+    font-size: 12px;
+  }
+
+  /* Sidebar countdown mini */
+  .sidebar-countdown {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+  .sidebar-cd-label { font-size: 10px; font-weight: 600; color: var(--muted2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .sidebar-cd-units { display: flex; gap: 4px; }
+  .sidebar-cd-unit {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 5px 2px; text-align: center;
+  }
+  .sidebar-cd-num { font-size: 14px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .sidebar-cd-lbl { font-size: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .sidebar-cd-none { font-size: 11px; color: var(--muted2); }
+
+  /* ─── OVERVIEW PLAN ─── */
+  .overview-section { margin-bottom: 32px; }
+  /* Base title — plain label + underline divider, no flex tricks */
+  .overview-section-title {
+    font-size: 13px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  /* Remove old ::after line — border-bottom replaces it */
+  .overview-section-title::after { display: none; }
+
+  /* ─── BUDGET TRACKER ─── */
+  .budget-hero {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    position: relative; overflow: hidden;
+  }
+  .budget-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 100% 0%, rgba(34,211,165,0.08), transparent 60%);
+    pointer-events: none;
+  }
+  .budget-hero-row {
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .budget-stat { flex: 1; min-width: 100px; }
+  .budget-stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .budget-stat-value { font-size: 26px; font-weight: 800; line-height: 1; }
+  .budget-stat-value.total  { color: var(--white); }
+  .budget-stat-value.spent  { color: var(--danger); }
+  .budget-stat-value.remain.ok   { color: var(--success); }
+  .budget-stat-value.remain.warn { color: var(--warning); }
+  .budget-stat-value.remain.over { color: var(--danger); }
+  .budget-progress-wrap { height: 8px; background: var(--surface3); border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+  .budget-progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .budget-progress-fill.ok   { background: linear-gradient(90deg, var(--accent), var(--success)); }
+  .budget-progress-fill.warn { background: linear-gradient(90deg, var(--warning), var(--accent)); }
+  .budget-progress-fill.over { background: var(--danger); }
+  .budget-pct-label { font-size: 11px; color: var(--muted); }
+
+  /* Expense table */
+  .expense-table { width: 100%; border-collapse: collapse; }
+  .expense-table th {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 8px 12px; text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .expense-table td {
+    padding: 10px 12px; font-size: 13px; color: var(--white);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .expense-table tr:last-child td { border-bottom: none; }
+  .expense-table tr:hover td { background: var(--surface2); }
+  .expense-cat-pill {
+    display: inline-block; padding: 2px 8px; border-radius: 20px;
+    font-size: 10px; font-weight: 700;
+  }
+  .exp-cat-staycation { background: rgba(124,58,237,0.10); color: var(--purple); }
+  .exp-cat-food       { background: rgba(5,150,105,0.10);  color: var(--success); }
+  .exp-cat-gas        { background: rgba(217,119,6,0.10);  color: var(--warning); }
+  .exp-cat-grocery    { background: rgba(8,145,178,0.10);  color: var(--cyan); }
+  .exp-cat-other      { background: rgba(37,99,235,0.10);  color: var(--accent); }
+  .expense-amount { font-weight: 700; color: var(--danger); white-space: nowrap; }
+  .expense-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* Car visual */
+  .car-overview-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 12px;
+  }
+  .car-overview-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .car-overview-icon {
+    font-size: 24px;
+    width: 44px; height: 44px;
+    background: var(--surface3);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .car-overview-meta { flex: 1; }
+  .car-overview-name { font-size: 14px; font-weight: 700; color: var(--white); }
+  .car-overview-sub { font-size: 12px; color: var(--muted); }
+  .car-seat-visual {
+    display: grid;
+    gap: 6px;
+  }
+  .car-seat-row { display: flex; gap: 6px; align-items: center; justify-content: center; }
+  .seat-vis {
+    width: 58px; height: 58px;
+    border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600; text-align: center; padding: 4px;
+    line-height: 1.3;
+    transition: all 0.15s;
+  }
+  .seat-vis.driver {
+    background: rgba(124,58,237,0.10);
+    border: 1.5px solid rgba(124,58,237,0.3);
+    color: var(--purple);
+  }
+  .seat-vis.occupied {
+    background: rgba(37,99,235,0.10);
+    border: 1.5px solid rgba(37,99,235,0.3);
+    color: var(--accent);
+  }
+  .seat-vis.empty {
+    background: var(--surface2);
+    border: 1.5px dashed var(--border2);
+    color: var(--muted2);
+  }
+  .seat-vis-icon { font-size: 18px; margin-bottom: 2px; }
+  .seat-vis-name { font-size: 9px; word-break: break-word; }
+  .seat-aisle {
+    width: 16px; height: 58px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; color: var(--muted2);
+    letter-spacing: 1px;
+  }
+
+  /* Room visual */
+  .room-overview-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 12px;
+  }
+  .room-overview-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .bed-visual-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .bed-vis {
+    width: 110px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .bed-vis-head {
+    height: 28px;
+    background: var(--surface3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .bed-vis-body {
+    padding: 8px;
+    background: var(--surface2);
+    min-height: 52px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    font-size: 11px; font-weight: 600;
+  }
+  .bed-vis.occupied .bed-vis-body { color: var(--success); }
+  .bed-vis.empty .bed-vis-body { color: var(--muted2); font-style: italic; }
+  .bed-vis.occupied { border-color: rgba(5,150,105,0.4); }
+
+  /* Activity overview timeline */
+  .ov-timeline { position: relative; padding-left: 28px; }
+  .ov-timeline::before { content:''; position:absolute; left:8px; top:4px; bottom:4px; width:2px; background: linear-gradient(180deg, var(--accent), var(--purple)); border-radius:1px; opacity:0.35; }
+  .ov-timeline-item { position:relative; margin-bottom:18px; }
+  .ov-dot { position:absolute; left:-23px; top:4px; width:12px; height:12px; border-radius:50%; background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 6px rgba(37,99,235,0.35); }
+  .ov-dot.past { background: var(--muted2); box-shadow: none; }
+  .ov-dot.today { background: var(--success); box-shadow: 0 0 8px rgba(5,150,105,0.5); }
+  .ov-item-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .ov-item-icon { font-size: 22px; flex-shrink: 0; }
+  .ov-item-name { font-size: 13px; font-weight: 600; color: var(--white); }
+  .ov-item-meta { font-size: 11px; color: var(--muted); margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* Games overview */
+  .games-overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .game-ov-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .game-ov-icon { font-size: 24px; flex-shrink: 0; }
+  .game-ov-name { font-size: 13px; font-weight: 600; color: var(--white); }
+  .game-ov-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* ─── ORGANIZING COMMITTEE ─── */
+  .committee-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.18s;
+  }
+  .committee-card:hover { border-color: var(--border2); }
+  .committee-header {
+    padding: 16px 18px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .committee-badge {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+  }
+  .committee-name { font-size: 14px; font-weight: 700; color: var(--white); }
+  .committee-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .committee-body { padding: 14px 18px; }
+  .committee-footer {
+    padding: 10px 18px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .member-list { display: flex; flex-direction: column; gap: 8px; }
+  .member-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: all 0.15s;
+  }
+  .member-item:hover { border-color: var(--border2); }
+  .member-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .member-info { flex: 1; min-width: 0; }
+  .member-name { font-size: 13px; font-weight: 600; color: var(--white); }
+  .member-role { font-size: 11px; color: var(--muted); }
+  .member-contact { font-size: 11px; color: var(--muted2); margin-top: 1px; }
+
+  /* ─── GROCERY LIST ─── */
+  .grocery-category-block { margin-bottom: 24px; }
+  .grocery-cat-header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 700; color: var(--white);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .grocery-cat-icon { font-size: 18px; }
+  .grocery-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    transition: all 0.15s;
+  }
+  .grocery-item:hover { border-color: var(--border2); }
+  .grocery-item.checked { opacity: 0.5; }
+  .grocery-check {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--border2);
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    transition: all 0.15s;
+    background: transparent;
+  }
+  .grocery-check.done { background: var(--success); border-color: var(--success); }
+  .grocery-item-name {
+    flex: 1; font-size: 13px; font-weight: 500; color: var(--white);
+  }
+  .grocery-item.checked .grocery-item-name { text-decoration: line-through; color: var(--muted); }
+  .grocery-qty { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .grocery-note { font-size: 11px; color: var(--muted2); }
+  .grocery-progress {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .grocery-progress-bar-wrap { flex: 1; height: 6px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+  .grocery-progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); border-radius: 3px; transition: width 0.4s ease; }
+  .grocery-progress-text { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  /* ─── MEAL PLAN ─── */
+  .meal-day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .meal-day-header {
+    padding: 12px 18px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .meal-day-title { font-size: 14px; font-weight: 700; color: var(--white); }
+  .meal-day-date { font-size: 12px; color: var(--muted); }
+  .meal-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0; }
+  .meal-slot {
+    padding: 14px 16px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    min-height: 90px;
+  }
+  .meal-slot:last-child { border-right: none; }
+  .meal-slot-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted);
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .meal-slot-content { font-size: 12px; color: var(--white); line-height: 1.5; }
+  .meal-slot-empty { font-size: 11px; color: var(--muted2); font-style: italic; }
+  .meal-slot-add {
+    font-size: 11px; color: var(--accent);
+    cursor: pointer; margin-top: 6px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .meal-slot-add:hover { color: var(--white); }
+  .meal-type-icon { font-size: 14px; }
+
+  /* ─── FIREBASE STATUS ─── */
+  .fb-status-bar {
+    padding: 8px 20px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; color: var(--muted);
+  }
+  .fb-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    background: var(--muted2);
+    transition: background 0.3s;
+  }
+  .fb-dot.connected   { background: var(--success); box-shadow: 0 0 6px rgba(5,150,105,0.5); }
+  .fb-dot.syncing     { background: var(--warning); }
+  .fb-dot.error       { background: var(--danger); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">💍</div>
+        <div>
+          <div class="logo-text">EngagePlanner</div>
+          <div class="logo-sub">Your big day, organized.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-date">
+      <div class="date-chip">
+        <div class="date-main" id="sidebar-date-text"></div>
+        <div class="date-sub" id="sidebar-month-text"></div>
+        <div class="quarter-badge" id="sidebar-quarter-badge"></div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <div class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">🏠</span> Dashboard
+        </div>
+        <div class="nav-item" data-page="overview">
+          <span class="nav-icon">🗺️</span> Full Overview
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Planning</div>
+        <div class="nav-item" data-page="activities">
+          <span class="nav-icon">📋</span> Activities
+          <span class="nav-count" id="nav-count-activities">0</span>
+        </div>
+        <div class="nav-item" data-page="quarters">
+          <span class="nav-icon">📅</span> By Quarter
+        </div>
+        <div class="nav-item" data-page="locations">
+          <span class="nav-icon">📍</span> Locations
+          <span class="nav-count" id="nav-count-locations">0</span>
+        </div>
+      </div>
+      <!-- hidden counts still needed by updateCounts() -->
+      <span style="display:none;" id="nav-count-carseats"></span>
+      <span style="display:none;" id="nav-count-beds"></span>
+      <span style="display:none;" id="nav-count-games"></span>
+      <span style="display:none;" id="nav-count-committee"></span>
+      <span style="display:none;" id="nav-count-grocery"></span>
+      <span style="display:none;" id="nav-count-meals"></span>
+    </nav>
+
+    <!-- Sidebar Countdown -->
+    <div class="sidebar-countdown" id="sidebar-countdown-area">
+      <div class="sidebar-cd-label">⏳ Countdown</div>
+      <div id="sidebar-cd-content">
+        <div class="sidebar-cd-none">No date set</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;font-size:11px;" onclick="openModal('modal-setdate')">Set Engagement Date</button>
+    </div>
+
+    <!-- Firebase Status -->
+    <div class="fb-status-bar">
+      <div class="fb-dot" id="fb-dot"></div>
+      <span id="fb-status-text">Connecting…</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary" id="topbar-add-btn" onclick="handleTopbarAdd()">
+          <span>＋</span> New Activity
+        </button>
+      </div>
+    </header>
+
+    <!-- ══════════════════ DASHBOARD ══════════════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Welcome back 👋</div>
+          <div class="section-subtitle" id="dash-subtitle">Here's your engagement planning overview</div>
+        </div>
+      </div>
+
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-value" id="stat-activities">0</div>
+          <div class="stat-label">Total Activities</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📍</div>
+          <div class="stat-value" id="stat-locations">0</div>
+          <div class="stat-label">Locations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🚗</div>
+          <div class="stat-value" id="stat-carseats">0</div>
+          <div class="stat-label">Car Seat Plans</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛏️</div>
+          <div class="stat-value" id="stat-beds">0</div>
+          <div class="stat-label">Bed Assignments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎮</div>
+          <div class="stat-value" id="stat-games">0</div>
+          <div class="stat-label">Games Planned</div>
+        </div>
+      </div>
+
+      <!-- hidden containers kept so JS doesn't break -->
+      <div style="display:none;">
+        <div id="dash-quarter-info"></div>
+        <div id="dash-recent"></div>
+      </div>
+
+      <!-- Recent Activities — clickable, visible as a full-width card -->
+      <div class="card" style="cursor:pointer;" onclick="navigate('overview')" title="Click to view Full Overview">
+        <div class="card-header">
+          <span class="card-title">⏱️ Recent Activities</span>
+          <span style="font-size:11px;color:var(--accent2);">View Full Overview →</span>
+        </div>
+        <div id="dash-recent-visible"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ ACTIVITIES ══════════════════ -->
+    <div class="page" id="page-activities">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Activities</div>
+          <div class="section-subtitle">All engagement activities across all quarters</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-activity')">＋ New Activity</button>
+      </div>
+      <div id="activities-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+
+    <!-- ══════════════════ BY QUARTER ══════════════════ -->
+    <div class="page" id="page-quarters">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">By Quarter</div>
+          <div class="section-subtitle">Plan and view activities per quarter of the year</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-activity')">＋ New Activity</button>
+      </div>
+      <div class="quarter-tabs" id="quarter-tabs">
+        <div class="q-tab active" data-q="Q1" onclick="selectQuarter('Q1')">Q1 — Jan–Mar</div>
+        <div class="q-tab" data-q="Q2" onclick="selectQuarter('Q2')">Q2 — Apr–Jun</div>
+        <div class="q-tab" data-q="Q3" onclick="selectQuarter('Q3')">Q3 — Jul–Sep</div>
+        <div class="q-tab" data-q="Q4" onclick="selectQuarter('Q4')">Q4 — Oct–Dec</div>
+      </div>
+      <div id="quarter-activities-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+
+    <!-- ══════════════════ LOCATIONS ══════════════════ -->
+    <div class="page" id="page-locations">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Locations</div>
+          <div class="section-subtitle">Manage all event venues and spots</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-location')">＋ Add Location</button>
+      </div>
+      <div class="card-grid" id="locations-list"></div>
+    </div>
+
+    <!-- ══════════════════ CAR SEAT PLAN ══════════════════ -->
+    <div class="page" id="page-carseats">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Car Seat Plan</div>
+          <div class="section-subtitle">Assign guests to vehicles and seats</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-carseat')">＋ Add Car</button>
+      </div>
+      <div class="card-grid" id="carseats-list"></div>
+    </div>
+
+    <!-- ══════════════════ BED PLAN ══════════════════ -->
+    <div class="page" id="page-bedplan">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Bed Plan</div>
+          <div class="section-subtitle">Assign guests to rooms and beds</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-bed')">＋ Add Room</button>
+      </div>
+      <div class="card-grid" id="bedplan-list"></div>
+    </div>
+
+    <!-- ══════════════════ GAMES ══════════════════ -->
+    <div class="page" id="page-games">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Engagement Games</div>
+          <div class="section-subtitle">Fun activities and games for your engagement party</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-game')">＋ Add Game</button>
+      </div>
+      <div class="card-grid" id="games-list"></div>
+    </div>
+
+    <!-- ══════════════════ OVERVIEW ══════════════════ -->
+    <div class="page" id="page-overview">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Full Plan Overview</div>
+          <div class="section-subtitle">Your complete engagement plan — countdown, activities, transport & rooms</div>
+        </div>
+        <button class="btn btn-ghost" onclick="openModal('modal-setdate')">📅 Set Engagement Date</button>
+      </div>
+
+      <!-- Countdown Hero -->
+      <div id="overview-countdown-hero"></div>
+
+      <!-- Budget Tracker -->
+      <div class="overview-section">
+        <div class="overview-section-title">
+          <span>💰 Budget Tracker</span>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-setbudget')">⚙️ Set Budget</button>
+        </div>
+        <div id="overview-budget"></div>
+      </div>
+
+      <!-- Activities Timeline -->
+      <div class="overview-section">
+        <div class="overview-section-title">
+          <span>📋 All Activities</span>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-activity')">＋ Add Activity</button>
+        </div>
+        <div id="overview-activities"></div>
+      </div>
+
+      <!-- Car Seat Plans -->
+      <div class="overview-section">
+        <div class="overview-section-title">
+          <span>🚗 Car Seat Plans</span>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-carseat')">＋ Add Car</button>
+        </div>
+        <div id="overview-cars"></div>
+      </div>
+
+      <!-- Bed Plans -->
+      <div class="overview-section">
+        <div class="overview-section-title">
+          <span>🛏️ Bed Plans</span>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-bed')">＋ Add Room</button>
+        </div>
+        <div id="overview-beds"></div>
+      </div>
+
+      <!-- Games -->
+      <div class="overview-section">
+        <div class="overview-section-title">
+          <span>🎮 Engagement Games</span>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-game')">＋ Add Game</button>
+        </div>
+        <div class="games-overview-grid" id="overview-games"></div>
+      </div>
+
+      <!-- Committee -->
+      <div class="overview-section">
+        <div class="overview-section-title">
+          <span>👥 Organizing Committee</span>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-committee')">＋ New Committee</button>
+        </div>
+        <div class="card-grid" id="overview-committee"></div>
+      </div>
+
+      <!-- Grocery List -->
+      <div class="overview-section">
+        <div class="overview-section-title">
+          <span>🛒 Grocery List</span>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-grocery')">＋ Add Item</button>
+        </div>
+        <div id="overview-grocery-progress"></div>
+        <div id="overview-grocery"></div>
+      </div>
+
+      <!-- Meal Plan -->
+      <div class="overview-section">
+        <div class="overview-section-title">
+          <span>🍽️ Meal Plan</span>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-mealday')">＋ Add Day</button>
+        </div>
+        <div id="overview-meals"></div>
+      </div>
+
+      <!-- Expenses -->
+      <div class="overview-section">
+        <div class="overview-section-title">
+          <span>💸 Expenses</span>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-expense')">＋ Add Expense</button>
+        </div>
+        <div id="overview-expenses"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ COMMITTEE ══════════════════ -->
+    <div class="page" id="page-committee">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Organizing Committee</div>
+          <div class="section-subtitle">Create committees and manage members for your engagement</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-committee')">＋ New Committee</button>
+      </div>
+      <div class="card-grid" id="committee-list"></div>
+    </div>
+
+    <!-- ══════════════════ GROCERY LIST ══════════════════ -->
+    <div class="page" id="page-grocery">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Grocery List</div>
+          <div class="section-subtitle">Track everything you need to buy — check off as you go</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-grocery')">＋ Add Item</button>
+      </div>
+      <div id="grocery-progress-wrap"></div>
+      <div id="grocery-list"></div>
+    </div>
+
+    <!-- ══════════════════ MEAL PLAN ══════════════════ -->
+    <div class="page" id="page-mealplan">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Meal Plan</div>
+          <div class="section-subtitle">Plan meals from breakfast to dinner for each day</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-mealday')">＋ Add Day</button>
+      </div>
+      <div id="mealplan-list"></div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ══════════════════ MODALS ══════════════════ -->
+
+<!-- Committee Modal -->
+<div class="modal-overlay" id="modal-committee">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New Committee</div>
+      <button class="modal-close" onclick="closeModal('modal-committee')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Committee Name *</label>
+          <input class="form-input" id="com-name" placeholder="e.g. Events Team, Finance, Catering" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon / Emoji</label>
+          <input class="form-input" id="com-icon" placeholder="👥" maxlength="4" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input class="form-input" id="com-desc" placeholder="What this committee handles..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-committee')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCommittee()">Save Committee</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Member Modal -->
+<div class="modal-overlay" id="modal-member">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-member-title">Add Member</div>
+      <button class="modal-close" onclick="closeModal('modal-member')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-input" id="mem-name" placeholder="e.g. Maria Santos" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role / Position</label>
+          <input class="form-input" id="mem-role" placeholder="e.g. Head Coordinator" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Contact / Phone</label>
+          <input class="form-input" id="mem-contact" placeholder="+63 9xx xxx xxxx" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="mem-email" placeholder="email@example.com" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <input class="form-input" id="mem-notes" placeholder="Responsibilities, notes..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-member')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMember()">Add Member</button>
+    </div>
+  </div>
+</div>
+
+<!-- Grocery Item Modal -->
+<div class="modal-overlay" id="modal-grocery">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Grocery Item</div>
+      <button class="modal-close" onclick="closeModal('modal-grocery')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Item Name *</label>
+          <input class="form-input" id="groc-name" placeholder="e.g. Chicken, Rice, Flowers..." />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Quantity</label>
+          <input class="form-input" id="groc-qty" placeholder="e.g. 2 kg, 1 dozen, 3 pcs" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="groc-cat">
+            <option value="🥩 Meat & Seafood">🥩 Meat &amp; Seafood</option>
+            <option value="🥦 Vegetables">🥦 Vegetables</option>
+            <option value="🍎 Fruits">🍎 Fruits</option>
+            <option value="🥛 Dairy & Eggs">🥛 Dairy &amp; Eggs</option>
+            <option value="🌾 Grains & Bread">🌾 Grains &amp; Bread</option>
+            <option value="🧂 Condiments & Spices">🧂 Condiments &amp; Spices</option>
+            <option value="🥤 Beverages">🥤 Beverages</option>
+            <option value="🍰 Desserts & Sweets">🍰 Desserts &amp; Sweets</option>
+            <option value="🌸 Decorations">🌸 Decorations</option>
+            <option value="🧹 Supplies">🧹 Supplies</option>
+            <option value="📦 Other">📦 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estimated Cost</label>
+          <input class="form-input" id="groc-cost" placeholder="e.g. ₱500" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <input class="form-input" id="groc-note" placeholder="Brand, store, or any notes..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-grocery')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGrocery()">Add to List</button>
+    </div>
+  </div>
+</div>
+
+<!-- Meal Day Modal -->
+<div class="modal-overlay" id="modal-mealday">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title">Add Meal Day</div>
+      <button class="modal-close" onclick="closeModal('modal-mealday')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Day Label *</label>
+          <input class="form-input" id="meal-label" placeholder="e.g. Day 1, Engagement Day, Eve Party" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input class="form-input" id="meal-date" type="date" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🌅 Breakfast</label>
+        <textarea class="form-textarea" id="meal-breakfast" placeholder="e.g. Garlic rice, eggs, tocino, coffee..." style="min-height:56px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">☀️ Morning Snack</label>
+        <textarea class="form-textarea" id="meal-amsnack" placeholder="e.g. Pandesal, juice..." style="min-height:48px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🍱 Lunch</label>
+        <textarea class="form-textarea" id="meal-lunch" placeholder="e.g. Kare-kare, lechon, rice, salad..." style="min-height:56px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🌤️ Afternoon Snack</label>
+        <textarea class="form-textarea" id="meal-pmsnack" placeholder="e.g. Buko salad, halo-halo..." style="min-height:48px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🌙 Dinner</label>
+        <textarea class="form-textarea" id="meal-dinner" placeholder="e.g. Roasted pig, pasta, dessert table..." style="min-height:56px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🍾 Midnight Snack / After-Party</label>
+        <textarea class="form-textarea" id="meal-midnight" placeholder="e.g. Ramen bar, dimsum, drinks..." style="min-height:48px;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-mealday')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMealDay()">Save Day</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Set Budget Modal -->
+<div class="modal-overlay" id="modal-setbudget">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💰 Set Budget</div>
+      <button class="modal-close" onclick="closeModal('modal-setbudget')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Total Budget (₱) *</label>
+        <input class="form-input" id="budget-total" type="number" min="0" placeholder="e.g. 50000" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Budget Label</label>
+        <input class="form-input" id="budget-label" placeholder="e.g. Engagement Party Budget" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-setbudget')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBudget()">Save Budget</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Expense Modal -->
+<div class="modal-overlay" id="modal-expense">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💸 Add Expense</div>
+      <button class="modal-close" onclick="closeModal('modal-expense')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Description *</label>
+          <input class="form-input" id="exp-label" placeholder="e.g. Staycation Downpayment" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount (₱) *</label>
+          <input class="form-input" id="exp-amount" type="number" min="0" placeholder="e.g. 5000" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="exp-category">
+            <option value="Staycation">🏨 Staycation (DP / Full Payment)</option>
+            <option value="Food">🍽️ Food Orders</option>
+            <option value="Gas">⛽ Gas</option>
+            <option value="Grocery">🛒 Grocery</option>
+            <option value="Other">📌 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input class="form-input" id="exp-date" type="date" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <input class="form-input" id="exp-note" placeholder="Any extra details..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-expense')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExpense()">Add Expense</button>
+    </div>
+  </div>
+</div>
+
+<!-- Set Engagement Date Modal -->
+<div class="modal-overlay" id="modal-setdate">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Set Engagement Date</div>
+      <button class="modal-close" onclick="closeModal('modal-setdate')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Event Name</label>
+        <input class="form-input" id="setdate-name" placeholder="e.g. Our Engagement Party" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Engagement Date *</label>
+        <input class="form-input" id="setdate-date" type="date" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Time (optional)</label>
+        <input class="form-input" id="setdate-time" type="time" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-setdate')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEngagementDate()">Save Date</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Activity Modal -->
+<div class="modal-overlay" id="modal-activity">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-activity-title">New Engagement Activity</div>
+      <button class="modal-close" onclick="closeModal('modal-activity')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Activity Name *</label>
+          <input class="form-input" id="act-name" placeholder="e.g. Ring Exchange Ceremony" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Quarter *</label>
+          <select class="form-select" id="act-quarter">
+            <option value="Q1">Q1 — Jan–Mar</option>
+            <option value="Q2">Q2 — Apr–Jun</option>
+            <option value="Q3">Q3 — Jul–Sep</option>
+            <option value="Q4">Q4 — Oct–Dec</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input class="form-input" id="act-date" type="date" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time</label>
+          <input class="form-input" id="act-time" type="time" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <select class="form-select" id="act-location">
+          <option value="">— None —</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="act-category">
+            <option value="Ceremony">💍 Ceremony</option>
+            <option value="Reception">🥂 Reception</option>
+            <option value="Pre-Event">🌸 Pre-Event</option>
+            <option value="Post-Event">🎉 Post-Event</option>
+            <option value="Game">🎮 Game</option>
+            <option value="Other">📌 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon / Emoji</label>
+          <input class="form-input" id="act-icon" placeholder="💍" maxlength="4" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="act-desc" placeholder="Describe the activity..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-activity')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveActivity()">Save Activity</button>
+    </div>
+  </div>
+</div>
+
+<!-- Location Modal -->
+<div class="modal-overlay" id="modal-location">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Location</div>
+      <button class="modal-close" onclick="closeModal('modal-location')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Venue Name *</label>
+          <input class="form-input" id="loc-name" placeholder="e.g. Grand Ballroom" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon / Emoji</label>
+          <input class="form-input" id="loc-icon" placeholder="🏛️" maxlength="4" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <input class="form-input" id="loc-address" placeholder="123 Wedding Lane, City" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-select" id="loc-type">
+            <option value="Indoor">🏛️ Indoor</option>
+            <option value="Outdoor">🌿 Outdoor</option>
+            <option value="Beach">🏖️ Beach</option>
+            <option value="Garden">🌸 Garden</option>
+            <option value="Restaurant">🍽️ Restaurant</option>
+            <option value="Hotel">🏨 Hotel</option>
+            <option value="Church">⛪ Church</option>
+            <option value="Other">📍 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Capacity</label>
+          <input class="form-input" id="loc-capacity" type="number" placeholder="100" min="1" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="loc-notes" placeholder="Parking, contact info, etc."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-location')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveLocation()">Save Location</button>
+    </div>
+  </div>
+</div>
+
+<!-- Car Seat Modal -->
+<div class="modal-overlay" id="modal-carseat">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title">Add Car Seat Plan</div>
+      <button class="modal-close" onclick="closeModal('modal-carseat')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Car Label *</label>
+          <input class="form-input" id="car-name" placeholder="e.g. Car 1 / Bride's Car" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Driver</label>
+          <input class="form-input" id="car-driver" placeholder="Driver name" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Seat Count</label>
+          <select class="form-select" id="car-seats">
+            <option value="2">2 seats</option>
+            <option value="4" selected>4 seats</option>
+            <option value="6">6 seats</option>
+            <option value="7">7 seats</option>
+            <option value="8">8 seats</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Vehicle Type</label>
+          <select class="form-select" id="car-type">
+            <option value="Sedan">🚗 Sedan</option>
+            <option value="SUV">🚙 SUV</option>
+            <option value="Van">🚐 Van</option>
+            <option value="Limo">🚘 Limousine</option>
+            <option value="Truck">🛻 Truck</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Assign Passengers (comma-separated names)</label>
+        <input class="form-input" id="car-passengers" placeholder="Alice, Bob, Carol, Dave" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-carseat')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCar()">Save Car Plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bed Plan Modal -->
+<div class="modal-overlay" id="modal-bed">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Room / Bed</div>
+      <button class="modal-close" onclick="closeModal('modal-bed')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Room Name *</label>
+          <input class="form-input" id="bed-room" placeholder="e.g. Master Suite" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bed Count</label>
+          <select class="form-select" id="bed-count">
+            <option value="1">1 bed</option>
+            <option value="2">2 beds</option>
+            <option value="3">3 beds</option>
+            <option value="4">4 beds</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Occupants (comma-separated per bed)</label>
+        <textarea class="form-textarea" id="bed-occupants" placeholder="Bed 1: Alice & Bob&#10;Bed 2: Carol & Dave" style="min-height:60px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location / Venue</label>
+        <select class="form-select" id="bed-location">
+          <option value="">— None —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <input class="form-input" id="bed-notes" placeholder="Floor, amenities, etc." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-bed')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBed()">Save Room</button>
+    </div>
+  </div>
+</div>
+
+<!-- Game Modal -->
+<div class="modal-overlay" id="modal-game">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Engagement Game</div>
+      <button class="modal-close" onclick="closeModal('modal-game')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Game Name *</label>
+          <input class="form-input" id="game-name" placeholder="e.g. How Well Do You Know Them?" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Emoji</label>
+          <input class="form-input" id="game-icon" placeholder="🎯" maxlength="4" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="game-category">
+            <option value="Icebreaker">🧊 Icebreaker</option>
+            <option value="Trivia">🧠 Trivia</option>
+            <option value="Physical">🏃 Physical</option>
+            <option value="Creative">🎨 Creative</option>
+            <option value="Classic">🎲 Classic</option>
+            <option value="Couples">💑 Couples</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Players</label>
+          <input class="form-input" id="game-players" placeholder="e.g. 4–10 players" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="game-desc" placeholder="Describe how the game is played..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Duration</label>
+          <input class="form-input" id="game-duration" placeholder="e.g. 15 mins" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Quarter</label>
+          <select class="form-select" id="game-quarter">
+            <option value="Any">Any</option>
+            <option value="Q1">Q1</option>
+            <option value="Q2">Q2</option>
+            <option value="Q3">Q3</option>
+            <option value="Q4">Q4</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-game')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGame()">Save Game</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assign Seat Modal -->
+<div class="modal-overlay" id="modal-assign-seat">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="assign-seat-title">Assign Seat</div>
+      <button class="modal-close" onclick="closeModal('modal-assign-seat')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Passenger Name</label>
+        <input class="form-input" id="assign-seat-name" placeholder="Enter name" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-assign-seat')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAssignSeat()">Assign</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// FIREBASE (Firestore — hardcoded config)
+// ──────────────────────────────────────────────
+const FB_FIRESTORE_CONFIG = {
+  apiKey:            "AIzaSyAKQ216Ytt52XTiwfolbvBsakc_0Sok5LE",
+  authDomain:        "engagement-activity-974bb.firebaseapp.com",
+  projectId:         "engagement-activity-974bb",
+  storageBucket:     "engagement-activity-974bb.firebasestorage.app",
+  messagingSenderId: "127473739240",
+  appId:             "1:127473739240:web:7c222e8e3f3ef742b7f05d",
+  measurementId:     "G-TBT4HRSP3W"
+};
+
+const FB_COLLECTION = 'planner';
+const FB_DOC_ID     = 'engagement_planner';
+
+let _fbApp  = null;
+let _fbDb   = null;
+let _fbDocRef = null;
+let _fbUnsubscribe = null;
+
+function setFbStatus(status, text) {
+  const dot = document.getElementById('fb-dot');
+  const lbl = document.getElementById('fb-status-text');
+  if (!dot || !lbl) return;
+  dot.className = 'fb-dot ' + status;
+  lbl.textContent = text;
+}
+
+function initFirebase() {
+  try {
+    _fbApp    = firebase.apps.length ? firebase.app() : firebase.initializeApp(FB_FIRESTORE_CONFIG);
+    _fbDb     = firebase.firestore(_fbApp);
+    _fbDocRef = _fbDb.collection(FB_COLLECTION).doc(FB_DOC_ID);
+
+    setFbStatus('syncing', 'Connecting…');
+
+    // Real-time listener — fires on every remote change
+    _fbUnsubscribe = _fbDocRef.onSnapshot(snapshot => {
+      if (snapshot.exists) {
+        const data = snapshot.data();
+        state = data;
+        state.activities  = state.activities  || [];
+        state.locations   = state.locations   || [];
+        state.cars        = state.cars        || [];
+        state.beds        = state.beds        || [];
+        state.games       = state.games       || [];
+        state.committees  = state.committees  || [];
+        state.grocery     = state.grocery     || [];
+        state.meals       = state.meals       || [];
+        state.expenses    = state.expenses    || [];
+      } else {
+        // Document doesn't exist yet — seed it with current local state
+        _fbDocRef.set(state).catch(e => console.warn('Firestore seed error:', e));
+      }
+      setFbStatus('connected', 'Live · Firestore');
+      initDate();
+      updateCounts();
+      renderPage(currentPage);
+      if (state.engagement && !_countdownInterval) startCountdown();
+    }, err => {
+      setFbStatus('error', 'Sync error');
+      console.error('Firestore listener error:', err);
+    });
+
+  } catch(err) {
+    setFbStatus('error', 'Init error');
+    console.error('Firestore init error:', err);
+  }
+}
+
+// ──────────────────────────────────────────────
+// STATE  (localStorage fallback while Firestore connects)
+// ──────────────────────────────────────────────
+const STORAGE_KEY = 'engage_planner_v1';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return { activities: [], locations: [], cars: [], beds: [], games: [], committees: [], grocery: [], meals: [], budget: null, expenses: [] };
+}
+
+function saveState() {
+  // Always mirror to localStorage for offline resilience
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  // Write to Firestore — onSnapshot will propagate to all connected clients
+  if (_fbDocRef) {
+    _fbDocRef.set(state).catch(e => console.warn('Firestore write error:', e));
+  }
+}
+
+let state = loadState();
+
+// pending seat assignment context
+let _assignCtx = null;
+
+// ──────────────────────────────────────────────
+// DATE / QUARTER
+// ──────────────────────────────────────────────
+function getQuarterFromMonth(m) {
+  if (m <= 2) return 'Q1';
+  if (m <= 5) return 'Q2';
+  if (m <= 8) return 'Q3';
+  return 'Q4';
+}
+
+function getQuarterMonths(q) {
+  return {Q1:'Jan – Mar',Q2:'Apr – Jun',Q3:'Jul – Sep',Q4:'Oct – Dec'}[q];
+}
+
+function initDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-based
+  const q = getQuarterFromMonth(month);
+  const monthName = now.toLocaleString('default',{month:'long'});
+
+  document.getElementById('sidebar-date-text').textContent = `${monthName} ${year}`;
+  document.getElementById('sidebar-month-text').textContent = now.toDateString();
+  document.getElementById('sidebar-quarter-badge').textContent = `${q} · ${getQuarterMonths(q)}`;
+  document.getElementById('dash-subtitle').textContent =
+    `${monthName} ${year} · ${q} · ${getQuarterMonths(q)}`;
+
+  // dashboard quarter info
+  const qi = document.getElementById('dash-quarter-info');
+  qi.innerHTML = `
+    <div style="margin-bottom:10px;">
+      <div style="font-size:28px;font-weight:800;color:var(--accent2);">${q}</div>
+      <div style="font-size:13px;color:var(--muted);">${getQuarterMonths(q)} · ${year}</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:8px;">
+      Activities this quarter: <span style="color:var(--white);font-weight:600;">${state.activities.filter(a=>a.quarter===q).length}</span>
+    </div>`;
+
+  // pre-select current quarter in activity form
+  const sel = document.getElementById('act-quarter');
+  if (sel) sel.value = q;
+}
+
+// ──────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────
+const PAGE_TITLES = {
+  dashboard: 'Dashboard',
+  activities: 'Activities',
+  quarters: 'By Quarter',
+  locations: 'Locations',
+  carseats: 'Car Seat Plan',
+  bedplan: 'Bed Plan',
+  games: 'Engagement Games',
+};
+
+const ADD_LABELS = {
+  dashboard: ['New Activity', 'modal-activity'],
+  activities: ['New Activity', 'modal-activity'],
+  quarters: ['New Activity', 'modal-activity'],
+  locations: ['Add Location', 'modal-location'],
+  carseats: ['Add Car', 'modal-carseat'],
+  bedplan: ['Add Room', 'modal-bed'],
+  games: ['Add Game', 'modal-game'],
+};
+
+let currentPage = 'dashboard';
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+  document.getElementById('topbar-title').textContent = PAGE_TITLES[page] || page;
+  currentPage = page;
+  const [label] = ADD_LABELS[page] || ['New', null];
+  document.getElementById('topbar-add-btn').textContent = `＋ ${label}`;
+  renderPage(page);
+}
+
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => navigate(el.dataset.page));
+});
+
+function handleTopbarAdd() {
+  const [, modal] = ADD_LABELS[currentPage] || [null, 'modal-activity'];
+  if (modal) openModal(modal);
+}
+
+// ──────────────────────────────────────────────
+// MODALS
+// ──────────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  // populate location dropdowns
+  if (id === 'modal-activity') populateLocationSelect('act-location');
+  if (id === 'modal-bed') populateLocationSelect('bed-location');
+  // pre-fill set-date modal with existing values
+  if (id === 'modal-setdate' && state.engagement) {
+    document.getElementById('setdate-name').value = state.engagement.name || '';
+    document.getElementById('setdate-date').value = state.engagement.date || '';
+    document.getElementById('setdate-time').value = state.engagement.time || '';
+  }
+  // pre-fill budget modal
+  if (id === 'modal-setbudget' && state.budget) {
+    document.getElementById('budget-total').value = state.budget.total || '';
+    document.getElementById('budget-label').value = state.budget.label || '';
+  }
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  clearModalFields(id);
+  // reset activity modal state if closed without saving
+  if (id === 'modal-activity' && _editActivityId) {
+    _editActivityId = null;
+    document.getElementById('modal-activity-title').textContent = 'New Engagement Activity';
+    document.querySelector('#modal-activity .btn-primary').textContent = 'Save Activity';
+  }
+}
+
+function clearModalFields(id) {
+  document.querySelectorAll(`#${id} input, #${id} textarea`).forEach(el => { el.value = ''; });
+  document.querySelectorAll(`#${id} select`).forEach(el => { el.selectedIndex = 0; });
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) closeModal(ov.id); });
+});
+
+// ──────────────────────────────────────────────
+// TOAST
+// ──────────────────────────────────────────────
+function showToast(msg, icon='✅') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span class="toast-icon">${icon}</span>${msg}`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.4s'; setTimeout(()=>t.remove(),400); }, 2800);
+}
+
+// ──────────────────────────────────────────────
+// HELPERS
+// ──────────────────────────────────────────────
+function uid() { return '_' + Math.random().toString(36).substr(2,9); }
+
+function populateLocationSelect(selectId) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— None —</option>';
+  state.locations.forEach(l => {
+    const opt = document.createElement('option');
+    opt.value = l.id;
+    opt.textContent = `${l.icon||'📍'} ${l.name}`;
+    sel.appendChild(opt);
+  });
+  if (cur) sel.value = cur;
+}
+
+function getLocationName(id) {
+  const l = state.locations.find(x=>x.id===id);
+  return l ? `${l.icon||'📍'} ${l.name}` : '';
+}
+
+function tagColor(cat) {
+  const map = {
+    Ceremony:'tag-blue', Reception:'tag-green', 'Pre-Event':'tag-purple',
+    'Post-Event':'tag-yellow', Game:'tag-cyan', Other:'tag-blue',
+    Icebreaker:'tag-cyan', Trivia:'tag-purple', Physical:'tag-yellow',
+    Creative:'tag-green', Classic:'tag-blue', Couples:'tag-blue',
+  };
+  return map[cat] || 'tag-blue';
+}
+
+function emptyState(msg, sub='', icon='🗂️') {
+  return `<div class="empty-state"><div class="empty-icon">${icon}</div><div class="empty-title">${msg}</div><div class="empty-sub">${sub}</div></div>`;
+}
+
+// ──────────────────────────────────────────────
+// SAVE — ACTIVITIES
+// ──────────────────────────────────────────────
+let _editActivityId = null; // null = new, string = editing
+
+function openEditActivity(id) {
+  const a = state.activities.find(x => x.id === id);
+  if (!a) return;
+  _editActivityId = id;
+  populateLocationSelect('act-location');
+  document.getElementById('act-name').value     = a.name;
+  document.getElementById('act-quarter').value  = a.quarter;
+  document.getElementById('act-date').value     = a.date || '';
+  document.getElementById('act-time').value     = a.time || '';
+  document.getElementById('act-location').value = a.locationId || '';
+  document.getElementById('act-category').value = a.category;
+  document.getElementById('act-icon').value     = a.icon || '';
+  document.getElementById('act-desc').value     = a.desc || '';
+  document.getElementById('modal-activity-title').textContent = '✏️ Edit Activity';
+  document.querySelector('#modal-activity .btn-primary').textContent = 'Save Changes';
+  document.getElementById('modal-activity').classList.add('open');
+}
+
+function saveActivity() {
+  const name = document.getElementById('act-name').value.trim();
+  if (!name) { showToast('Activity name is required.','⚠️'); return; }
+
+  if (_editActivityId) {
+    // — EDIT MODE —
+    const a = state.activities.find(x => x.id === _editActivityId);
+    if (a) {
+      a.name       = name;
+      a.quarter    = document.getElementById('act-quarter').value;
+      a.date       = document.getElementById('act-date').value;
+      a.time       = document.getElementById('act-time').value;
+      a.locationId = document.getElementById('act-location').value;
+      a.category   = document.getElementById('act-category').value;
+      a.icon       = document.getElementById('act-icon').value || '💍';
+      a.desc       = document.getElementById('act-desc').value.trim();
+    }
+    _editActivityId = null;
+    saveState();
+    closeModal('modal-activity');
+    // reset modal title & button
+    document.getElementById('modal-activity-title').textContent = 'New Engagement Activity';
+    document.querySelector('#modal-activity .btn-primary').textContent = 'Save Activity';
+    showToast(`Activity "${name}" updated!`,'✏️');
+  } else {
+    // — CREATE MODE —
+    const entry = {
+      id: uid(),
+      name,
+      quarter:    document.getElementById('act-quarter').value,
+      date:       document.getElementById('act-date').value,
+      time:       document.getElementById('act-time').value,
+      locationId: document.getElementById('act-location').value,
+      category:   document.getElementById('act-category').value,
+      icon:       document.getElementById('act-icon').value || '💍',
+      desc:       document.getElementById('act-desc').value.trim(),
+      createdAt:  new Date().toISOString(),
+    };
+    state.activities.push(entry);
+    saveState();
+    closeModal('modal-activity');
+    showToast(`Activity "${name}" added!`);
+  }
+  renderPage(currentPage);
+  updateCounts();
+  initDate();
+}
+
+function deleteActivity(id) {
+  const a = state.activities.find(x=>x.id===id);
+  if (!a) return;
+  state.activities = state.activities.filter(x=>x.id!==id);
+  saveState();
+  showToast(`"${a.name}" removed.`,'🗑️');
+  renderPage(currentPage);
+  updateCounts();
+  initDate();
+}
+
+// ──────────────────────────────────────────────
+// SAVE — LOCATIONS
+// ──────────────────────────────────────────────
+function saveLocation() {
+  const name = document.getElementById('loc-name').value.trim();
+  if (!name) { showToast('Venue name is required.','⚠️'); return; }
+  const entry = {
+    id: uid(),
+    name,
+    icon: document.getElementById('loc-icon').value || '📍',
+    address: document.getElementById('loc-address').value.trim(),
+    type: document.getElementById('loc-type').value,
+    capacity: document.getElementById('loc-capacity').value,
+    notes: document.getElementById('loc-notes').value.trim(),
+  };
+  state.locations.push(entry);
+  saveState();
+  closeModal('modal-location');
+  showToast(`Location "${name}" added!`);
+  renderPage(currentPage);
+  updateCounts();
+}
+
+function deleteLocation(id) {
+  const l = state.locations.find(x=>x.id===id);
+  if (!l) return;
+  state.locations = state.locations.filter(x=>x.id!==id);
+  saveState();
+  showToast(`"${l.name}" removed.`,'🗑️');
+  renderPage(currentPage);
+  updateCounts();
+}
+
+// ──────────────────────────────────────────────
+// SAVE — CARS
+// ──────────────────────────────────────────────
+function saveCar() {
+  const name = document.getElementById('car-name').value.trim();
+  if (!name) { showToast('Car label is required.','⚠️'); return; }
+  const seats = parseInt(document.getElementById('car-seats').value);
+  const rawPass = document.getElementById('car-passengers').value;
+  const passengers = rawPass ? rawPass.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  // fill to seat count
+  const seatArr = [];
+  for (let i=0;i<seats;i++) seatArr.push(passengers[i]||null);
+
+  const entry = {
+    id: uid(),
+    name,
+    driver: document.getElementById('car-driver').value.trim(),
+    seatCount: seats,
+    type: document.getElementById('car-type').value,
+    seats: seatArr,
+  };
+  state.cars.push(entry);
+  saveState();
+  closeModal('modal-carseat');
+  showToast(`Car "${name}" added!`);
+  renderPage(currentPage);
+  updateCounts();
+}
+
+function deleteCar(id) {
+  const c = state.cars.find(x=>x.id===id);
+  if (!c) return;
+  state.cars = state.cars.filter(x=>x.id!==id);
+  saveState();
+  showToast(`"${c.name}" removed.`,'🗑️');
+  renderPage(currentPage);
+  updateCounts();
+}
+
+// ──────────────────────────────────────────────
+// ASSIGN SEAT
+// ──────────────────────────────────────────────
+function openAssignSeat(carId, seatIdx) {
+  _assignCtx = { carId, seatIdx };
+  const car = state.cars.find(x=>x.id===carId);
+  document.getElementById('assign-seat-title').textContent = `Assign Seat ${seatIdx+1} — ${car.name}`;
+  document.getElementById('assign-seat-name').value = car.seats[seatIdx]||'';
+  openModal('modal-assign-seat');
+}
+
+function confirmAssignSeat() {
+  if (!_assignCtx) return;
+  const { carId, seatIdx } = _assignCtx;
+  const car = state.cars.find(x=>x.id===carId);
+  if (!car) return;
+  const name = document.getElementById('assign-seat-name').value.trim();
+  car.seats[seatIdx] = name || null;
+  saveState();
+  closeModal('modal-assign-seat');
+  showToast(name ? `Seat ${seatIdx+1} assigned to ${name}` : `Seat ${seatIdx+1} cleared.`);
+  renderPage(currentPage);
+  _assignCtx = null;
+}
+
+// ──────────────────────────────────────────────
+// SAVE — BEDS
+// ──────────────────────────────────────────────
+function saveBed() {
+  const room = document.getElementById('bed-room').value.trim();
+  if (!room) { showToast('Room name is required.','⚠️'); return; }
+  const count = parseInt(document.getElementById('bed-count').value);
+  const occupants = document.getElementById('bed-occupants').value.trim();
+  const entry = {
+    id: uid(),
+    room,
+    bedCount: count,
+    occupants,
+    locationId: document.getElementById('bed-location').value,
+    notes: document.getElementById('bed-notes').value.trim(),
+  };
+  state.beds.push(entry);
+  saveState();
+  closeModal('modal-bed');
+  showToast(`Room "${room}" added!`);
+  renderPage(currentPage);
+  updateCounts();
+}
+
+function deleteBed(id) {
+  const b = state.beds.find(x=>x.id===id);
+  if (!b) return;
+  state.beds = state.beds.filter(x=>x.id!==id);
+  saveState();
+  showToast(`"${b.room}" removed.`,'🗑️');
+  renderPage(currentPage);
+  updateCounts();
+}
+
+// ──────────────────────────────────────────────
+// SAVE — GAMES
+// ──────────────────────────────────────────────
+function saveGame() {
+  const name = document.getElementById('game-name').value.trim();
+  if (!name) { showToast('Game name is required.','⚠️'); return; }
+  const entry = {
+    id: uid(),
+    name,
+    icon: document.getElementById('game-icon').value || '🎮',
+    category: document.getElementById('game-category').value,
+    players: document.getElementById('game-players').value.trim(),
+    desc: document.getElementById('game-desc').value.trim(),
+    duration: document.getElementById('game-duration').value.trim(),
+    quarter: document.getElementById('game-quarter').value,
+  };
+  state.games.push(entry);
+  saveState();
+  closeModal('modal-game');
+  showToast(`Game "${name}" added!`);
+  renderPage(currentPage);
+  updateCounts();
+}
+
+function deleteGame(id) {
+  const g = state.games.find(x=>x.id===id);
+  if (!g) return;
+  state.games = state.games.filter(x=>x.id!==id);
+  saveState();
+  showToast(`"${g.name}" removed.`,'🗑️');
+  renderPage(currentPage);
+  updateCounts();
+}
+
+// ──────────────────────────────────────────────
+// RENDER HELPERS
+// ──────────────────────────────────────────────
+function renderActivityItem(a) {
+  const loc = a.locationId ? getLocationName(a.locationId) : '';
+  const dateStr = a.date ? new Date(a.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : '';
+  return `
+  <div class="activity-card">
+    <div class="activity-icon">${a.icon||'💍'}</div>
+    <div class="activity-info">
+      <div class="activity-name">${a.name}</div>
+      <div class="activity-meta">
+        <span class="tag tag-blue">${a.quarter}</span>
+        <span class="tag ${tagColor(a.category)}">${a.category}</span>
+        ${dateStr?`<span>📅 ${dateStr}</span>`:''}
+        ${a.time?`<span>⏰ ${a.time}</span>`:''}
+        ${loc?`<span>${loc}</span>`:''}
+      </div>
+      ${a.desc?`<div style="font-size:12px;color:var(--muted);margin-top:6px;">${a.desc}</div>`:''}
+    </div>
+    <div class="activity-actions">
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="openEditActivity('${a.id}')" title="Edit">✏️</button>
+      <button class="btn btn-danger btn-sm btn-icon" onclick="deleteActivity('${a.id}')" title="Delete">🗑️</button>
+    </div>
+  </div>`;
+}
+
+// ──────────────────────────────────────────────
+// RENDER PAGES
+// ──────────────────────────────────────────────
+function renderPage(page) {
+  if (page === 'dashboard') renderDashboard();
+  else if (page === 'activities') renderActivities();
+  else if (page === 'quarters') renderQuarters();
+  else if (page === 'locations') renderLocations();
+  else if (page === 'carseats') renderCars();
+  else if (page === 'bedplan') renderBeds();
+  else if (page === 'games') renderGames();
+  else if (page === 'overview') renderOverview();
+  else if (page === 'committee') renderCommittee();
+  else if (page === 'grocery') renderGrocery();
+  else if (page === 'mealplan') renderMealPlan();
+}
+
+// DASHBOARD
+function renderDashboard() {
+  document.getElementById('stat-activities').textContent = state.activities.length;
+  document.getElementById('stat-locations').textContent = state.locations.length;
+  document.getElementById('stat-carseats').textContent = state.cars.length;
+  document.getElementById('stat-beds').textContent = state.beds.length;
+  document.getElementById('stat-games').textContent = state.games.length;
+
+  const recent = document.getElementById('dash-recent-visible');
+  const sorted = [...state.activities].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+  if (!sorted.length) {
+    recent.innerHTML = `<div style="padding:12px 0;font-size:13px;color:var(--muted);text-align:center;">No activities yet — click to open Full Overview</div>`;
+    return;
+  }
+  recent.innerHTML = `<div class="timeline">${sorted.map(a=>`
+    <div class="timeline-item" style="cursor:pointer;" onclick="navigate('overview')" title="Open Full Overview">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">${a.quarter} · ${a.category}</div>
+      <div class="timeline-content">${a.icon||'💍'} ${a.name}</div>
+      ${a.date?`<div class="timeline-sub">📅 ${new Date(a.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric'})}</div>`:''}
+    </div>`).join('')}
+  </div>`;
+}
+
+// ACTIVITIES
+function renderActivities() {
+  const el = document.getElementById('activities-list');
+  if (!state.activities.length) { el.innerHTML = emptyState('No activities yet','Click "+ New Activity" to get started','📋'); return; }
+  el.innerHTML = state.activities.map(a=>renderActivityItem(a)).join('');
+}
+
+// QUARTERS
+let selectedQuarter = (() => {
+  const m = new Date().getMonth();
+  return getQuarterFromMonth(m);
+})();
+
+function selectQuarter(q) {
+  selectedQuarter = q;
+  document.querySelectorAll('.q-tab').forEach(t=>t.classList.toggle('active', t.dataset.q===q));
+  renderQuarterList();
+}
+
+function renderQuarters() {
+  // sync active tab
+  document.querySelectorAll('.q-tab').forEach(t=>t.classList.toggle('active', t.dataset.q===selectedQuarter));
+  renderQuarterList();
+}
+
+function renderQuarterList() {
+  const el = document.getElementById('quarter-activities-list');
+  const list = state.activities.filter(a=>a.quarter===selectedQuarter);
+  if (!list.length) {
+    el.innerHTML = emptyState(`No activities for ${selectedQuarter}`,`Add an activity assigned to ${selectedQuarter}`,'📅');
+    return;
+  }
+  el.innerHTML = list.map(a=>renderActivityItem(a)).join('');
+}
+
+// LOCATIONS
+function renderLocations() {
+  const el = document.getElementById('locations-list');
+  if (!state.locations.length) { el.innerHTML = emptyState('No locations yet','Add venues and event spots','📍'); return; }
+  el.innerHTML = state.locations.map(l=>`
+    <div class="location-card">
+      <div class="location-banner">${l.icon||'📍'}</div>
+      <div class="location-body">
+        <div class="location-name">${l.name}</div>
+        <div class="location-addr">${l.address||'No address'}</div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag tag-blue">${l.type}</span>
+          ${l.capacity?`<span class="tag tag-purple">👥 ${l.capacity}</span>`:''}
+        </div>
+        ${l.notes?`<div style="font-size:11px;color:var(--muted);margin-top:8px;">${l.notes}</div>`:''}
+      </div>
+      <div class="location-footer">
+        <span style="font-size:11px;color:var(--muted);">
+          ${state.activities.filter(a=>a.locationId===l.id).length} activities
+        </span>
+        <button class="btn btn-danger btn-sm" onclick="deleteLocation('${l.id}')">🗑️ Remove</button>
+      </div>
+    </div>`).join('');
+}
+
+// CARS
+function renderCars() {
+  const el = document.getElementById('carseats-list');
+  if (!state.cars.length) { el.innerHTML = emptyState('No car plans yet','Assign guests to vehicles','🚗'); return; }
+
+  const typeIcon = {Sedan:'🚗',SUV:'🚙',Van:'🚐',Limo:'🚘',Truck:'🛻'};
+
+  el.innerHTML = state.cars.map(car=>{
+    const seatsHtml = car.seats.map((p,i)=>`
+      <div class="seat-cell ${p?'occupied':'empty-slot'}" onclick="openAssignSeat('${car.id}',${i})">
+        ${p ? `<span style="font-size:9px;word-break:break-all;">${p}</span>` : `<span class="seat-label">S${i+1}</span><span style="font-size:16px;">🪑</span>`}
+      </div>`).join('');
+
+    const occupied = car.seats.filter(Boolean).length;
+    return `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">${typeIcon[car.type]||'🚗'} ${car.name}</span>
+        <button class="btn btn-danger btn-sm" onclick="deleteCar('${car.id}')">🗑️</button>
+      </div>
+      ${car.driver?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">🧑‍✈️ Driver: <b style="color:var(--white)">${car.driver}</b></div>`:''}
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">
+        ${occupied}/${car.seatCount} seats occupied · Click a seat to assign
+      </div>
+      <div class="seat-grid-wrapper">
+        <div class="seat-grid" style="grid-template-columns:repeat(${Math.min(car.seatCount,4)},52px);">
+          ${seatsHtml}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// BEDS
+function renderBeds() {
+  const el = document.getElementById('bedplan-list');
+  if (!state.beds.length) { el.innerHTML = emptyState('No room plans yet','Assign guests to rooms and beds','🛏️'); return; }
+  el.innerHTML = state.beds.map(b=>{
+    const loc = b.locationId ? getLocationName(b.locationId) : '';
+    const lines = b.occupants ? b.occupants.split('\n') : [];
+    const bedCards = Array.from({length:b.bedCount},(_, i)=>{
+      const occ = lines[i] ? lines[i].replace(/^bed\s*\d+:\s*/i,'') : '';
+      return `<div class="bed-card ${occ?'assigned':''}">
+        <div class="bed-icon">🛏️</div>
+        <div class="bed-num">Bed ${i+1}</div>
+        <div class="bed-person">${occ || 'Unassigned'}</div>
+      </div>`;
+    }).join('');
+
+    return `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🏠 ${b.room}</span>
+        <button class="btn btn-danger btn-sm" onclick="deleteBed('${b.id}')">🗑️</button>
+      </div>
+      ${loc?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">${loc}</div>`:''}
+      ${b.notes?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">📝 ${b.notes}</div>`:''}
+      <div class="bed-grid">${bedCards}</div>
+    </div>`;
+  }).join('');
+}
+
+// GAMES
+function renderGames() {
+  const el = document.getElementById('games-list');
+  if (!state.games.length) { el.innerHTML = emptyState('No games yet','Add fun games for the engagement party','🎮'); return; }
+  el.innerHTML = state.games.map(g=>`
+    <div class="game-card">
+      <div class="game-emoji">${g.icon||'🎮'}</div>
+      <div class="game-name">${g.name}</div>
+      <div class="game-desc">${g.desc||'No description provided.'}</div>
+      <div class="game-meta">
+        <span class="tag ${tagColor(g.category)}">${g.category}</span>
+        ${g.players?`<span class="tag tag-blue">👥 ${g.players}</span>`:''}
+        ${g.duration?`<span class="tag tag-purple">⏱ ${g.duration}</span>`:''}
+        ${g.quarter&&g.quarter!=='Any'?`<span class="tag tag-cyan">${g.quarter}</span>`:''}
+      </div>
+      <div style="margin-top:12px;text-align:right;">
+        <button class="btn btn-danger btn-sm" onclick="deleteGame('${g.id}')">🗑️ Remove</button>
+      </div>
+    </div>`).join('');
+}
+
+// ──────────────────────────────────────────────
+// COUNT BADGES
+// ──────────────────────────────────────────────
+function updateCounts() {
+  document.getElementById('nav-count-activities').textContent = state.activities.length;
+  document.getElementById('nav-count-locations').textContent = state.locations.length;
+  document.getElementById('nav-count-carseats').textContent = state.cars.length;
+  document.getElementById('nav-count-beds').textContent = state.beds.length;
+  document.getElementById('nav-count-games').textContent = state.games.length;
+  document.getElementById('nav-count-committee').textContent = (state.committees||[]).length;
+  document.getElementById('nav-count-grocery').textContent = (state.grocery||[]).length;
+  document.getElementById('nav-count-meals').textContent = (state.meals||[]).length;
+}
+
+// ──────────────────────────────────────────────
+// PAGE TITLES / ADD LABELS  (extended)
+// ──────────────────────────────────────────────
+PAGE_TITLES['overview'] = 'Full Plan Overview';
+ADD_LABELS['overview'] = ['Set Date', 'modal-setdate'];
+PAGE_TITLES['committee'] = 'Organizing Committee';
+ADD_LABELS['committee'] = ['New Committee', 'modal-committee'];
+PAGE_TITLES['grocery'] = 'Grocery List';
+ADD_LABELS['grocery'] = ['Add Item', 'modal-grocery'];
+PAGE_TITLES['mealplan'] = 'Meal Plan';
+ADD_LABELS['mealplan'] = ['Add Day', 'modal-mealday'];
+
+// ──────────────────────────────────────────────
+// COUNTDOWN
+// ──────────────────────────────────────────────
+let _countdownInterval = null;
+
+function saveEngagementDate() {
+  const d = document.getElementById('setdate-date').value;
+  if (!d) { showToast('Please pick a date.','⚠️'); return; }
+  state.engagement = {
+    name: document.getElementById('setdate-name').value.trim() || 'Our Engagement',
+    date: d,
+    time: document.getElementById('setdate-time').value || '00:00',
+  };
+  saveState();
+  closeModal('modal-setdate');
+  showToast(`Countdown set for ${state.engagement.name}! 🎉`);
+  startCountdown();
+  if (currentPage === 'overview') renderOverview();
+}
+
+function getCountdownParts() {
+  if (!state.engagement) return null;
+  const { date, time } = state.engagement;
+  const target = new Date(`${date}T${time||'00:00'}`);
+  const now = new Date();
+  const diff = target - now;
+  if (diff <= 0) return { done: true };
+  const days = Math.floor(diff / 86400000);
+  const hrs  = Math.floor((diff % 86400000) / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
+  return { days, hrs, mins, secs, done: false };
+}
+
+function pad(n) { return String(n).padStart(2,'0'); }
+
+function renderSidebarCountdown() {
+  const el = document.getElementById('sidebar-cd-content');
+  const parts = getCountdownParts();
+  if (!parts) {
+    el.innerHTML = `<div class="sidebar-cd-none">No date set</div>`;
+    return;
+  }
+  if (parts.done) {
+    el.innerHTML = `<div style="font-size:12px;color:var(--success);font-weight:700;">🎉 It's today!</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="sidebar-cd-units">
+      <div class="sidebar-cd-unit"><div class="sidebar-cd-num">${pad(parts.days)}</div><div class="sidebar-cd-lbl">d</div></div>
+      <div class="sidebar-cd-unit"><div class="sidebar-cd-num">${pad(parts.hrs)}</div><div class="sidebar-cd-lbl">h</div></div>
+      <div class="sidebar-cd-unit"><div class="sidebar-cd-num">${pad(parts.mins)}</div><div class="sidebar-cd-lbl">m</div></div>
+      <div class="sidebar-cd-unit"><div class="sidebar-cd-num">${pad(parts.secs)}</div><div class="sidebar-cd-lbl">s</div></div>
+    </div>`;
+}
+
+function renderCountdownHero(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!state.engagement) {
+    el.innerHTML = `
+      <div class="countdown-hero">
+        <div class="countdown-label">Countdown</div>
+        <div class="countdown-event-name">No engagement date set</div>
+        <div class="countdown-event-date">Set your big day to start the countdown</div>
+        <button class="btn btn-primary countdown-set-btn" onclick="openModal('modal-setdate')">📅 Set Engagement Date</button>
+      </div>`;
+    return;
+  }
+  const { name, date, time } = state.engagement;
+  const target = new Date(`${date}T${time||'00:00'}`);
+  const dateStr = target.toLocaleDateString('default',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const parts = getCountdownParts();
+
+  let unitsHtml = '';
+  if (parts.done) {
+    unitsHtml = `<div class="countdown-done">🎉 The day is here!</div>`;
+  } else {
+    unitsHtml = `
+      <div class="countdown-units">
+        <div class="countdown-unit"><div class="countdown-num">${pad(parts.days)}</div><div class="countdown-unit-label">Days</div></div>
+        <div class="countdown-unit"><div class="countdown-num">${pad(parts.hrs)}</div><div class="countdown-unit-label">Hours</div></div>
+        <div class="countdown-unit"><div class="countdown-num">${pad(parts.mins)}</div><div class="countdown-unit-label">Mins</div></div>
+        <div class="countdown-unit"><div class="countdown-num">${pad(parts.secs)}</div><div class="countdown-unit-label">Secs</div></div>
+      </div>`;
+  }
+
+  el.innerHTML = `
+    <div class="countdown-hero">
+      <div class="countdown-label">Counting down to</div>
+      <div class="countdown-event-name">${name}</div>
+      <div class="countdown-event-date">${dateStr}${time&&time!=='00:00'?' · '+time:''}</div>
+      ${unitsHtml}
+      <button class="btn btn-ghost countdown-set-btn" onclick="openModal('modal-setdate')">✏️ Edit Date</button>
+    </div>`;
+}
+
+function startCountdown() {
+  if (_countdownInterval) clearInterval(_countdownInterval);
+  renderSidebarCountdown();
+  _countdownInterval = setInterval(() => {
+    renderSidebarCountdown();
+    // live-update overview hero if on that page
+    if (currentPage === 'overview') {
+      const heroEl = document.getElementById('overview-countdown-hero');
+      if (heroEl && state.engagement) {
+        // only re-render the numbers to avoid full DOM thrash
+        const parts = getCountdownParts();
+        if (!parts || parts.done) return;
+        const nums = heroEl.querySelectorAll('.countdown-num');
+        if (nums.length === 4) {
+          nums[0].textContent = pad(parts.days);
+          nums[1].textContent = pad(parts.hrs);
+          nums[2].textContent = pad(parts.mins);
+          nums[3].textContent = pad(parts.secs);
+        }
+      }
+    }
+  }, 1000);
+}
+
+// ──────────────────────────────────────────────
+// OVERVIEW RENDER
+// ──────────────────────────────────────────────
+function renderOverview() {
+  // 1 — countdown hero
+  renderCountdownHero('overview-countdown-hero');
+
+  // 1b — budget tracker
+  renderBudget('overview-budget');
+
+  // 2 — activities (sorted by date, then by quarter)
+  const actEl = document.getElementById('overview-activities');
+  if (!state.activities.length) {
+    actEl.innerHTML = emptyState('No activities yet','Add activities in the Activities section','📋');
+  } else {
+    const sorted = [...state.activities].sort((a,b) => {
+      if (a.date && b.date) return new Date(a.date) - new Date(b.date);
+      if (a.date) return -1;
+      if (b.date) return 1;
+      return a.quarter.localeCompare(b.quarter);
+    });
+    const today = new Date(); today.setHours(0,0,0,0);
+    actEl.innerHTML = `<div class="ov-timeline">${sorted.map(a => {
+      let dotClass = '';
+      if (a.date) {
+        const d = new Date(a.date + 'T00:00');
+        if (d < today) dotClass = 'past';
+        else if (d.getTime() === today.getTime()) dotClass = 'today';
+      }
+      const dateStr = a.date ? new Date(a.date+'T00:00').toLocaleDateString('default',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '';
+      const loc = a.locationId ? getLocationName(a.locationId) : '';
+      return `
+        <div class="ov-timeline-item">
+          <div class="ov-dot ${dotClass}"></div>
+          <div class="ov-item-inner">
+            <div class="ov-item-icon">${a.icon||'💍'}</div>
+            <div>
+              <div class="ov-item-name">${a.name}</div>
+              <div class="ov-item-meta">
+                <span class="tag tag-blue">${a.quarter}</span>
+                <span class="tag ${tagColor(a.category)}">${a.category}</span>
+                ${dateStr?`<span>📅 ${dateStr}</span>`:''}
+                ${a.time?`<span>⏰ ${a.time}</span>`:''}
+                ${loc?`<span>${loc}</span>`:''}
+              </div>
+              ${a.desc?`<div style="font-size:11px;color:var(--muted);margin-top:4px;">${a.desc}</div>`:''}
+            </div>
+          </div>
+        </div>`;
+    }).join('')}</div>`;
+  }
+
+  // 3 — car seat visual
+  const carEl = document.getElementById('overview-cars');
+  if (!state.cars.length) {
+    carEl.innerHTML = emptyState('No car plans yet','Add cars in the Car Seat Plan section','🚗');
+  } else {
+    const typeIcon = {Sedan:'🚗',SUV:'🚙',Van:'🚐',Limo:'🚘',Truck:'🛻'};
+    carEl.innerHTML = state.cars.map(car => {
+      // Build seat layout rows
+      // Row 0: driver seat (index 0) + front passenger (index 1)
+      // Remaining seats split into rows of 2 (with aisle)
+      const seats = car.seats;
+      const seatCount = car.seatCount;
+
+      function seatCell(idx, isDriver) {
+        const name = seats[idx];
+        const cls = isDriver ? 'driver' : (name ? 'occupied' : 'empty');
+        const icon = isDriver ? '🧑‍✈️' : (name ? '🪑' : '🪑');
+        const label = isDriver ? (car.driver || name || 'Driver') : (name || `S${idx+1}`);
+        return `<div class="seat-vis ${cls}">
+          <div class="seat-vis-icon">${icon}</div>
+          <div class="seat-vis-name">${label}</div>
+        </div>`;
+      }
+
+      let rows = '';
+      // Front row: driver + front passenger
+      if (seatCount >= 1) {
+        rows += `<div class="car-seat-row">
+          ${seatCell(0, true)}
+          <div class="seat-aisle">│</div>
+          ${seatCount >= 2 ? seatCell(1, false) : ''}
+        </div>`;
+      }
+      // Back rows: pairs
+      for (let i = 2; i < seatCount; i += 2) {
+        const hasRight = i+1 < seatCount;
+        rows += `<div class="car-seat-row">
+          ${seatCell(i, false)}
+          <div class="seat-aisle">│</div>
+          ${hasRight ? seatCell(i+1, false) : '<div style="width:58px;"></div>'}
+        </div>`;
+      }
+
+      const occupied = seats.filter(Boolean).length + (car.driver ? 1 : 0);
+      return `
+        <div class="car-overview-card">
+          <div class="car-overview-header">
+            <div class="car-overview-icon">${typeIcon[car.type]||'🚗'}</div>
+            <div class="car-overview-meta">
+              <div class="car-overview-name">${car.name}</div>
+              <div class="car-overview-sub">${car.type}${car.driver?' · Driver: '+car.driver:''} · ${car.seats.filter(Boolean).length}/${seatCount} passengers</div>
+            </div>
+          </div>
+          <div class="car-seat-visual" style="max-width:200px;margin:0 auto;">
+            ${rows}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // 4 — bed plan visual
+  const bedEl = document.getElementById('overview-beds');
+  if (!state.beds.length) {
+    bedEl.innerHTML = emptyState('No room plans yet','Add rooms in the Bed Plan section','🛏️');
+  } else {
+    bedEl.innerHTML = state.beds.map(b => {
+      const lines = b.occupants ? b.occupants.split('\n') : [];
+      const loc = b.locationId ? getLocationName(b.locationId) : '';
+      const bedsHtml = Array.from({length: b.bedCount}, (_, i) => {
+        const raw = lines[i] || '';
+        const occ = raw.replace(/^bed\s*\d+:\s*/i, '').trim();
+        return `
+          <div class="bed-vis ${occ ? 'occupied' : 'empty'}">
+            <div class="bed-vis-head">🛏️ Bed ${i+1}</div>
+            <div class="bed-vis-body">${occ || 'Unassigned'}</div>
+          </div>`;
+      }).join('');
+      return `
+        <div class="room-overview-card">
+          <div class="room-overview-header">
+            <div style="font-size:24px;">🏠</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--white);">${b.room}</div>
+              <div style="font-size:12px;color:var(--muted);">${b.bedCount} bed${b.bedCount>1?'s':''}${loc?' · '+loc:''}${b.notes?' · '+b.notes:''}</div>
+            </div>
+          </div>
+          <div class="bed-visual-grid">${bedsHtml}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // 5 — games
+  const gamesEl = document.getElementById('overview-games');
+  if (!state.games.length) {
+    gamesEl.innerHTML = emptyState('No games yet','Click "+ Add Game" to get started','🎮');
+  } else {
+    gamesEl.innerHTML = state.games.map(g => `
+      <div class="game-ov-card">
+        <div class="game-ov-icon">${g.icon||'🎮'}</div>
+        <div>
+          <div class="game-ov-name">${g.name}</div>
+          <div class="game-ov-meta">
+            <span class="tag ${tagColor(g.category)}">${g.category}</span>
+            ${g.players?` · 👥 ${g.players}`:''}
+            ${g.duration?` · ⏱ ${g.duration}`:''}
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  // 6 — organizing committee
+  const comEl = document.getElementById('overview-committee');
+  const committees = state.committees || [];
+  if (!committees.length) {
+    comEl.innerHTML = emptyState('No committees yet','Click "+ New Committee" to create one','👥');
+  } else {
+    const initials = (name) => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    comEl.innerHTML = committees.map(c => {
+      const membersHtml = c.members.length
+        ? `<div class="member-list">${c.members.map(m => `
+            <div class="member-item">
+              <div class="member-avatar">${initials(m.name)}</div>
+              <div class="member-info">
+                <div class="member-name">${m.name}</div>
+                ${m.role?`<div class="member-role">🏷️ ${m.role}</div>`:''}
+                ${m.contact?`<div class="member-contact">📞 ${m.contact}${m.email?' · '+m.email:''}</div>`:(m.email?`<div class="member-contact">✉️ ${m.email}</div>`:'')}
+              </div>
+              <button class="btn btn-danger btn-sm btn-icon" onclick="deleteMember('${c.id}','${m.id}');renderOverview();" title="Remove">🗑️</button>
+            </div>`).join('')}
+          </div>`
+        : `<div style="font-size:12px;color:var(--muted2);font-style:italic;padding:6px 0;">No members yet</div>`;
+      return `
+        <div class="committee-card">
+          <div class="committee-header">
+            <div class="committee-badge">${c.icon}</div>
+            <div>
+              <div class="committee-name">${c.name}</div>
+              ${c.desc?`<div class="committee-desc">${c.desc}</div>`:''}
+            </div>
+          </div>
+          <div class="committee-body">${membersHtml}</div>
+          <div class="committee-footer">
+            <span style="font-size:12px;color:var(--muted);">👤 ${c.members.length} member${c.members.length!==1?'s':''}</span>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-ghost btn-sm" onclick="openAddMember('${c.id}')">＋ Add Member</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteCommittee('${c.id}');renderOverview();">🗑️</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // 7 — grocery list
+  const grocProgEl = document.getElementById('overview-grocery-progress');
+  const grocEl = document.getElementById('overview-grocery');
+  const grocery = state.grocery || [];
+  if (!grocery.length) {
+    grocProgEl.innerHTML = '';
+    grocEl.innerHTML = emptyState('No grocery items yet','Click "+ Add Item" to start your list','🛒');
+  } else {
+    const total = grocery.length;
+    const done = grocery.filter(x=>x.checked).length;
+    const pct = Math.round((done/total)*100);
+    grocProgEl.innerHTML = `
+      <div class="grocery-progress">
+        <div style="font-size:13px;font-weight:600;color:var(--white);white-space:nowrap;">🛒 ${done}/${total} bought</div>
+        <div class="grocery-progress-bar-wrap">
+          <div class="grocery-progress-bar" style="width:${pct}%"></div>
+        </div>
+        <div class="grocery-progress-text">${pct}%</div>
+      </div>`;
+    const grouped = {};
+    grocery.forEach(item => {
+      const cat = item.category || '📦 Other';
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(item);
+    });
+    grocEl.innerHTML = Object.entries(grouped).map(([cat, items]) => `
+      <div class="grocery-category-block">
+        <div class="grocery-cat-header">
+          <span class="grocery-cat-icon">${cat.split(' ')[0]}</span>
+          <span>${cat.split(' ').slice(1).join(' ')}</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--muted);">${items.filter(i=>i.checked).length}/${items.length}</span>
+        </div>
+        ${items.map(item => `
+          <div class="grocery-item ${item.checked?'checked':''}">
+            <div class="grocery-check ${item.checked?'done':''}" onclick="toggleGrocery('${item.id}');renderOverview();">
+              ${item.checked?'✓':''}
+            </div>
+            <div class="grocery-item-name">${item.name}</div>
+            ${item.qty?`<div class="grocery-qty">${item.qty}</div>`:''}
+            ${item.cost?`<div class="grocery-qty" style="color:var(--warning);">${item.cost}</div>`:''}
+            <button class="btn btn-danger btn-sm btn-icon" onclick="deleteGrocery('${item.id}');renderOverview();" title="Remove">🗑️</button>
+          </div>
+          ${item.note?`<div class="grocery-note" style="margin-left:42px;margin-top:-4px;margin-bottom:4px;">📝 ${item.note}</div>`:''}`).join('')}
+      </div>`).join('');
+  }
+
+  // 8 — meal plan
+  const mealsEl = document.getElementById('overview-meals');
+  const meals = state.meals || [];
+  if (!meals.length) {
+    mealsEl.innerHTML = emptyState('No meal days yet','Click "+ Add Day" to plan meals','🍽️');
+  } else {
+    const sorted = [...meals].sort((a,b) => {
+      if (a.date && b.date) return new Date(a.date) - new Date(b.date);
+      if (a.date) return -1; if (b.date) return 1; return 0;
+    });
+    mealsEl.innerHTML = sorted.map(day => {
+      const dateStr = day.date ? new Date(day.date+'T00:00').toLocaleDateString('default',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '';
+      const slotsHtml = MEAL_SLOTS.map(s => {
+        const content = day[s.key];
+        return `
+          <div class="meal-slot">
+            <div class="meal-slot-label">${s.label}</div>
+            ${content
+              ? `<div class="meal-slot-content">${content.replace(/\n/g,'<br>')}</div>`
+              : `<div class="meal-slot-empty">Not planned</div>`}
+          </div>`;
+      }).join('');
+      return `
+        <div class="meal-day-card">
+          <div class="meal-day-header">
+            <div>
+              <div class="meal-day-title">🍽️ ${day.label}</div>
+              ${dateStr?`<div class="meal-day-date">📅 ${dateStr}</div>`:''}
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="deleteMealDay('${day.id}');renderOverview();">🗑️ Remove</button>
+          </div>
+          <div class="meal-slots">${slotsHtml}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // 9 — expenses
+  renderExpenses('overview-expenses');
+}
+
+// ──────────────────────────────────────────────
+// ORGANIZING COMMITTEE
+// ──────────────────────────────────────────────
+let _memberCtx = null; // committee id for pending member add
+
+function saveCommittee() {
+  const name = document.getElementById('com-name').value.trim();
+  if (!name) { showToast('Committee name is required.','⚠️'); return; }
+  if (!state.committees) state.committees = [];
+  const entry = {
+    id: uid(),
+    name,
+    icon: document.getElementById('com-icon').value || '👥',
+    desc: document.getElementById('com-desc').value.trim(),
+    members: [],
+  };
+  state.committees.push(entry);
+  saveState();
+  closeModal('modal-committee');
+  showToast(`Committee "${name}" created!`);
+  if (currentPage === 'overview') renderOverview(); else renderCommittee();
+  updateCounts();
+}
+
+function deleteCommittee(id) {
+  const c = (state.committees||[]).find(x=>x.id===id);
+  if (!c) return;
+  state.committees = state.committees.filter(x=>x.id!==id);
+  saveState();
+  showToast(`"${c.name}" removed.`,'🗑️');
+  if (currentPage === 'overview') renderOverview(); else renderCommittee();
+  updateCounts();
+}
+
+function openAddMember(committeeId) {
+  _memberCtx = committeeId;
+  const c = (state.committees||[]).find(x=>x.id===committeeId);
+  document.getElementById('modal-member-title').textContent = `Add Member — ${c ? c.name : ''}`;
+  openModal('modal-member');
+}
+
+function saveMember() {
+  const name = document.getElementById('mem-name').value.trim();
+  if (!name) { showToast('Member name is required.','⚠️'); return; }
+  if (!_memberCtx) return;
+  const c = (state.committees||[]).find(x=>x.id===_memberCtx);
+  if (!c) return;
+  const member = {
+    id: uid(),
+    name,
+    role: document.getElementById('mem-role').value.trim(),
+    contact: document.getElementById('mem-contact').value.trim(),
+    email: document.getElementById('mem-email').value.trim(),
+    notes: document.getElementById('mem-notes').value.trim(),
+  };
+  c.members.push(member);
+  saveState();
+  closeModal('modal-member');
+  showToast(`${name} added to ${c.name}!`);
+  if (currentPage === 'overview') renderOverview(); else renderCommittee();
+  _memberCtx = null;
+}
+
+function deleteMember(committeeId, memberId) {
+  const c = (state.committees||[]).find(x=>x.id===committeeId);
+  if (!c) return;
+  const m = c.members.find(x=>x.id===memberId);
+  if (!m) return;
+  c.members = c.members.filter(x=>x.id!==memberId);
+  saveState();
+  showToast(`${m.name} removed.`,'🗑️');
+  if (currentPage === 'overview') renderOverview(); else renderCommittee();
+}
+
+function renderCommittee() {
+  const el = document.getElementById('committee-list');
+  if (!state.committees || !state.committees.length) {
+    el.innerHTML = emptyState('No committees yet','Create a committee like "Events Team" or "Catering"','👥');
+    return;
+  }
+  el.innerHTML = state.committees.map(c => {
+    const initials = (name) => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    const membersHtml = c.members.length
+      ? `<div class="member-list">${c.members.map(m => `
+          <div class="member-item">
+            <div class="member-avatar">${initials(m.name)}</div>
+            <div class="member-info">
+              <div class="member-name">${m.name}</div>
+              ${m.role ? `<div class="member-role">🏷️ ${m.role}</div>` : ''}
+              ${m.contact ? `<div class="member-contact">📞 ${m.contact}${m.email ? ' · ' + m.email : ''}</div>` : (m.email ? `<div class="member-contact">✉️ ${m.email}</div>` : '')}
+              ${m.notes ? `<div class="member-contact">📝 ${m.notes}</div>` : ''}
+            </div>
+            <button class="btn btn-danger btn-sm btn-icon" onclick="deleteMember('${c.id}','${m.id}')" title="Remove">🗑️</button>
+          </div>`).join('')}
+        </div>`
+      : `<div style="font-size:12px;color:var(--muted2);font-style:italic;padding:8px 0;">No members yet</div>`;
+
+    return `
+      <div class="committee-card">
+        <div class="committee-header">
+          <div class="committee-badge">${c.icon}</div>
+          <div>
+            <div class="committee-name">${c.name}</div>
+            ${c.desc ? `<div class="committee-desc">${c.desc}</div>` : ''}
+          </div>
+        </div>
+        <div class="committee-body">
+          ${membersHtml}
+        </div>
+        <div class="committee-footer">
+          <span style="font-size:12px;color:var(--muted);">👤 ${c.members.length} member${c.members.length!==1?'s':''}</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-ghost btn-sm" onclick="openAddMember('${c.id}')">＋ Add Member</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCommittee('${c.id}')">🗑️</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ──────────────────────────────────────────────
+// GROCERY LIST
+// ──────────────────────────────────────────────
+function saveGrocery() {
+  const name = document.getElementById('groc-name').value.trim();
+  if (!name) { showToast('Item name is required.','⚠️'); return; }
+  if (!state.grocery) state.grocery = [];
+  const entry = {
+    id: uid(),
+    name,
+    qty: document.getElementById('groc-qty').value.trim(),
+    category: document.getElementById('groc-cat').value,
+    cost: document.getElementById('groc-cost').value.trim(),
+    note: document.getElementById('groc-note').value.trim(),
+    checked: false,
+  };
+  state.grocery.push(entry);
+  saveState();
+  closeModal('modal-grocery');
+  showToast(`"${name}" added to grocery list!`);
+  if (currentPage === 'overview') renderOverview(); else renderGrocery();
+  updateCounts();
+}
+
+function toggleGrocery(id) {
+  const item = (state.grocery||[]).find(x=>x.id===id);
+  if (!item) return;
+  item.checked = !item.checked;
+  saveState();
+  if (currentPage === 'overview') renderOverview(); else renderGrocery();
+}
+
+function deleteGrocery(id) {
+  const item = (state.grocery||[]).find(x=>x.id===id);
+  if (!item) return;
+  state.grocery = state.grocery.filter(x=>x.id!==id);
+  saveState();
+  showToast(`"${item.name}" removed.`,'🗑️');
+  if (currentPage === 'overview') renderOverview(); else renderGrocery();
+  updateCounts();
+}
+
+function renderGrocery() {
+  const grocery = state.grocery || [];
+  const progressWrap = document.getElementById('grocery-progress-wrap');
+  const el = document.getElementById('grocery-list');
+
+  if (!grocery.length) {
+    progressWrap.innerHTML = '';
+    el.innerHTML = emptyState('No grocery items yet','Start adding everything you need to buy','🛒');
+    return;
+  }
+
+  const total = grocery.length;
+  const done = grocery.filter(x=>x.checked).length;
+  const pct = Math.round((done/total)*100);
+
+  progressWrap.innerHTML = `
+    <div class="grocery-progress">
+      <div style="font-size:13px;font-weight:600;color:var(--white);white-space:nowrap;">🛒 ${done}/${total} bought</div>
+      <div class="grocery-progress-bar-wrap">
+        <div class="grocery-progress-bar" style="width:${pct}%"></div>
+      </div>
+      <div class="grocery-progress-text">${pct}%</div>
+    </div>`;
+
+  // Group by category
+  const grouped = {};
+  grocery.forEach(item => {
+    const cat = item.category || '📦 Other';
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(item);
+  });
+
+  el.innerHTML = Object.entries(grouped).map(([cat, items]) => `
+    <div class="grocery-category-block">
+      <div class="grocery-cat-header">
+        <span class="grocery-cat-icon">${cat.split(' ')[0]}</span>
+        <span>${cat.split(' ').slice(1).join(' ')}</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--muted);">${items.filter(i=>i.checked).length}/${items.length}</span>
+      </div>
+      ${items.map(item => `
+        <div class="grocery-item ${item.checked?'checked':''}">
+          <div class="grocery-check ${item.checked?'done':''}" onclick="toggleGrocery('${item.id}')">
+            ${item.checked ? '✓' : ''}
+          </div>
+          <div class="grocery-item-name">${item.name}</div>
+          ${item.qty ? `<div class="grocery-qty">${item.qty}</div>` : ''}
+          ${item.cost ? `<div class="grocery-qty" style="color:var(--warning);">${item.cost}</div>` : ''}
+          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteGrocery('${item.id}')" title="Remove">🗑️</button>
+        </div>
+        ${item.note ? `<div class="grocery-note" style="margin-left:42px;margin-top:-4px;margin-bottom:4px;">📝 ${item.note}</div>` : ''}
+      `).join('')}
+    </div>`).join('');
+}
+
+// ──────────────────────────────────────────────
+// MEAL PLAN
+// ──────────────────────────────────────────────
+const MEAL_SLOTS = [
+  { key: 'breakfast', label: '🌅 Breakfast' },
+  { key: 'amsnack',   label: '☀️ AM Snack' },
+  { key: 'lunch',     label: '🍱 Lunch' },
+  { key: 'pmsnack',   label: '🌤️ PM Snack' },
+  { key: 'dinner',    label: '🌙 Dinner' },
+  { key: 'midnight',  label: '🍾 Midnight' },
+];
+
+function saveMealDay() {
+  const label = document.getElementById('meal-label').value.trim();
+  if (!label) { showToast('Day label is required.','⚠️'); return; }
+  if (!state.meals) state.meals = [];
+  const entry = {
+    id: uid(),
+    label,
+    date: document.getElementById('meal-date').value,
+    breakfast: document.getElementById('meal-breakfast').value.trim(),
+    amsnack:   document.getElementById('meal-amsnack').value.trim(),
+    lunch:     document.getElementById('meal-lunch').value.trim(),
+    pmsnack:   document.getElementById('meal-pmsnack').value.trim(),
+    dinner:    document.getElementById('meal-dinner').value.trim(),
+    midnight:  document.getElementById('meal-midnight').value.trim(),
+  };
+  state.meals.push(entry);
+  saveState();
+  closeModal('modal-mealday');
+  showToast(`Meal plan for "${label}" saved!`);
+  if (currentPage === 'overview') renderOverview(); else renderMealPlan();
+  updateCounts();
+}
+
+function deleteMealDay(id) {
+  const m = (state.meals||[]).find(x=>x.id===id);
+  if (!m) return;
+  state.meals = state.meals.filter(x=>x.id!==id);
+  saveState();
+  showToast(`"${m.label}" removed.`,'🗑️');
+  if (currentPage === 'overview') renderOverview(); else renderMealPlan();
+  updateCounts();
+}
+
+function renderMealPlan() {
+  const el = document.getElementById('mealplan-list');
+  const meals = state.meals || [];
+  if (!meals.length) {
+    el.innerHTML = emptyState('No meal days yet','Add a day and plan from breakfast to dinner','🍽️');
+    return;
+  }
+  const sorted = [...meals].sort((a,b) => {
+    if (a.date && b.date) return new Date(a.date) - new Date(b.date);
+    if (a.date) return -1; if (b.date) return 1; return 0;
+  });
+  el.innerHTML = sorted.map(day => {
+    const dateStr = day.date ? new Date(day.date+'T00:00').toLocaleDateString('default',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '';
+    const slotsHtml = MEAL_SLOTS.map(s => {
+      const content = day[s.key];
+      return `
+        <div class="meal-slot">
+          <div class="meal-slot-label">${s.label}</div>
+          ${content
+            ? `<div class="meal-slot-content">${content.replace(/\n/g,'<br>')}</div>`
+            : `<div class="meal-slot-empty">Not planned</div>`}
+        </div>`;
+    }).join('');
+    return `
+      <div class="meal-day-card">
+        <div class="meal-day-header">
+          <div>
+            <div class="meal-day-title">🍽️ ${day.label}</div>
+            ${dateStr ? `<div class="meal-day-date">📅 ${dateStr}</div>` : ''}
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="deleteMealDay('${day.id}')">🗑️ Remove</button>
+        </div>
+        <div class="meal-slots">${slotsHtml}</div>
+      </div>`;
+  }).join('');
+}
+
+// ──────────────────────────────────────────────
+// BUDGET & EXPENSES
+// ──────────────────────────────────────────────
+function saveBudget() {
+  const total = parseFloat(document.getElementById('budget-total').value);
+  if (!total || total <= 0) { showToast('Enter a valid budget amount.','⚠️'); return; }
+  state.budget = {
+    total,
+    label: document.getElementById('budget-label').value.trim() || 'Engagement Budget',
+  };
+  saveState();
+  closeModal('modal-setbudget');
+  showToast(`Budget set to ₱${fmt(total)} 💰`);
+  if (currentPage === 'overview') renderOverview();
+}
+
+function saveExpense() {
+  const label = document.getElementById('exp-label').value.trim();
+  const amount = parseFloat(document.getElementById('exp-amount').value);
+  if (!label) { showToast('Description is required.','⚠️'); return; }
+  if (!amount || amount <= 0) { showToast('Enter a valid amount.','⚠️'); return; }
+  if (!state.expenses) state.expenses = [];
+  const entry = {
+    id: uid(),
+    label,
+    amount,
+    category: document.getElementById('exp-category').value,
+    date: document.getElementById('exp-date').value,
+    note: document.getElementById('exp-note').value.trim(),
+    source: 'manual',
+  };
+  state.expenses.push(entry);
+  saveState();
+  closeModal('modal-expense');
+  showToast(`Expense "${label}" added!`);
+  if (currentPage === 'overview') renderOverview();
+}
+
+function deleteExpense(id) {
+  const e = (state.expenses||[]).find(x=>x.id===id);
+  if (!e) return;
+  state.expenses = state.expenses.filter(x=>x.id!==id);
+  saveState();
+  showToast(`"${e.label}" removed.`,'🗑️');
+  if (currentPage === 'overview') renderOverview();
+}
+
+// Format number as Philippine Peso
+function fmt(n) {
+  return Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// Compute total expenses: manual expenses + grocery items with costs
+function getTotalSpent() {
+  const manual = (state.expenses||[]).reduce((s,e) => s + (parseFloat(e.amount)||0), 0);
+  const grocery = (state.grocery||[]).reduce((s,g) => {
+    const n = parseFloat((g.cost||'').replace(/[^0-9.]/g,''));
+    return s + (isNaN(n) ? 0 : n);
+  }, 0);
+  return manual + grocery;
+}
+
+function renderBudget(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!state.budget) {
+    el.innerHTML = `
+      <div class="budget-hero" style="text-align:center;">
+        <div style="font-size:32px;margin-bottom:10px;">💰</div>
+        <div style="font-size:15px;font-weight:600;color:var(--white);margin-bottom:6px;">No budget set yet</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">Set your total budget to start tracking expenses</div>
+        <button class="btn btn-primary" onclick="openModal('modal-setbudget')">⚙️ Set Budget</button>
+      </div>`;
+    return;
+  }
+  const total   = parseFloat(state.budget.total) || 0;
+  const spent   = getTotalSpent();
+  const remain  = total - spent;
+  const pct     = total > 0 ? Math.min((spent/total)*100, 100) : 0;
+  const status  = pct >= 100 ? 'over' : pct >= 80 ? 'warn' : 'ok';
+  const remainClass = remain < 0 ? 'over' : remain < total*0.2 ? 'warn' : 'ok';
+
+  el.innerHTML = `
+    <div class="budget-hero">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:600;">${state.budget.label}</div>
+      <div class="budget-hero-row">
+        <div class="budget-stat">
+          <div class="budget-stat-label">Total Budget</div>
+          <div class="budget-stat-value total">₱${fmt(total)}</div>
+        </div>
+        <div class="budget-stat">
+          <div class="budget-stat-label">Total Spent</div>
+          <div class="budget-stat-value spent">₱${fmt(spent)}</div>
+        </div>
+        <div class="budget-stat">
+          <div class="budget-stat-label">Remaining</div>
+          <div class="budget-stat-value remain ${remainClass}">₱${fmt(remain)}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="openModal('modal-setbudget')">✏️ Edit</button>
+      </div>
+      <div class="budget-progress-wrap">
+        <div class="budget-progress-fill ${status}" style="width:${pct.toFixed(1)}%"></div>
+      </div>
+      <div class="budget-pct-label">${pct.toFixed(1)}% of budget used</div>
+    </div>`;
+}
+
+function renderExpenses(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  // Manual expenses
+  const manual = state.expenses || [];
+  // Grocery items that have a cost
+  const grocWithCost = (state.grocery||[]).filter(g => g.cost && g.cost.trim());
+
+  if (!manual.length && !grocWithCost.length) {
+    el.innerHTML = `<div style="padding:20px;text-align:center;font-size:13px;color:var(--muted);">No expenses logged yet. Use "+ Add Expense" or add costs to grocery items.</div>`;
+    return;
+  }
+
+  const catMeta = {
+    Staycation: { label:'Staycation', css:'exp-cat-staycation', icon:'🏨' },
+    Food:       { label:'Food Orders', css:'exp-cat-food', icon:'🍽️' },
+    Gas:        { label:'Gas', css:'exp-cat-gas', icon:'⛽' },
+    Grocery:    { label:'Grocery', css:'exp-cat-grocery', icon:'🛒' },
+    Other:      { label:'Other', css:'exp-cat-other', icon:'📌' },
+  };
+
+  // Build rows: manual expenses
+  const manualRows = manual.map(e => {
+    const m = catMeta[e.category] || catMeta.Other;
+    const dateStr = e.date ? new Date(e.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : '—';
+    return `
+      <tr>
+        <td><span class="expense-cat-pill ${m.css}">${m.icon} ${m.label}</span></td>
+        <td>${e.label}${e.note?`<div style="font-size:11px;color:var(--muted);">${e.note}</div>`:''}</td>
+        <td>${dateStr}</td>
+        <td class="expense-amount">₱${fmt(e.amount)}</td>
+        <td><button class="btn btn-danger btn-sm btn-icon" onclick="deleteExpense('${e.id}')">🗑️</button></td>
+      </tr>`;
+  }).join('');
+
+  // Grocery cost rows
+  const grocRows = grocWithCost.map(g => {
+    const cost = parseFloat((g.cost||'').replace(/[^0-9.]/g,''));
+    return `
+      <tr>
+        <td><span class="expense-cat-pill exp-cat-grocery">🛒 Grocery</span></td>
+        <td>${g.name}${g.qty?` <span style="color:var(--muted);font-size:11px;">(${g.qty})</span>`:''}</td>
+        <td>—</td>
+        <td class="expense-amount">${isNaN(cost)?g.cost:'₱'+fmt(cost)}</td>
+        <td><span style="font-size:11px;color:var(--muted2);">via list</span></td>
+      </tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="expense-table-wrap">
+      <table class="expense-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>${manualRows}${grocRows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+// Boot from localStorage immediately (instant paint)
+if (state.engagement) startCountdown();
+initDate();
+updateCounts();
+renderDashboard();
+
+// Then connect Firestore — onSnapshot will refresh the UI once live data arrives
+initFirebase();
+</script>
+
+</body>
+</html>
