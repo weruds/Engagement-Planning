@@ -4938,19 +4938,14 @@ function deptIcon(dept) {
 
 let _peopleFilterDept = 'All';
 
+const SEET_DEPTS = ['SEET - Automation Sector','SEET - Enterprise Tooling','SEET - OneInfra','SEET - QE','SEET - SE','Other'];
+
 function renderPeople() {
-  // ── Self-healing: remove duplicates by name and remove "No" respondents (dept=Other, no role/contact) ──
+  // ── Self-healing dedup: remove people with duplicate names (keep first occurrence) ──
   if (state.people) {
     const seen = new Set();
     const before = state.people.length;
     state.people = state.people.filter(p => {
-      // Remove stub entries imported from non-attending survey responses:
-      // they have dept='Other', no role, no contact, no email set by the user
-      const isNoAttendStub = (p.dept || '').trim() === 'Other'
-        && !(p.role || '').trim()
-        && !(p.contact || '').trim();
-      if (isNoAttendStub) return false;
-      // Remove duplicate names (keep first occurrence)
       const k = p.name.trim().toLowerCase();
       if (seen.has(k)) return false;
       seen.add(k);
@@ -4962,7 +4957,7 @@ function renderPeople() {
   const el = document.getElementById('people-list');
   const filterRow = document.getElementById('people-filter-row');
   const actionsRow = document.getElementById('people-header-actions');
-  const depts = ['All', 'SEET - Automation Sector', 'SEET - Enterprise Tooling', 'SEET - OneInfra', 'SEET - QE', 'SEET - SE'];
+  const depts = ['All', ...SEET_DEPTS.filter(d => d !== 'Other')];
   if (actionsRow) {
     actionsRow.innerHTML = `
       <button class="btn btn-ghost" onclick="importPeopleFromSurvey()" title="Import unique names from survey responses">📋 Import from Survey</button>`;
@@ -4975,17 +4970,40 @@ function renderPeople() {
   const people = (state.people||[]).filter(p => _peopleFilterDept==='All' || p.dept===_peopleFilterDept);
   if (!people.length) { el.innerHTML = emptyState('No people yet','Add team members to your People list','👤'); return; }
   const initials = name => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-  el.innerHTML = people.map(p => `
+  el.innerHTML = people.map(p => {
+    const isOther = (p.dept || '').trim() === 'Other';
+    const deptDisplay = isOther
+      ? `<span class="people-dept" style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);display:inline-flex;align-items:center;gap:6px;">
+           ⚠️ Other — Service Line unknown
+           <select onchange="updatePersonDept('${p.id}',this.value)" onclick="event.stopPropagation()"
+             style="background:var(--surface2);color:var(--white);border:1px solid var(--border2);border-radius:6px;font-size:11px;padding:2px 4px;cursor:pointer;">
+             <option value="">— update dept —</option>
+             ${SEET_DEPTS.filter(d=>d!=='Other').map(d=>`<option value="${d}">${d}</option>`).join('')}
+           </select>
+         </span>`
+      : `<span class="people-dept ${deptClass(p.dept)}">${deptIcon(p.dept)} ${p.dept}</span>`;
+    return `
     <div class="people-card">
       <div class="people-avatar">${initials(p.name)}</div>
       <div class="people-info">
         <div class="people-name">${p.name}</div>
         <div class="people-role">${p.role||'—'}</div>
-        <span class="people-dept ${deptClass(p.dept)}">${deptIcon(p.dept)} ${p.dept}</span>
+        ${deptDisplay}
         ${p.contact?`<div style="font-size:11px;color:var(--muted);margin-top:3px;">📞 ${p.contact}${p.email?' · ✉️ '+p.email:''}</div>`:''}
       </div>
       <button class="btn btn-danger btn-sm btn-icon" onclick="deletePerson('${p.id}')" title="Remove">🗑️</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+function updatePersonDept(id, dept) {
+  if (!dept) return;
+  const p = (state.people||[]).find(x => x.id === id);
+  if (!p) return;
+  p.dept = dept;
+  saveState();
+  showToast(`${p.name} moved to ${dept} ✅`);
+  renderPeople();
 }
 
 function savePerson() {
@@ -5044,11 +5062,9 @@ function importPeopleFromSurvey() {
     const seen = new Set();
     let added = 0;
     responses.forEach(r => {
-      // Only import people who confirmed attendance
-      if ((r.attend || '').trim().toLowerCase() !== 'yes') return;
       const name = resolveNameFromEmail(r.name, r.email);
       if (!name) return;
-      // Map survey serviceLine / dept fields to People dept; skip if none found
+      // Map survey serviceLine / dept fields to People dept; fall back to 'Other'
       const rawDept = r.service || r.serviceLine || r.service_line || r.dept || r.department || '';
       const dept = rawDept.trim() || 'Other';
       const key = name.trim().toLowerCase();
