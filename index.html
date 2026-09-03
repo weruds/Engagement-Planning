@@ -158,6 +158,84 @@
   }
   .nav-item.active .nav-count { background: rgba(37,99,235,0.15); color: var(--accent); }
 
+  /* ── Sub-nav items (indented children under a parent nav item) ── */
+  .nav-parent {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    border: 1px solid transparent;
+    margin-bottom: 1px;
+    user-select: none;
+  }
+  .nav-parent:hover { background: var(--surface2); color: var(--accent); }
+  .nav-parent.open  { color: var(--white); }
+  .nav-parent .nav-chevron {
+    margin-left: auto;
+    font-size: 9px;
+    transition: transform 0.2s ease;
+    color: var(--muted2);
+  }
+  .nav-parent.open .nav-chevron { transform: rotate(180deg); }
+
+  .nav-sub-list {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.22s ease;
+  }
+  .nav-sub-list.open { max-height: 200px; }
+
+  .nav-sub-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px 7px 34px;   /* 34px left = icon width + gap + indent */
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    border: 1px solid transparent;
+    margin-bottom: 1px;
+    position: relative;
+  }
+  .nav-sub-item::before {
+    content: '';
+    position: absolute;
+    left: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--border2);
+    transition: background 0.18s;
+  }
+  .nav-sub-item:hover { background: var(--surface2); color: var(--accent); }
+  .nav-sub-item:hover::before { background: var(--accent2); }
+  .nav-sub-item.active {
+    background: var(--accent-glow);
+    color: var(--accent);
+    border-color: rgba(37,99,235,0.25);
+  }
+  .nav-sub-item.active::before { background: var(--accent); }
+  .nav-sub-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 8px;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+    pointer-events: none;
+  }
+  .nav-sub-badge.show { opacity: 1; transform: scale(1); }
+
   /* ─── MAIN ─── */
   .main {
     flex: 1;
@@ -1977,9 +2055,20 @@
           <span class="nav-icon">👤</span> People
           <span class="nav-count" id="nav-count-people">0</span>
         </div>
-        <div class="nav-item" data-page="survey">
+        <!-- Survey parent + sub-links -->
+        <div class="nav-parent open" id="nav-parent-survey" onclick="toggleNavParent('survey')">
           <span class="nav-icon">📝</span> Survey
-          <span class="survey-nav-badge" id="survey-nav-badge" style="margin-left:auto;">NEW</span>
+          <span class="nav-chevron">▼</span>
+        </div>
+        <div class="nav-sub-list open" id="nav-sub-list-survey">
+          <div class="nav-sub-item" data-page="survey" onclick="navigate('survey')">
+            Feedback Survey
+            <span class="nav-sub-badge" id="survey-nav-badge">NEW</span>
+          </div>
+          <div class="nav-sub-item" data-page="initial-survey" onclick="navigate('initial-survey')">
+            Initial Survey
+            <span class="nav-sub-badge" id="initial-survey-nav-badge">NEW</span>
+          </div>
         </div>
       </div>
       <!-- hidden count targets still needed by updateCounts() -->
@@ -2430,6 +2519,22 @@
       <div style="max-width:640px;">
         <div id="survey-page-body">
           <!-- rendered by renderSurveyPage() -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ INITIAL SURVEY PAGE ══════════════════ -->
+    <div class="page" id="page-initial-survey">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">🗳️ Initial Survey</div>
+          <div class="section-subtitle">Help us understand your needs before we begin planning</div>
+        </div>
+      </div>
+      <div style="max-width:640px;">
+        <div id="initial-survey-page-body">
+          <!-- rendered by renderInitialSurveyPage() -->
         </div>
       </div>
     </div>
@@ -3321,37 +3426,39 @@ function initDate() {
 // NAVIGATION
 // ──────────────────────────────────────────────
 const PAGE_TITLES = {
-  dashboard:  'Dashboard',
-  activities: 'Activities',
-  quarters:   'By Quarter',
-  locations:  'Locations',
-  carseats:   'Car Seat Plan',
-  bedplan:    'Bed Plan',
-  games:      'Engagement Games',
-  committee:  'Organizing Committee',
-  grocery:    'Grocery List',
-  mealplan:   'Meal Plan',
-  expenses:   'Expenses',
-  overview:   'Full Plan Overview',
-  people:     'People',
-  survey:     'Survey',
+  dashboard:        'Dashboard',
+  activities:       'Activities',
+  quarters:         'By Quarter',
+  locations:        'Locations',
+  carseats:         'Car Seat Plan',
+  bedplan:          'Bed Plan',
+  games:            'Engagement Games',
+  committee:        'Organizing Committee',
+  grocery:          'Grocery List',
+  mealplan:         'Meal Plan',
+  expenses:         'Expenses',
+  overview:         'Full Plan Overview',
+  people:           'People',
+  survey:           'Feedback Survey',
+  'initial-survey': 'Initial Survey',
 };
 
 const ADD_LABELS = {
-  dashboard:  ['New Activity',    'modal-activity'],
-  activities: ['New Activity',    'modal-activity'],
-  quarters:   ['New Activity',    'modal-activity'],
-  locations:  ['Add Location',    'modal-location'],
-  carseats:   ['Add Car',         'modal-carseat'],
-  bedplan:    ['Add Room',        'modal-bed'],
-  games:      ['Add Game',        'modal-game'],
-  committee:  ['New Committee',   'modal-committee'],
-  grocery:    ['Add Item',        'modal-grocery'],
-  mealplan:   null,
-  expenses:   ['Add Expense',     'modal-expense'],
-  overview:   ['Set Date',        'modal-setdate'],
-  people:     ['Add Person',      'modal-person'],
-  survey:     null,
+  dashboard:        ['New Activity',    'modal-activity'],
+  activities:       ['New Activity',    'modal-activity'],
+  quarters:         ['New Activity',    'modal-activity'],
+  locations:        ['Add Location',    'modal-location'],
+  carseats:         ['Add Car',         'modal-carseat'],
+  bedplan:          ['Add Room',        'modal-bed'],
+  games:            ['Add Game',        'modal-game'],
+  committee:        ['New Committee',   'modal-committee'],
+  grocery:          ['Add Item',        'modal-grocery'],
+  mealplan:         null,
+  expenses:         ['Add Expense',     'modal-expense'],
+  overview:         ['Set Date',        'modal-setdate'],
+  people:           ['Add Person',      'modal-person'],
+  survey:           null,
+  'initial-survey': null,
 };
 
 let currentPage = 'dashboard';
@@ -3376,9 +3483,19 @@ function navigate(page) {
   }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-sub-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   const navEl = document.querySelector(`[data-page="${page}"]`);
-  if (navEl) navEl.classList.add('active');
+  if (navEl) {
+    navEl.classList.add('active');
+    // if it's a sub-item, ensure the parent accordion is open
+    const subList = navEl.closest('.nav-sub-list');
+    if (subList) {
+      subList.classList.add('open');
+      const parent = subList.previousElementSibling;
+      if (parent && parent.classList.contains('nav-parent')) parent.classList.add('open');
+    }
+  }
   document.getElementById('topbar-title').textContent = PAGE_TITLES[page] || page;
   currentPage = page;
   const addEntry = ADD_LABELS[page];
@@ -3396,6 +3513,16 @@ function navigate(page) {
 document.querySelectorAll('.nav-item').forEach(el => {
   el.addEventListener('click', () => navigate(el.dataset.page));
 });
+
+// Toggle a collapsible nav parent (e.g. Survey accordion)
+function toggleNavParent(key) {
+  const parent  = document.getElementById(`nav-parent-${key}`);
+  const subList = document.getElementById(`nav-sub-list-${key}`);
+  if (!parent || !subList) return;
+  const isOpen = subList.classList.contains('open');
+  subList.classList.toggle('open', !isOpen);
+  parent.classList.toggle('open', !isOpen);
+}
 
 // ── Mobile sidebar toggle ──
 function toggleSidebar() {
@@ -4052,7 +4179,8 @@ function renderPage(page) {
   else if (page === 'mealplan')   renderMealPlan();
   else if (page === 'people')     renderPeople();
   else if (page === 'expenses')   renderExpensesPage();
-  else if (page === 'survey')     renderSurveyPage();
+  else if (page === 'survey')          renderSurveyPage();
+  else if (page === 'initial-survey')  renderInitialSurveyPage();
 }
 
 // DASHBOARD
@@ -6084,6 +6212,240 @@ function submitSurvey() {
 if (!localStorage.getItem('survey_seen')) {
   const badge = document.getElementById('survey-nav-badge');
   if (badge) badge.classList.add('show');
+}
+
+// Show NEW badge for initial survey if never seen
+if (!localStorage.getItem('initial_survey_seen')) {
+  const b = document.getElementById('initial-survey-nav-badge');
+  if (b) b.classList.add('show');
+}
+
+// ──────────────────────────────────────────────
+// INITIAL SURVEY
+// ──────────────────────────────────────────────
+const INITIAL_SURVEY_KEY = 'engage_initial_survey_v1';
+
+let _isvStars  = {};   // { qId: rating }
+let _isvSingle = {};   // { qId: text }
+let _isvMulti  = {};   // { containerId: Set }
+
+function isvSetStar(qId, val) {
+  _isvStars[qId] = val;
+  const c = document.getElementById(`isv-stars-${qId}`);
+  if (!c) return;
+  c.querySelectorAll('.sq-star').forEach(s => s.classList.toggle('active', parseInt(s.dataset.val) <= val));
+  const lbl = document.getElementById(`isv-star-val-${qId}`);
+  if (lbl) lbl.textContent = STAR_LABELS[val] || '';
+}
+
+function isvSetChip(qId, el) {
+  const c = document.getElementById(`isv-chips-${qId}`);
+  if (!c) return;
+  c.querySelectorAll('.sq-chip').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  _isvSingle[qId] = el.textContent.trim();
+}
+
+function isvToggleChip(el) {
+  el.classList.toggle('active');
+  const c = el.closest('.sq-chips');
+  if (!c) return;
+  const qId = c.id;
+  if (!_isvMulti[qId]) _isvMulti[qId] = new Set();
+  const v = el.textContent.trim();
+  if (el.classList.contains('active')) _isvMulti[qId].add(v);
+  else _isvMulti[qId].delete(v);
+}
+
+function initialSurveyFormHTML() {
+  return `
+    <div class="card" style="margin-bottom:20px;">
+
+      <!-- Q1: Role -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">1</span> What is your role on the team?</div>
+        <div class="sq-chips" id="isv-chips-1" style="padding-left:28px;margin-top:8px;">
+          <span class="sq-chip" onclick="isvSetChip(1,this)">💻 Developer</span>
+          <span class="sq-chip" onclick="isvSetChip(1,this)">🧪 QE / Tester</span>
+          <span class="sq-chip" onclick="isvSetChip(1,this)">☁️ OneInfra</span>
+          <span class="sq-chip" onclick="isvSetChip(1,this)">📌 Other</span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+
+      <!-- Q2: Availability -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">2</span> Are you available to join engagement activities?</div>
+        <div class="sq-chips" id="isv-chips-2" style="padding-left:28px;margin-top:8px;">
+          <span class="sq-chip" onclick="isvSetChip(2,this)">✅ Yes, definitely</span>
+          <span class="sq-chip" onclick="isvSetChip(2,this)">🤔 Most likely</span>
+          <span class="sq-chip" onclick="isvSetChip(2,this)">⚠️ Depends on schedule</span>
+          <span class="sq-chip" onclick="isvSetChip(2,this)">❌ Not sure yet</span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+
+      <!-- Q3: Preferred activity types (multi) -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">3</span> What types of activities do you enjoy?</div>
+        <div class="sq-sub">Select all that apply</div>
+        <div class="sq-chips" id="isv-chips-3" style="padding-left:28px;margin-top:8px;">
+          <span class="sq-chip multi" onclick="isvToggleChip(this)">🏖️ Beach / Outdoor</span>
+          <span class="sq-chip multi" onclick="isvToggleChip(this)">🍽️ Food &amp; Dining</span>
+          <span class="sq-chip multi" onclick="isvToggleChip(this)">🎮 Games &amp; Fun</span>
+          <span class="sq-chip multi" onclick="isvToggleChip(this)">🏨 Staycation</span>
+          <span class="sq-chip multi" onclick="isvToggleChip(this)">🎤 Karaoke / Music</span>
+          <span class="sq-chip multi" onclick="isvToggleChip(this)">🏃 Sports / Fitness</span>
+          <span class="sq-chip multi" onclick="isvToggleChip(this)">🎨 Arts &amp; Crafts</span>
+          <span class="sq-chip multi" onclick="isvToggleChip(this)">🗺️ Out-of-town Trip</span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+
+      <!-- Q4: Preferred schedule -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">4</span> When are you usually free for team activities?</div>
+        <div class="sq-chips" id="isv-chips-4" style="padding-left:28px;margin-top:8px;">
+          <span class="sq-chip" onclick="isvSetChip(4,this)">🌅 Weekday mornings</span>
+          <span class="sq-chip" onclick="isvSetChip(4,this)">🌇 Weekday evenings</span>
+          <span class="sq-chip" onclick="isvSetChip(4,this)">🗓️ Weekends</span>
+          <span class="sq-chip" onclick="isvSetChip(4,this)">🏖️ Long weekends / Holidays</span>
+          <span class="sq-chip" onclick="isvSetChip(4,this)">📋 No strong preference</span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+
+      <!-- Q5: Budget comfort -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">5</span> What is your comfortable spending range per activity?</div>
+        <div class="sq-chips" id="isv-chips-5" style="padding-left:28px;margin-top:8px;">
+          <span class="sq-chip" onclick="isvSetChip(5,this)">₱0 – ₱500</span>
+          <span class="sq-chip" onclick="isvSetChip(5,this)">₱500 – ₱1,000</span>
+          <span class="sq-chip" onclick="isvSetChip(5,this)">₱1,000 – ₱2,000</span>
+          <span class="sq-chip" onclick="isvSetChip(5,this)">₱2,000 – ₱5,000</span>
+          <span class="sq-chip" onclick="isvSetChip(5,this)">₱5,000+</span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+
+      <!-- Q6: Dietary / special needs -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">6</span> Any dietary restrictions or special considerations?</div>
+        <div class="sq-chips" id="isv-chips-6" style="padding-left:28px;margin-top:8px;">
+          <span class="sq-chip" onclick="isvSetChip(6,this)">None</span>
+          <span class="sq-chip" onclick="isvSetChip(6,this)">🥩 No pork</span>
+          <span class="sq-chip" onclick="isvSetChip(6,this)">🐟 Pescatarian</span>
+          <span class="sq-chip" onclick="isvSetChip(6,this)">🥗 Vegetarian</span>
+          <span class="sq-chip" onclick="isvSetChip(6,this)">🌾 Gluten-free</span>
+          <span class="sq-chip" onclick="isvSetChip(6,this)">🤧 Allergies</span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+
+      <!-- Q7: Name (optional) -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">7</span> Your name <span style="font-weight:400;color:var(--muted2);">(optional)</span></div>
+        <input class="form-input" id="isv-name" placeholder="e.g. Juan dela Cruz" style="margin-top:8px;" />
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+
+      <!-- Q8: Open suggestions -->
+      <div class="sq-block" style="margin-bottom:24px;">
+        <div class="sq-label"><span class="sq-label-num">8</span> Any activity ideas or suggestions for the team?</div>
+        <textarea class="sq-textarea" id="isv-comment"
+          placeholder="Share any ideas — places, games, food spots, anything!" style="margin-top:8px;"></textarea>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <span style="font-size:11px;color:var(--muted2);">Responses saved to Firestore · anonymous unless you add your name.</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="resetInitialSurveyPage()">Reset</button>
+          <button class="btn btn-primary" onclick="submitInitialSurvey()">Submit ✓</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderInitialSurveyPage() {
+  const el = document.getElementById('initial-survey-page-body');
+  if (!el) return;
+  // Hide NEW badge
+  const badge = document.getElementById('initial-survey-nav-badge');
+  if (badge) badge.classList.remove('show');
+  localStorage.setItem('initial_survey_seen', '1');
+  // Reset state
+  _isvStars  = {};
+  _isvSingle = {};
+  _isvMulti  = {};
+  el.innerHTML = initialSurveyFormHTML();
+}
+
+function resetInitialSurveyPage() {
+  _isvStars  = {};
+  _isvSingle = {};
+  _isvMulti  = {};
+  renderInitialSurveyPage();
+}
+
+function submitInitialSurvey() {
+  const role       = _isvSingle[1] || '';
+  const available  = _isvSingle[2] || '';
+  const activities = _isvMulti['isv-chips-3'] ? [..._isvMulti['isv-chips-3']].join(', ') : '';
+  const schedule   = _isvSingle[4] || '';
+  const budget     = _isvSingle[5] || '';
+  const dietary    = _isvSingle[6] || '';
+  const name       = (document.getElementById('isv-name')?.value || '').trim();
+  const comment    = (document.getElementById('isv-comment')?.value || '').trim();
+
+  if (!role && !available) { showToast('Please answer at least one question.','⚠️'); return; }
+
+  const response = {
+    id: uid(),
+    submittedAt: new Date().toISOString(),
+    name, role, available, activities, schedule, budget, dietary, comment,
+  };
+
+  // Save to localStorage
+  try {
+    const saved = JSON.parse(localStorage.getItem(INITIAL_SURVEY_KEY) || '[]');
+    saved.push(response);
+    localStorage.setItem(INITIAL_SURVEY_KEY, JSON.stringify(saved));
+  } catch(e) {}
+
+  // Save to Firestore (separate collection)
+  if (_fbDb) {
+    _fbDb.collection('initial_survey_responses').add(response)
+      .catch(e => console.warn('Initial survey Firestore error:', e));
+  }
+
+  // Thank-you state
+  const thankYou = `
+    <div class="card">
+      <div class="survey-submitted">
+        <div class="survey-submitted-icon">🙌</div>
+        <div class="survey-submitted-title">Thanks${name ? ', ' + name.split(' ')[0] + '!' : '!'}</div>
+        <div class="survey-submitted-sub">
+          Your initial response has been recorded.<br>
+          The organizer will use this to plan activities that everyone will enjoy.
+        </div>
+        <div style="margin-top:16px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--muted);text-align:left;width:100%;max-width:420px;">
+          <div style="font-weight:700;color:var(--white);margin-bottom:8px;">Your response summary</div>
+          ${role       ? `<div>👤 Role: ${role}</div>` : ''}
+          ${available  ? `<div>📅 Availability: ${available}</div>` : ''}
+          ${schedule   ? `<div>🕐 Best schedule: ${schedule}</div>` : ''}
+          ${budget     ? `<div>💰 Budget: ${budget}</div>` : ''}
+          ${dietary    ? `<div>🍽️ Dietary: ${dietary}</div>` : ''}
+          ${activities ? `<div>🎯 Likes: ${activities}</div>` : ''}
+          ${comment    ? `<div>💬 Ideas: "${comment}"</div>` : ''}
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="resetInitialSurveyPage()" style="margin-top:12px;">↩ Submit another response</button>
+      </div>
+    </div>`;
+
+  const pageBody = document.getElementById('initial-survey-page-body');
+  if (pageBody) pageBody.innerHTML = thankYou;
+  showToast('Initial survey submitted! 🙌', '🗳️');
 }
 </script>
 
