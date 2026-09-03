@@ -4677,24 +4677,43 @@ function toggleAttendeeRow(rowEl, personId) {
   if (cb) cb.checked = rowEl.classList.contains('selected');
 }
 
+// Returns true if a person with the same name (case-insensitive) is already in the attendees list
+function _isNameAlreadyAttendee(act, name) {
+  return (act.attendees||[]).some(id => {
+    const p = (state.people||[]).find(x => x.id === id);
+    return p && p.name.trim().toLowerCase() === name.trim().toLowerCase();
+  });
+}
+
 function confirmAddAttendees() {
   if (!currentActivityId) return;
   const act = (state.activities||[]).find(a=>a.id===currentActivityId);
   if (!act) return;
   if (!act.attendees) act.attendees = [];
   const selected = [...document.querySelectorAll('#attendee-select-list .attendee-select-row.selected')];
-  let added = 0;
+  let added = 0, skipped = 0;
   selected.forEach(row => {
     const onclick = row.getAttribute('onclick');
     const m = onclick && onclick.match(/'([^']+)'\)$/);
     if (m) {
       const pid = m[1];
-      if (!act.attendees.includes(pid)) { act.attendees.push(pid); added++; }
+      const person = (state.people||[]).find(p => p.id === pid);
+      if (!person) return;
+      // block duplicate by ID or by name
+      if (act.attendees.includes(pid) || _isNameAlreadyAttendee(act, person.name)) {
+        skipped++;
+      } else {
+        act.attendees.push(pid);
+        added++;
+      }
     }
   });
   saveState();
   closeModal('modal-attendees');
-  showToast(`${added} attendee${added!==1?'s':''} added!`,'🙋');
+  const parts = [];
+  if (added   > 0) parts.push(`${added} added`);
+  if (skipped > 0) parts.push(`${skipped} duplicate${skipped!==1?'s':''} skipped`);
+  showToast(parts.join(' · ') || 'No changes.', '🙋');
   renderOverview();
   updateCounts();
 }
@@ -4739,8 +4758,8 @@ function fetchAttendeesFromSurvey() {
         newPeople++;
       }
 
-      // Add to activity attendees if not already there
-      if (!act.attendees.includes(person.id)) {
+      // Add to activity attendees if not already there (guard by ID and by name)
+      if (!act.attendees.includes(person.id) && !_isNameAlreadyAttendee(act, person.name)) {
         act.attendees.push(person.id);
         newAttendees++;
       }
