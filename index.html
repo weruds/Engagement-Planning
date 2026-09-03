@@ -3622,16 +3622,6 @@ document.querySelectorAll('.nav-item').forEach(el => {
   el.addEventListener('click', () => navigate(el.dataset.page));
 });
 
-// Toggle a collapsible nav parent (e.g. Survey accordion)
-function toggleNavParent(key) {
-  const parent  = document.getElementById(`nav-parent-${key}`);
-  const subList = document.getElementById(`nav-sub-list-${key}`);
-  if (!parent || !subList) return;
-  const isOpen = subList.classList.contains('open');
-  subList.classList.toggle('open', !isOpen);
-  parent.classList.toggle('open', !isOpen);
-}
-
 // ── Mobile sidebar toggle ──
 function toggleSidebar() {
   const sidebar  = document.getElementById('sidebar');
@@ -3743,16 +3733,6 @@ function populateLocationSelect(selectId) {
 function getLocationName(id) {
   const l = state.locations.find(x=>x.id===id);
   return l ? `${l.icon||'📍'} ${l.name}` : '';
-}
-
-function tagColor(cat) {
-  const map = {
-    Ceremony:'tag-blue', Reception:'tag-green', 'Pre-Event':'tag-purple',
-    'Post-Event':'tag-yellow', Game:'tag-cyan', Other:'tag-blue',
-    Icebreaker:'tag-cyan', Trivia:'tag-purple', Physical:'tag-yellow',
-    Creative:'tag-green', Classic:'tag-blue', Couples:'tag-blue',
-  };
-  return map[cat] || 'tag-blue';
 }
 
 function emptyState(msg, sub='', icon='🗂️') {
@@ -4431,21 +4411,6 @@ function deleteBedFromOverview(id) {
   showToast(`"${b.room}" removed.`, '🗑️');
   renderOverview();
   updateCounts();
-}
-
-function clearBedOccupant(bedId, bedIdx) {
-  const b = actData().beds.find(x => x.id === bedId);
-  if (!b) return;
-  const lines = b.occupants ? b.occupants.split('\n') : [];
-  if (lines[bedIdx]) {
-    const name = lines[bedIdx].replace(/^bed\s*\d+:\s*/i, '').trim();
-    lines[bedIdx] = '';
-    b.occupants = lines.join('\n').replace(/\n+$/, '');
-    saveState();
-    showToast(`Bed ${bedIdx + 1} cleared.`, '🗑️');
-    renderPage(currentPage);
-    if (currentPage === 'overview') renderOverview();
-  }
 }
 
 // ──────────────────────────────────────────────
@@ -7631,15 +7596,6 @@ const INITIAL_SURVEY_KEY = 'engage_initial_survey_v1';
 let _isvStars  = {};   // { qId: rating }
 let _isvSingle = {};   // { qId: text }
 let _isvMulti  = {};   // { containerId: Set }
-
-function isvSetStar(qId, val) {
-  _isvStars[qId] = val;
-  const c = document.getElementById(`isv-stars-${qId}`);
-  if (!c) return;
-  c.querySelectorAll('.sq-star').forEach(s => s.classList.toggle('active', parseInt(s.dataset.val) <= val));
-  const lbl = document.getElementById(`isv-star-val-${qId}`);
-  if (lbl) lbl.textContent = STAR_LABELS[val] || '';
-}
 
 function isvSetChip(qId, el) {
   const c = document.getElementById(`isv-chips-${qId}`);
