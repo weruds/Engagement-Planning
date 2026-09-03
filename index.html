@@ -2469,7 +2469,10 @@
           <div class="section-title">📊 Survey Results</div>
           <div class="section-subtitle">Live attendance and date preference results from survey responses</div>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="renderSurveyResultsPage()" title="Refresh from Firestore">🔄 Refresh</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="syncFromMonday()" title="Pull latest responses from Monday.com">📥 Sync from Monday</button>
+          <button class="btn btn-ghost btn-sm" onclick="renderSurveyResultsPage()" title="Refresh charts">🔄 Refresh</button>
+        </div>
       </div>
       <div id="survey-results-body">
         <div style="color:var(--muted);font-size:13px;padding:40px 0;text-align:center;">Loading results…</div>
@@ -5213,6 +5216,89 @@ function renderSurveyResultsPage() {
     const body = document.getElementById('survey-results-body');
     if (body) body.innerHTML = `<div style="color:#f87171;font-size:13px;padding:40px 0;text-align:center;">Failed to load results.</div>`;
     console.error('Survey results page error:', err);
+  });
+}
+
+// ──────────────────────────────────────────────
+// MONDAY.COM SYNC
+// ──────────────────────────────────────────────
+const MONDAY_API_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjcwMDEwOTc5MywiYWFpIjoxMSwidWlkIjo2Njc0NjIyOSwiaWFkIjoiMjAyNi0wOS0wM1QxNDo1NTo0NS44NTBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MTM1MzY5ODEsInJnbiI6InVzZTEifQ.LcEDVhxnSTbcSumOwsgnDL84_Nmy7IQ535gBCpCBDuM';
+const MONDAY_BOARD_ID  = '18429492550';
+
+// Column ID → field mapping for SEET Year End 2026 Survey board
+const MONDAY_COL_MAP = {
+  emailf9193p88:       'email',    // Email
+  single_selectn5d4kfd:'attend',   // attend Yes/No (request_type)
+  dateq831r7y8:        'date',     // Preferred date
+  single_selectf1d91wl:'service',  // Service line
+};
+
+function syncFromMonday() {
+  if (!_fbDb) { showToast('Not connected to Firestore.', '⚠️'); return; }
+  showToast('Fetching from Monday.com…', '🔄');
+
+  const query = `{
+    boards(ids: [${MONDAY_BOARD_ID}]) {
+      items_page(limit: 500) {
+        items {
+          id
+          name
+          column_values(ids: ["emailf9193p88","single_selectn5d4kfd","dateq831r7y8","single_selectf1d91wl"]) {
+            id
+            text
+          }
+        }
+      }
+    }
+  }`;
+
+  fetch('https://api.monday.com/v2', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': MONDAY_API_TOKEN,
+    },
+    body: JSON.stringify({ query }),
+  })
+  .then(r => r.json())
+  .then(json => {
+    if (json.errors) {
+      console.error('Monday API errors:', json.errors);
+      showToast('Monday.com API error. Check console.', '❌');
+      return;
+    }
+    const items = json.data?.boards?.[0]?.items_page?.items || [];
+    if (!items.length) {
+      showToast('No survey responses found on Monday.com yet.', 'ℹ️');
+      return;
+    }
+
+    // Build responses array
+    const responses = items.map(item => {
+      const r = { id: item.id, name: item.name };
+      item.column_values.forEach(cv => {
+        const field = MONDAY_COL_MAP[cv.id];
+        if (field) r[field] = cv.text || '';
+      });
+      return r;
+    });
+
+    // Write to Firestore survey/engagement_survey
+    _fbDb.collection('survey').doc('engagement_survey').set(
+      { responses },
+      { merge: false }
+    ).then(() => {
+      showToast(`${responses.length} response${responses.length !== 1 ? 's' : ''} synced from Monday.com ✅`);
+      loadSidebarSurveyResults();
+      if (currentPage === 'survey-results') renderSurveyResultsPage();
+    }).catch(err => {
+      console.error('Firestore write error:', err);
+      showToast('Sync failed — Firestore write error.', '❌');
+    });
+  })
+  .catch(err => {
+    console.error('Monday.com fetch error:', err);
+    showToast('Could not reach Monday.com API.', '❌');
   });
 }
 
