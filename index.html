@@ -4112,6 +4112,21 @@ function deleteBed(id) {
   updateCounts();
 }
 
+function clearBedOccupant(bedId, bedIdx) {
+  const b = actData().beds.find(x => x.id === bedId);
+  if (!b) return;
+  const lines = b.occupants ? b.occupants.split('\n') : [];
+  if (lines[bedIdx]) {
+    const name = lines[bedIdx].replace(/^bed\s*\d+:\s*/i, '').trim();
+    lines[bedIdx] = '';
+    b.occupants = lines.join('\n').replace(/\n+$/, '');
+    saveState();
+    showToast(`Bed ${bedIdx + 1} cleared.`, '🗑️');
+    renderPage(currentPage);
+    if (currentPage === 'overview') renderOverview();
+  }
+}
+
 // ──────────────────────────────────────────────
 // ADD OCCUPANTS MODAL
 // ──────────────────────────────────────────────
@@ -4556,6 +4571,7 @@ function renderBeds() {
         <div class="bed-icon">🛏️</div>
         <div class="bed-num">Bed ${i+1}</div>
         <div class="bed-person">${occ || 'Unassigned'}</div>
+        ${occ ? `<button class="btn btn-danger btn-sm btn-icon" style="margin-top:6px;font-size:10px;padding:2px 6px;" onclick="clearBedOccupant('${b.id}',${i})" title="Clear occupant">✕</button>` : ''}
       </div>`;
     }).join('');
 
