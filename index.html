@@ -1466,44 +1466,92 @@
   .grocery-progress-text { font-size: 12px; color: var(--muted); white-space: nowrap; }
 
   /* ─── MEAL PLAN ─── */
-  .meal-day-card {
+
+  /* Day tab strip */
+  .meal-day-tabs {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .meal-day-tab {
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border2);
     background: var(--surface);
-    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    transition: all 0.15s;
+    text-align: center; min-width: 90px;
+  }
+  .meal-day-tab:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow2); }
+  .meal-day-tab.active {
+    background: linear-gradient(90deg, var(--accent), var(--purple));
+    color: #fff; border-color: transparent;
+    box-shadow: 0 2px 10px rgba(37,99,235,0.25);
+  }
+  .meal-day-tab-date { font-size: 10px; font-weight: 400; opacity: 0.75; margin-top: 2px; }
+
+  /* 4-slot grid */
+  .meal-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 500px) { .meal-slots-grid { grid-template-columns: 1fr; } }
+
+  .meal-slot-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius);
-    overflow: hidden;
-    margin-bottom: 14px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex; flex-direction: column; gap: 8px;
+    min-height: 110px;
+    position: relative;
   }
-  .meal-day-header {
-    padding: 12px 18px;
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
+  .meal-slot-card:hover { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow2); transform: translateY(-1px); }
+  .meal-slot-card.has-menu { border-color: var(--accent2); background: var(--accent-glow2); }
+  .meal-slot-card-header {
+    display: flex; align-items: center; gap: 8px;
   }
-  .meal-day-title { font-size: 14px; font-weight: 700; color: var(--white); }
-  .meal-day-date { font-size: 12px; color: var(--muted); }
-  .meal-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0; }
-  .meal-slot {
-    padding: 14px 16px;
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    min-height: 90px;
+  .meal-slot-emoji { font-size: 22px; flex-shrink: 0; }
+  .meal-slot-name { font-size: 13px; font-weight: 700; color: var(--white); }
+  .meal-slot-menu-text {
+    font-size: 12px; color: var(--muted); line-height: 1.5;
+    flex: 1;
   }
-  .meal-slot:last-child { border-right: none; }
-  .meal-slot-label {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1px; color: var(--muted);
-    margin-bottom: 6px;
+  .meal-slot-menu-empty {
+    font-size: 11px; color: var(--muted2); font-style: italic;
     display: flex; align-items: center; gap: 4px;
   }
-  .meal-slot-content { font-size: 12px; color: var(--white); line-height: 1.5; }
-  .meal-slot-empty { font-size: 11px; color: var(--muted2); font-style: italic; }
-  .meal-slot-add {
-    font-size: 11px; color: var(--accent);
-    cursor: pointer; margin-top: 6px;
-    display: inline-flex; align-items: center; gap: 4px;
+  .meal-slot-assignee {
+    font-size: 10px; color: var(--accent2); font-weight: 600;
+    display: flex; align-items: center; gap: 4px;
+    margin-top: auto;
+    padding-top: 6px; border-top: 1px solid var(--border);
   }
-  .meal-slot-add:hover { color: var(--white); }
-  .meal-type-icon { font-size: 14px; }
+  .meal-slot-edit-hint {
+    position: absolute; top: 8px; right: 10px;
+    font-size: 10px; color: var(--muted2);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .meal-slot-card:hover .meal-slot-edit-hint { opacity: 1; }
+
+  /* No-duration placeholder */
+  .meal-no-duration {
+    padding: 32px; text-align: center;
+    background: var(--surface);
+    border: 1px dashed var(--border2);
+    border-radius: var(--radius);
+    font-size: 13px; color: var(--muted);
+  }
+  .meal-no-duration strong { color: var(--white); }
+
+  /* Keep legacy classes so nothing else breaks */
+  .meal-day-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 14px; }
+  .meal-day-header { padding: 12px 18px; background: var(--surface2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .meal-day-title { font-size: 14px; font-weight: 700; color: var(--white); }
+  .meal-day-date { font-size: 12px; color: var(--muted); }
 
   /* ─── TOP-VIEW VISUALIZER ─── */
 
@@ -2084,7 +2132,6 @@
           <div class="ov-panel-icon">🍽️</div>
           <div class="ov-panel-title">Meal Plan</div>
           <span class="ov-panel-count" id="pcount-meals">0</span>
-          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-mealday')">＋ Add Day</button>
           <span class="ov-panel-chevron">▼</span>
         </div>
         <div class="ov-panel-body">
@@ -2170,9 +2217,8 @@
       <div class="section-header">
         <div>
           <div class="section-title">Meal Plan</div>
-          <div class="section-subtitle">Plan meals from breakfast to dinner for each day</div>
+          <div class="section-subtitle">Days auto-generated from the activity's duration — click a day to plan meals</div>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modal-mealday')">＋ Add Day</button>
       </div>
       <div id="mealplan-list"></div>
     </div>
@@ -2320,52 +2366,28 @@
   </div>
 </div>
 
-<!-- Meal Day Modal -->
-<div class="modal-overlay" id="modal-mealday">
-  <div class="modal modal-lg">
+<!-- Meal Slot Config Modal -->
+<div class="modal-overlay" id="modal-mealslot">
+  <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">Add Meal Day</div>
-      <button class="modal-close" onclick="closeModal('modal-mealday')">✕</button>
+      <div class="modal-title" id="modal-mealslot-title">Configure Meal</div>
+      <button class="modal-close" onclick="closeModal('modal-mealslot')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Day Label *</label>
-          <input class="form-input" id="meal-label" placeholder="e.g. Day 1, Engagement Day, Eve Party" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Date</label>
-          <input class="form-input" id="meal-date" type="date" />
-        </div>
+      <div class="form-group">
+        <label class="form-label">Menu / Description</label>
+        <textarea class="form-textarea" id="mealslot-menu" placeholder="e.g. Garlic rice, lechon, pancit, salad..." style="min-height:80px;"></textarea>
       </div>
       <div class="form-group">
-        <label class="form-label">🌅 Breakfast</label>
-        <textarea class="form-textarea" id="meal-breakfast" placeholder="e.g. Garlic rice, eggs, tocino, coffee..." style="min-height:56px;"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">☀️ Morning Snack</label>
-        <textarea class="form-textarea" id="meal-amsnack" placeholder="e.g. Pandesal, juice..." style="min-height:48px;"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">🍱 Lunch</label>
-        <textarea class="form-textarea" id="meal-lunch" placeholder="e.g. Kare-kare, lechon, rice, salad..." style="min-height:56px;"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">🌤️ Afternoon Snack</label>
-        <textarea class="form-textarea" id="meal-pmsnack" placeholder="e.g. Buko salad, halo-halo..." style="min-height:48px;"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">🌙 Dinner</label>
-        <textarea class="form-textarea" id="meal-dinner" placeholder="e.g. Roasted pig, pasta, dessert table..." style="min-height:56px;"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">🍾 Midnight Snack / After-Party</label>
-        <textarea class="form-textarea" id="meal-midnight" placeholder="e.g. Ramen bar, dimsum, drinks..." style="min-height:48px;"></textarea>
+        <label class="form-label">Assignee — Who's in charge?</label>
+        <select class="form-select" id="mealslot-assignee">
+          <option value="">— None —</option>
+        </select>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('modal-mealday')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveMealDay()">Save Day</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-mealslot')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMealSlot()">Save</button>
     </div>
   </div>
 </div>
@@ -2471,14 +2493,15 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Date</label>
-          <input class="form-input" id="act-date" type="date" />
+          <label class="form-label">Start Date</label>
+          <input class="form-input" id="act-date-start" type="date" oninput="actDurationCalc()" />
         </div>
         <div class="form-group">
-          <label class="form-label">Time</label>
-          <input class="form-input" id="act-time" type="time" />
+          <label class="form-label">End Date</label>
+          <input class="form-input" id="act-date-end" type="date" oninput="actDurationCalc()" />
         </div>
       </div>
+      <div id="act-duration-display" style="display:none;font-size:12px;color:var(--accent);font-weight:600;margin-bottom:12px;padding:6px 10px;background:var(--accent-glow2);border-radius:var(--radius-sm);border:1px solid rgba(37,99,235,0.18);"></div>
       <div class="form-group">
         <label class="form-label">Location</label>
         <select class="form-select" id="act-location">
@@ -3059,7 +3082,7 @@ const ADD_LABELS = {
   games:      ['Add Game',        'modal-game'],
   committee:  ['New Committee',   'modal-committee'],
   grocery:    ['Add Item',        'modal-grocery'],
-  mealplan:   ['Add Day',         'modal-mealday'],
+  mealplan:   null,
   expenses:   ['Add Expense',     'modal-expense'],
   overview:   ['Set Date',        'modal-setdate'],
   people:     ['Add Person',      'modal-person'],
@@ -3130,6 +3153,7 @@ function openModal(id) {
   if (id === 'modal-activity') { populateLocationSelect('act-location'); selectTheme(document.getElementById('act-theme').value || 'Party'); }
   if (id === 'modal-bed') populateLocationSelect('bed-location');
   if (id === 'modal-game') populateGameOwnerSelect();
+  if (id === 'modal-mealslot') populateMealSlotAssignee();
   // pre-fill set-date modal with existing values
   if (id === 'modal-setdate' && state.engagement) {
     document.getElementById('setdate-name').value = state.engagement.name || '';
@@ -3223,18 +3247,35 @@ function emptyState(msg, sub='', icon='🗂️') {
 // ──────────────────────────────────────────────
 let _editActivityId = null; // null = new, string = editing
 
+function actDurationCalc() {
+  const s = document.getElementById('act-date-start').value;
+  const e = document.getElementById('act-date-end').value;
+  const el = document.getElementById('act-duration-display');
+  if (!el) return;
+  if (s && e && e >= s) {
+    const days = Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
+    const fmt = d => new Date(d + 'T00:00').toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
+    el.style.display = 'block';
+    el.textContent = `📅 ${fmt(s)} → ${fmt(e)}  ·  ${days} day${days !== 1 ? 's' : ''}`;
+  } else {
+    el.style.display = 'none';
+    el.textContent = '';
+  }
+}
+
 function openEditActivity(id) {
   const a = state.activities.find(x => x.id === id);
   if (!a) return;
   _editActivityId = id;
   populateLocationSelect('act-location');
-  document.getElementById('act-name').value     = a.name;
-  document.getElementById('act-quarter').value  = a.quarter;
-  document.getElementById('act-date').value     = a.date || '';
-  document.getElementById('act-time').value     = a.time || '';
-  document.getElementById('act-location').value = a.locationId || '';
-  document.getElementById('act-desc').value     = a.desc || '';
+  document.getElementById('act-name').value       = a.name;
+  document.getElementById('act-quarter').value    = a.quarter;
+  document.getElementById('act-date-start').value = a.dateStart || a.date || '';
+  document.getElementById('act-date-end').value   = a.dateEnd   || a.date || '';
+  document.getElementById('act-location').value   = a.locationId || '';
+  document.getElementById('act-desc').value       = a.desc || '';
   selectTheme(a.theme || 'Party');
+  actDurationCalc();
   document.getElementById('modal-activity-title').textContent = '✏️ Edit Activity';
   document.querySelector('#modal-activity .btn-primary').textContent = 'Save Changes';
   document.getElementById('modal-activity').classList.add('open');
@@ -3243,6 +3284,11 @@ function openEditActivity(id) {
 function saveActivity() {
   const name = document.getElementById('act-name').value.trim();
   if (!name) { showToast('Activity name is required.','⚠️'); return; }
+  const dateStart = document.getElementById('act-date-start').value;
+  const dateEnd   = document.getElementById('act-date-end').value;
+  const days = (dateStart && dateEnd && dateEnd >= dateStart)
+    ? Math.round((new Date(dateEnd) - new Date(dateStart)) / 86400000) + 1
+    : (dateStart ? 1 : 0);
 
   if (_editActivityId) {
     // — EDIT MODE —
@@ -3250,8 +3296,10 @@ function saveActivity() {
     if (a) {
       a.name       = name;
       a.quarter    = document.getElementById('act-quarter').value;
-      a.date       = document.getElementById('act-date').value;
-      a.time       = document.getElementById('act-time').value;
+      a.dateStart  = dateStart;
+      a.dateEnd    = dateEnd || dateStart;
+      a.date       = dateStart; // keep legacy field in sync
+      a.days       = days;
       a.locationId = document.getElementById('act-location').value;
       a.theme      = document.getElementById('act-theme').value;
       a.icon       = '💍';
@@ -3260,7 +3308,6 @@ function saveActivity() {
     _editActivityId = null;
     saveState();
     closeModal('modal-activity');
-    // reset modal title & button
     document.getElementById('modal-activity-title').textContent = 'New Engagement Activity';
     document.querySelector('#modal-activity .btn-primary').textContent = 'Save Activity';
     showToast(`Activity "${name}" updated!`,'✏️');
@@ -3270,8 +3317,10 @@ function saveActivity() {
       id: uid(),
       name,
       quarter:    document.getElementById('act-quarter').value,
-      date:       document.getElementById('act-date').value,
-      time:       document.getElementById('act-time').value,
+      dateStart,
+      dateEnd:    dateEnd || dateStart,
+      date:       dateStart, // legacy
+      days,
       locationId: document.getElementById('act-location').value,
       theme:      document.getElementById('act-theme').value,
       icon:       '💍',
@@ -3589,7 +3638,16 @@ function themeBanner(a) {
 
 function renderActivityItem(a) {
   const loc = a.locationId ? getLocationName(a.locationId) : '';
-  const dateStr = a.date ? new Date(a.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : '';
+  const fmtD = d => new Date(d + 'T00:00').toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
+  let durationStr = '';
+  if (a.dateStart && a.dateEnd && a.dateEnd !== a.dateStart) {
+    durationStr = `📅 ${fmtD(a.dateStart)} → ${fmtD(a.dateEnd)}`;
+  } else if (a.dateStart) {
+    durationStr = `📅 ${fmtD(a.dateStart)}`;
+  } else if (a.date) {
+    durationStr = `📅 ${fmtD(a.date)}`;
+  }
+  const daysTag = a.days > 1 ? `<span class="tag tag-purple">${a.days} days</span>` : '';
   return `
   <div class="activity-card" onclick="navigateToActivity('${a.id}')" title="Open overview for this activity">
     ${themeBanner(a)}
@@ -3598,8 +3656,8 @@ function renderActivityItem(a) {
         <div class="activity-name">${a.name}</div>
         <div class="activity-meta">
           <span class="tag tag-blue">${a.quarter}</span>
-          ${dateStr?`<span>📅 ${dateStr}</span>`:''}
-          ${a.time?`<span>⏰ ${a.time}</span>`:''}
+          ${daysTag}
+          ${durationStr?`<span>${durationStr}</span>`:''}
           ${loc?`<span>${loc}</span>`:''}
         </div>
         ${a.desc?`<div style="font-size:12px;color:var(--muted);margin-top:6px;">${a.desc}</div>`:''}
@@ -4259,7 +4317,8 @@ function renderOverview() {
   function setPCount(id, n) { const el = document.getElementById(id); if (el) el.textContent = n; }
   setPCount('pcount-activities', state.activities.length);
   setPCount('pcount-grocery', grocTotal);
-  setPCount('pcount-meals', (actData().meals||[]).length);
+  const _ovAct = currentActivityId ? (state.activities||[]).find(a=>a.id===currentActivityId) : null;
+  setPCount('pcount-meals', activityDays(_ovAct).length + ' day' + (activityDays(_ovAct).length!==1?'s':''));
   setPCount('pcount-cars', actData().cars.length);
   setPCount('pcount-beds', actData().beds.length);
   setPCount('pcount-games', actData().games.length);
@@ -4563,38 +4622,38 @@ function renderOverview() {
       </div>`).join('');
   }
 
-  // 8 — meal plan
-  const mealsEl = document.getElementById('overview-meals');
-  const meals = actData().meals || [];
-  if (!meals.length) {
-    mealsEl.innerHTML = emptyState('No meal days yet','Click "+ Add Day" to plan meals','🍽️');
+  // 8 — meal plan (overview — compact read-only view)
+  const mealsEl  = document.getElementById('overview-meals');
+  const ovDays   = activityDays(_ovAct);
+  if (!ovDays.length) {
+    mealsEl.innerHTML = `<div class="meal-no-duration" style="padding:16px;">
+      <div style="font-size:22px;margin-bottom:6px;">📅</div>
+      <div>No duration set — edit this activity to add Start &amp; End dates.</div>
+    </div>`;
   } else {
-    const sorted = [...meals].sort((a,b) => {
-      if (a.date && b.date) return new Date(a.date) - new Date(b.date);
-      if (a.date) return -1; if (b.date) return 1; return 0;
-    });
-    mealsEl.innerHTML = sorted.map(day => {
-      const dateStr = day.date ? new Date(day.date+'T00:00').toLocaleDateString('default',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '';
+    const mealDaysData = getMealDays();
+    mealsEl.innerHTML = ovDays.map((d, i) => {
+      const dateLabel = new Date(d + 'T00:00').toLocaleDateString('default', { weekday: 'short', month: 'short', day: 'numeric' });
+      const dayData   = mealDaysData[d] || {};
       const slotsHtml = MEAL_SLOTS.map(s => {
-        const content = day[s.key];
+        const slot     = dayData[s.key] || {};
+        const assignee = slot.assigneeId ? (state.people||[]).find(p=>p.id===slot.assigneeId) : null;
         return `
-          <div class="meal-slot">
-            <div class="meal-slot-label">${s.label}</div>
-            ${content
-              ? `<div class="meal-slot-content">${content.replace(/\n/g,'<br>')}</div>`
-              : `<div class="meal-slot-empty">Not planned</div>`}
+          <div class="meal-slot-card${slot.menu?' has-menu':''}" style="cursor:pointer;" onclick="navigateToActivity('${currentActivityId||''}');setTimeout(()=>{navigate('mealplan');selectMealDay('${d}');openMealSlot('${d}','${s.key}');},120);">
+            <div class="meal-slot-card-header">
+              <span class="meal-slot-emoji">${s.emoji}</span>
+              <span class="meal-slot-name">${s.label}</span>
+            </div>
+            ${slot.menu
+              ? `<div class="meal-slot-menu-text">${slot.menu.replace(/\n/g,'<br>')}</div>`
+              : `<div class="meal-slot-menu-empty">➕ Add menu</div>`}
+            ${assignee ? `<div class="meal-slot-assignee">👤 ${assignee.name}</div>` : ''}
           </div>`;
       }).join('');
       return `
-        <div class="meal-day-card">
-          <div class="meal-day-header">
-            <div>
-              <div class="meal-day-title">🍽️ ${day.label}</div>
-              ${dateStr?`<div class="meal-day-date">📅 ${dateStr}</div>`:''}
-            </div>
-            <button class="btn btn-danger btn-sm" onclick="deleteMealDay('${day.id}');renderOverview();">🗑️ Remove</button>
-          </div>
-          <div class="meal-slots">${slotsHtml}</div>
+        <div style="margin-bottom:18px;">
+          <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:10px;">🍽️ Day ${i+1} — ${dateLabel}</div>
+          <div class="meal-slots-grid">${slotsHtml}</div>
         </div>`;
     }).join('');
   }
@@ -4819,85 +4878,148 @@ function renderGrocery() {
 }
 
 // ──────────────────────────────────────────────
-// MEAL PLAN
+// MEAL PLAN  (duration-driven, 4 slots per day)
 // ──────────────────────────────────────────────
 const MEAL_SLOTS = [
-  { key: 'breakfast', label: '🌅 Breakfast' },
-  { key: 'amsnack',   label: '☀️ AM Snack' },
-  { key: 'lunch',     label: '🍱 Lunch' },
-  { key: 'pmsnack',   label: '🌤️ PM Snack' },
-  { key: 'dinner',    label: '🌙 Dinner' },
-  { key: 'midnight',  label: '🍾 Midnight' },
+  { key: 'breakfast', label: 'Breakfast', emoji: '🌅' },
+  { key: 'lunch',     label: 'Lunch',     emoji: '🍱' },
+  { key: 'snack',     label: 'Snack',     emoji: '☕' },
+  { key: 'dinner',    label: 'Dinner',    emoji: '🌙' },
 ];
 
-function saveMealDay() {
-  const label = document.getElementById('meal-label').value.trim();
-  if (!label) { showToast('Day label is required.','⚠️'); return; }
-  actData().meals = actData().meals || [];
-  const entry = {
-    id: uid(),
-    label,
-    date: document.getElementById('meal-date').value,
-    breakfast: document.getElementById('meal-breakfast').value.trim(),
-    amsnack:   document.getElementById('meal-amsnack').value.trim(),
-    lunch:     document.getElementById('meal-lunch').value.trim(),
-    pmsnack:   document.getElementById('meal-pmsnack').value.trim(),
-    dinner:    document.getElementById('meal-dinner').value.trim(),
-    midnight:  document.getElementById('meal-midnight').value.trim(),
-  };
-  actData().meals.push(entry);
-  saveState();
-  closeModal('modal-mealday');
-  showToast(`Meal plan for "${label}" saved!`);
-  if (currentPage === 'overview') renderOverview(); else renderMealPlan();
-  updateCounts();
+// Returns an array of date strings ['2025-01-01', ...] for the activity's duration
+function activityDays(a) {
+  if (!a || !a.dateStart) return [];
+  const start = new Date(a.dateStart + 'T00:00');
+  const end   = a.dateEnd ? new Date(a.dateEnd + 'T00:00') : start;
+  const days  = [];
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    days.push(d.toISOString().slice(0, 10));
+  }
+  return days;
 }
 
-function deleteMealDay(id) {
-  const m = (actData().meals||[]).find(x=>x.id===id);
-  if (!m) return;
-  actData().meals = actData().meals.filter(x=>x.id!==id);
+// Ensure actData().mealDays is an object keyed by dateStr
+function getMealDays() {
+  const d = actData();
+  if (!d.mealDays) d.mealDays = {};
+  return d.mealDays;
+}
+
+function getMealDay(dateStr) {
+  const md = getMealDays();
+  if (!md[dateStr]) md[dateStr] = {};
+  return md[dateStr];
+}
+
+// Active day tab state
+let _mealActiveDay = null;
+
+function selectMealDay(dateStr) {
+  _mealActiveDay = dateStr;
+  renderMealPlan();
+}
+
+// Context for slot modal
+let _mealSlotCtx = null; // { dateStr, slotKey }
+
+function openMealSlot(dateStr, slotKey) {
+  const day  = getMealDay(dateStr);
+  const slot = day[slotKey] || {};
+  _mealSlotCtx = { dateStr, slotKey };
+  const meta = MEAL_SLOTS.find(s => s.key === slotKey);
+  document.getElementById('modal-mealslot-title').textContent =
+    `${meta ? meta.emoji + ' ' + meta.label : slotKey} — ${new Date(dateStr + 'T00:00').toLocaleDateString('default', { weekday: 'short', month: 'short', day: 'numeric' })}`;
+  document.getElementById('mealslot-menu').value = slot.menu || '';
+  openModal('modal-mealslot');
+  // pre-select existing assignee after populate
+  const sel = document.getElementById('mealslot-assignee');
+  if (sel) sel.value = slot.assigneeId || '';
+}
+
+function populateMealSlotAssignee() {
+  const sel = document.getElementById('mealslot-assignee');
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— None —</option>' +
+    (state.people || []).map(p => `<option value="${p.id}">${p.name} (${p.dept})</option>`).join('');
+  if (cur) sel.value = cur;
+}
+
+function saveMealSlot() {
+  if (!_mealSlotCtx) return;
+  const { dateStr, slotKey } = _mealSlotCtx;
+  const day = getMealDay(dateStr);
+  day[slotKey] = {
+    menu:       document.getElementById('mealslot-menu').value.trim(),
+    assigneeId: document.getElementById('mealslot-assignee').value,
+  };
   saveState();
-  showToast(`"${m.label}" removed.`,'🗑️');
+  closeModal('modal-mealslot');
+  const meta = MEAL_SLOTS.find(s => s.key === slotKey);
+  showToast(`${meta ? meta.label : slotKey} saved!`, '🍽️');
   if (currentPage === 'overview') renderOverview(); else renderMealPlan();
-  updateCounts();
+  _mealSlotCtx = null;
+}
+
+function renderMealSlotCards(dateStr) {
+  const day = getMealDay(dateStr);
+  return `<div class="meal-slots-grid">
+    ${MEAL_SLOTS.map(s => {
+      const slot = day[s.key] || {};
+      const hasMenu = !!slot.menu;
+      const assignee = slot.assigneeId ? (state.people || []).find(p => p.id === slot.assigneeId) : null;
+      return `
+        <div class="meal-slot-card${hasMenu ? ' has-menu' : ''}" onclick="openMealSlot('${dateStr}','${s.key}')">
+          <span class="meal-slot-edit-hint">✏️ Edit</span>
+          <div class="meal-slot-card-header">
+            <span class="meal-slot-emoji">${s.emoji}</span>
+            <span class="meal-slot-name">${s.label}</span>
+          </div>
+          ${hasMenu
+            ? `<div class="meal-slot-menu-text">${slot.menu.replace(/\n/g, '<br>')}</div>`
+            : `<div class="meal-slot-menu-empty">➕ Tap to add menu</div>`}
+          <div class="meal-slot-assignee">
+            ${assignee
+              ? `👤 ${assignee.name}`
+              : `<span style="color:var(--muted2);font-weight:400;">No assignee</span>`}
+          </div>
+        </div>`;
+    }).join('')}
+  </div>`;
 }
 
 function renderMealPlan() {
   const el = document.getElementById('mealplan-list');
-  const meals = actData().meals || [];
-  if (!meals.length) {
-    el.innerHTML = actContextBanner() + emptyState('No meal days yet','Add a day and plan from breakfast to dinner','🍽️');
+  if (!el) return;
+
+  const act = currentActivityId ? (state.activities || []).find(a => a.id === currentActivityId) : null;
+  const days = activityDays(act);
+
+  if (!days.length) {
+    el.innerHTML = actContextBanner() + `
+      <div class="meal-no-duration">
+        <div style="font-size:32px;margin-bottom:10px;">📅</div>
+        <div><strong>No duration set for this activity</strong></div>
+        <div style="margin-top:6px;">Edit the activity and set a <strong>Start Date</strong> and <strong>End Date</strong> to generate meal plan days.</div>
+      </div>`;
     return;
   }
-  const sorted = [...meals].sort((a,b) => {
-    if (a.date && b.date) return new Date(a.date) - new Date(b.date);
-    if (a.date) return -1; if (b.date) return 1; return 0;
-  });
-  el.innerHTML = actContextBanner() + sorted.map(day => {
-    const dateStr = day.date ? new Date(day.date+'T00:00').toLocaleDateString('default',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '';
-    const slotsHtml = MEAL_SLOTS.map(s => {
-      const content = day[s.key];
-      return `
-        <div class="meal-slot">
-          <div class="meal-slot-label">${s.label}</div>
-          ${content
-            ? `<div class="meal-slot-content">${content.replace(/\n/g,'<br>')}</div>`
-            : `<div class="meal-slot-empty">Not planned</div>`}
-        </div>`;
-    }).join('');
-    return `
-      <div class="meal-day-card">
-        <div class="meal-day-header">
-          <div>
-            <div class="meal-day-title">🍽️ ${day.label}</div>
-            ${dateStr ? `<div class="meal-day-date">📅 ${dateStr}</div>` : ''}
-          </div>
-          <button class="btn btn-danger btn-sm" onclick="deleteMealDay('${day.id}')">🗑️ Remove</button>
-        </div>
-        <div class="meal-slots">${slotsHtml}</div>
-      </div>`;
+
+  // Default to first day if none selected or selected day not in range
+  if (!_mealActiveDay || !days.includes(_mealActiveDay)) _mealActiveDay = days[0];
+
+  const tabsHtml = days.map((d, i) => {
+    const dateLabel = new Date(d + 'T00:00').toLocaleDateString('default', { month: 'short', day: 'numeric' });
+    return `<div class="meal-day-tab${d === _mealActiveDay ? ' active' : ''}" onclick="selectMealDay('${d}')">
+      <div>Day ${i + 1}</div>
+      <div class="meal-day-tab-date">${dateLabel}</div>
+    </div>`;
   }).join('');
+
+  el.innerHTML = actContextBanner() +
+    `<div class="meal-day-tabs">${tabsHtml}</div>` +
+    renderMealSlotCards(_mealActiveDay);
 }
 
 // ──────────────────────────────────────────────
