@@ -4939,6 +4939,19 @@ function deptIcon(dept) {
 let _peopleFilterDept = 'All';
 
 function renderPeople() {
+  // ── Self-healing dedup: remove people with duplicate names (keep first occurrence) ──
+  if (state.people) {
+    const seen = new Set();
+    const before = state.people.length;
+    state.people = state.people.filter(p => {
+      const k = p.name.trim().toLowerCase();
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+    if (state.people.length < before) saveState();
+  }
+
   const el = document.getElementById('people-list');
   const filterRow = document.getElementById('people-filter-row');
   const actionsRow = document.getElementById('people-header-actions');
@@ -5007,9 +5020,19 @@ function importPeopleFromSurvey() {
     if (!snap.exists) { showToast('No survey data found.', '⚠️'); return; }
     const responses = snap.data().responses || [];
     if (!state.people) state.people = [];
-    // Dedup key = name (lowercase) + "|" + service line (lowercase)
+
+    // ── Remove any existing duplicates by name (keep first occurrence) ──
+    const seenNames = new Set();
+    state.people = state.people.filter(p => {
+      const k = p.name.trim().toLowerCase();
+      if (seenNames.has(k)) return false;
+      seenNames.add(k);
+      return true;
+    });
+
+    // Dedup key = name only (case-insensitive) — same person may submit with different dept
     const existingKeys = new Set(
-      (state.people).map(p => (p.name.trim() + '|' + (p.dept||'')).toLowerCase())
+      state.people.map(p => p.name.trim().toLowerCase())
     );
     const seen = new Set();
     let added = 0;
@@ -5018,7 +5041,7 @@ function importPeopleFromSurvey() {
       if (!name) return;
       // Map survey serviceLine / dept fields to People dept
       const dept = r.service || r.serviceLine || r.service_line || r.dept || r.department || 'Other';
-      const key = (name + '|' + dept).toLowerCase();
+      const key = name.trim().toLowerCase();
       if (existingKeys.has(key) || seen.has(key)) return;
       seen.add(key);
       state.people.push({
