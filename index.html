@@ -2089,15 +2089,6 @@
       <span style="display:none;" id="nav-count-expenses"></span>
     </nav>
 
-    <!-- Sidebar Countdown -->
-    <div class="sidebar-countdown" id="sidebar-countdown-area">
-      <div class="sidebar-cd-label">⏳ Countdown</div>
-      <div id="sidebar-cd-content">
-        <div class="sidebar-cd-none">No date set</div>
-      </div>
-      <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;font-size:11px;" onclick="openModal('modal-setdate')">Set Engagement Date</button>
-    </div>
-
     <!-- Survey Results -->
     <div class="sidebar-survey-results" id="sidebar-survey-results">
       <div class="sidebar-cd-label">📋 Survey Results</div>
@@ -4736,6 +4727,7 @@ function pad(n) { return String(n).padStart(2,'0'); }
 
 function renderSidebarCountdown() {
   const el = document.getElementById('sidebar-cd-content');
+  if (!el) return; // countdown section removed from sidebar
   const parts = getCountdownParts();
   if (!parts) {
     el.innerHTML = `<div class="sidebar-cd-none">No date set</div>`;
