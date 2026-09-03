@@ -596,10 +596,13 @@
     font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px;
     margin-top: 4px;
   }
-  .dept-dev      { background: rgba(37,99,235,0.12); color: #1d4ed8; }
-  .dept-qe       { background: rgba(124,58,237,0.12); color: #6d28d9; }
-  .dept-oneinfra { background: rgba(5,150,105,0.12);  color: #047857; }
-  .dept-other    { background: rgba(107,114,128,0.12); color: #4b5563; }
+  .dept-dev        { background: rgba(37,99,235,0.12);  color: #1d4ed8; }
+  .dept-qe         { background: rgba(124,58,237,0.12); color: #6d28d9; }
+  .dept-oneinfra   { background: rgba(5,150,105,0.12);  color: #047857; }
+  .dept-se         { background: rgba(8,145,178,0.12);  color: #0e7490; }
+  .dept-tooling    { background: rgba(245,158,11,0.12); color: #b45309; }
+  .dept-automation { background: rgba(239,68,68,0.12);  color: #b91c1c; }
+  .dept-other      { background: rgba(107,114,128,0.12); color: #4b5563; }
 
   /* ─── ATTENDEES ─── */
   .attendee-grid { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -1769,104 +1772,138 @@
   .vis-car-list-icon { font-size: 20px; }
   .vis-car-list-sub { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 1px; }
 
-  /* top-view car body */
+  /* ── Car top-view (landscape / rotated) ── */
   .vis-car-diagram {
     background: var(--surface2);
     border: 2px solid var(--border2);
     border-radius: var(--radius);
-    padding: 20px;
-    min-height: 200px;
+    padding: 24px 20px;
+    min-height: 180px;
     display: flex; align-items: center; justify-content: center;
+    overflow-x: auto;
   }
+
+  /* The whole car sits in a horizontal flex: bonnet | shell | boot */
   .vis-car-body {
-    position: relative;
-    width: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
   }
-  .vis-car-shell {
-    background: linear-gradient(180deg, var(--surface3) 0%, #e8ecff 100%);
-    border: 2px solid var(--border2);
-    border-radius: 24px 24px 18px 18px;
-    padding: 14px 10px 14px;
-    display: flex; flex-direction: column; gap: 6px;
+  .vis-car-name-plate {
+    font-size: 13px; font-weight: 700; color: var(--white);
+    text-align: center; margin-bottom: 4px;
+  }
+  .vis-car-name-plate span { font-size: 11px; color: var(--muted); font-weight: 400; }
+
+  /* Horizontal car shape: bonnet ▷ body ▷ boot */
+  .vis-car-horiz {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
     position: relative;
   }
-  /* bonnet */
-  .vis-car-shell::before {
-    content: '';
-    position: absolute; top: -18px; left: 20px; right: 20px;
-    height: 20px;
+  /* bonnet (front) */
+  .vis-car-bonnet {
+    width: 28px;
     background: var(--surface3);
     border: 2px solid var(--border2);
-    border-bottom: none;
-    border-radius: 14px 14px 0 0;
+    border-right: none;
+    border-radius: 14px 0 0 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--muted2);
+    writing-mode: vertical-rl;
+    padding: 6px 4px;
+    letter-spacing: 1px;
+    font-weight: 600;
   }
-  /* boot */
-  .vis-car-shell::after {
-    content: '';
-    position: absolute; bottom: -14px; left: 24px; right: 24px;
-    height: 14px;
+  /* main shell */
+  .vis-car-shell-h {
+    background: linear-gradient(135deg, var(--surface3) 0%, #e8ecff 100%);
+    border: 2px solid var(--border2);
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: row;  /* columns = seat rows */
+    gap: 10px;
+    align-items: center;
+    position: relative;
+  }
+  /* boot (rear) */
+  .vis-car-boot {
+    width: 22px;
     background: var(--surface3);
     border: 2px solid var(--border2);
-    border-top: none;
-    border-radius: 0 0 10px 10px;
+    border-left: none;
+    border-radius: 0 10px 10px 0;
   }
-  /* steering wheel */
-  .vis-steering {
+
+  /* steering wheel — floats above driver seat column */
+  .vis-steering-h {
     position: absolute;
-    left: 14px; top: 14px;
-    width: 22px; height: 22px;
-    border: 3px solid var(--accent3);
+    top: 8px; left: 10px;
+    width: 18px; height: 18px;
+    border: 2.5px solid var(--accent3);
     border-radius: 50%;
     background: var(--surface);
-    z-index: 1;
+    z-index: 2;
+    pointer-events: none;
   }
-  .vis-steering::after {
+  .vis-steering-h::after {
     content: '';
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%,-50%);
-    width: 8px; height: 2px;
+    width: 7px; height: 2px;
     background: var(--accent3);
     border-radius: 1px;
   }
-  .vis-car-row {
-    display: flex; gap: 6px; align-items: center; justify-content: center;
-    position: relative;
+
+  /* A column = one "row" of seats side-by-side (top=window, bot=aisle) */
+  .vis-seat-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
   }
-  .vis-car-aisle {
-    width: 12px; height: 100%;
+  .vis-aisle-h {
+    width: 100%;
+    height: 10px;
     display: flex; align-items: center; justify-content: center;
     font-size: 7px; color: var(--muted2);
   }
-  /* individual seat top-view */
+
+  /* individual seat — landscape orientation */
   .vis-seat {
-    width: 58px; height: 44px;
-    border-radius: 8px 8px 5px 5px;
+    width: 80px; height: 56px;
+    border-radius: 5px 5px 8px 8px;   /* headrest top, cushion bottom */
     border: 1.5px solid var(--border2);
     background: var(--surface);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-size: 9px; font-weight: 600; text-align: center; padding: 2px 3px;
-    line-height: 1.2; color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; text-align: center;
+    padding: 4px 6px;
+    line-height: 1.3; color: var(--muted);
     position: relative;
+    cursor: default;
   }
-  /* headrest bump */
+  /* headrest bump — now on LEFT (front of car) */
   .vis-seat::before {
     content: '';
-    position: absolute; top: -5px; left: 10px; right: 10px;
-    height: 5px;
+    position: absolute; left: -6px; top: 8px; bottom: 8px;
+    width: 6px;
     background: var(--border2);
-    border-radius: 4px 4px 0 0;
+    border-radius: 4px 0 0 4px;
   }
   .vis-seat.driver { background: rgba(124,58,237,0.08); border-color: rgba(124,58,237,0.3); color: var(--purple); }
   .vis-seat.driver::before { background: rgba(124,58,237,0.25); }
   .vis-seat.occupied { background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.3); color: var(--accent); }
   .vis-seat.occupied::before { background: rgba(37,99,235,0.2); }
   .vis-seat.empty { background: var(--surface2); color: var(--muted2); }
-  .vis-seat-name { font-size: 8px; word-break: break-word; max-width: 54px; }
-  .vis-car-name-plate {
-    text-align: center; margin-bottom: 10px;
-    font-size: 12px; font-weight: 700; color: var(--white);
+  .vis-seat-name {
+    font-size: 11px; font-weight: 600;
+    word-break: break-word; max-width: 72px;
+    line-height: 1.25; text-align: center;
+    overflow: hidden; display: -webkit-box;
+    -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
   }
-  .vis-car-name-plate span { font-size: 10px; color: var(--muted); font-weight: 400; }
 
   /* ─── FIREBASE STATUS ─── */
   .fb-status-bar {
@@ -2453,7 +2490,7 @@
       <div class="section-header">
         <div>
           <div class="section-title">People</div>
-          <div class="section-subtitle">Employee list across SEET departments</div>
+          <div class="section-subtitle">Employee list across SEET service lines</div>
         </div>
         <div id="people-header-actions" style="display:flex;gap:8px;"></div>
       </div>
@@ -3000,7 +3037,7 @@
 <div class="modal-overlay" id="modal-carseat">
   <div class="modal modal-lg">
     <div class="modal-header">
-      <div class="modal-title">Add Car Seat Plan</div>
+      <div class="modal-title">Add Car</div>
       <button class="modal-close" onclick="closeModal('modal-carseat')">✕</button>
     </div>
     <div class="modal-body">
@@ -3011,39 +3048,63 @@
         </div>
         <div class="form-group">
           <label class="form-label">Driver</label>
-          <input class="form-input" id="car-driver" placeholder="Driver name" />
+          <select class="form-select" id="car-driver">
+            <option value="">— Select driver —</option>
+          </select>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Seat Count</label>
-          <select class="form-select" id="car-seats">
-            <option value="2">2 seats</option>
-            <option value="4" selected>4 seats</option>
-            <option value="6">6 seats</option>
-            <option value="7">7 seats</option>
-            <option value="8">8 seats</option>
+          <label class="form-label">Brand</label>
+          <select class="form-select" id="car-brand" onchange="populateCarModels()">
+            <option value="">— Select brand —</option>
+            <option>Toyota</option><option>Honda</option><option>Mitsubishi</option>
+            <option>Ford</option><option>Hyundai</option><option>Kia</option>
+            <option>Nissan</option><option>Suzuki</option><option>Isuzu</option>
+            <option>Chevrolet</option><option>BMW</option><option>Mercedes-Benz</option>
+            <option>Audi</option><option>Volkswagen</option><option>Mazda</option>
+            <option>Subaru</option><option>Lexus</option><option>Jeep</option>
+            <option>Dodge</option><option>RAM</option><option>Other</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Vehicle Type</label>
-          <select class="form-select" id="car-type">
-            <option value="Sedan">🚗 Sedan</option>
-            <option value="SUV">🚙 SUV</option>
-            <option value="Van">🚐 Van</option>
-            <option value="Limo">🚘 Limousine</option>
-            <option value="Truck">🛻 Truck</option>
+          <label class="form-label">Model</label>
+          <select class="form-select" id="car-model" onchange="autoDetectSeats()">
+            <option value="">— Select brand first —</option>
           </select>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Assign Passengers (comma-separated names)</label>
-        <input class="form-input" id="car-passengers" placeholder="Alice, Bob, Carol, Dave" />
+        <label class="form-label">Seat Count <span style="font-size:11px;color:var(--muted);font-weight:400;">(driver included)</span></label>
+        <select class="form-select" id="car-seats">
+          <option value="2">2 seats</option>
+          <option value="4" selected>4 seats</option>
+          <option value="5">5 seats</option>
+          <option value="6">6 seats</option>
+          <option value="7">7 seats</option>
+        </select>
+        <div id="car-seats-hint" style="font-size:11px;color:var(--accent);font-weight:600;margin-top:5px;display:none;"></div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modal-carseat')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveCar()">Save Car Plan</button>
+      <button class="btn btn-primary" onclick="saveCar()">Save Car</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Passengers Modal -->
+<div class="modal-overlay" id="modal-passengers">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Passengers</div>
+      <button class="modal-close" onclick="closeModal('modal-passengers')">✕</button>
+    </div>
+    <div class="modal-body" id="passengers-modal-body">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-passengers')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAddPassengers()">Add Passengers</button>
     </div>
   </div>
 </div>
@@ -3125,12 +3186,13 @@
           <input class="form-input" id="person-name" placeholder="e.g. Juan dela Cruz" />
         </div>
         <div class="form-group">
-          <label class="form-label">Department *</label>
+          <label class="form-label">Service Line *</label>
           <select class="form-select" id="person-dept">
-            <option value="SEET - Dev">💻 SEET - Dev</option>
-            <option value="SEET - QE">🧪 SEET - QE</option>
+            <option value="SEET - Automation Sector">⚙️ SEET - Automation Sector</option>
+            <option value="SEET - Enterprise Tooling">🛠️ SEET - Enterprise Tooling</option>
             <option value="SEET - OneInfra">☁️ SEET - OneInfra</option>
-            <option value="Other">📌 Other</option>
+            <option value="SEET - QE">🧪 SEET - QE</option>
+            <option value="SEET - SE">🔬 SEET - SE</option>
           </select>
         </div>
       </div>
@@ -3165,7 +3227,7 @@
     </div>
     <div class="modal-body">
       <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Select people from the People list to add as attendees for this activity.</div>
-      <input class="form-input" id="attendee-search" placeholder="Search by name or department…" oninput="filterAttendeeList()" style="margin-bottom:10px;" />
+      <input class="form-input" id="attendee-search" placeholder="Search by name or service line…" oninput="filterAttendeeList()" style="margin-bottom:10px;" />
       <div class="attendee-select-list" id="attendee-select-list"></div>
     </div>
     <div class="modal-footer">
@@ -3600,6 +3662,7 @@ function openModal(id) {
   document.getElementById(id).classList.add('open');
   // populate location dropdowns
   if (id === 'modal-activity') { populateLocationSelect('act-location'); selectTheme(document.getElementById('act-theme').value || 'Party'); }
+  if (id === 'modal-carseat') { _populateNameSelect('car-driver', '', null); }
   if (id === 'modal-game') populateGameOwnerSelect();
   if (id === 'modal-mealslot') populateMealSlotAssignee();
   // pre-fill set-date modal with existing values
@@ -3626,6 +3689,12 @@ function clearModalFields(id) {
   document.querySelectorAll(`#${id} select`).forEach(el => { el.selectedIndex = 0; });
   if (id === 'modal-activity') selectTheme('Party');
   if (id === 'modal-location') clearLocImage();
+  if (id === 'modal-carseat') {
+    const hint = document.getElementById('car-seats-hint');
+    const modelSel = document.getElementById('car-model');
+    if (hint) { hint.style.display = 'none'; hint.textContent = ''; }
+    if (modelSel) modelSel.innerHTML = '<option value="">— Select brand first —</option>';
+  }
 }
 
 function selectTheme(theme) {
@@ -3956,29 +4025,167 @@ function saveEditLocation() {
 }
 
 // ──────────────────────────────────────────────
+// CAR BRAND / MODEL DATA  (model → seat count)
+// ──────────────────────────────────────────────
+// Each entry: 'Model': seats  (total incl. driver)
+const CAR_DATA = {
+  Toyota: {
+    'Vios': 5, 'Yaris': 5, 'Corolla': 5, 'Camry': 5, 'RAV4': 5,
+    'Wigo': 5, 'Avanza': 7, 'Rush': 7, 'Fortuner': 7,
+    'Hilux': 5, 'Alphard': 7,
+  },
+  Honda: {
+    'Brio': 5, 'Jazz': 5, 'City': 5, 'Civic': 5, 'Accord': 5,
+    'HR-V': 5, 'CR-V': 5, 'BR-V': 7, 'Mobilio': 7, 'Freed': 7,
+    'Odyssey': 7,
+  },
+  Mitsubishi: {
+    'Mirage': 5, 'Xpander': 7, 'ASX': 5, 'Outlander': 7,
+    'Eclipse Cross': 5, 'Montero Sport': 7, 'Strada': 5, 'Pajero': 7,
+  },
+  Ford: {
+    'EcoSport': 5, 'Territory': 5, 'Bronco': 5,
+    'Ranger': 5, 'Explorer': 7, 'Everest': 7,
+    'F-150': 5, 'Raptor': 5,
+  },
+  Hyundai: {
+    'Accent': 5, 'Elantra': 5, 'Tucson': 5, 'Venue': 5,
+    'Creta': 5, 'Ioniq 5': 5, 'Santa Fe': 7,
+  },
+  Kia: {
+    'Picanto': 5, 'Soul': 5, 'Stonic': 5, 'Seltos': 5,
+    'Niro': 5, 'EV6': 5, 'Sportage': 5, 'Sorento': 7,
+  },
+  Nissan: {
+    'Almera': 5, 'Juke': 5, 'Magnite': 5, 'Leaf': 5,
+    'X-Trail': 7, 'Terra': 7, 'Navara': 5,
+  },
+  Suzuki: {
+    'S-Presso': 5, 'Swift': 5, 'Ciaz': 5, 'Jimny': 4,
+    'Vitara': 5, 'Ertiga': 7, 'XL7': 7,
+  },
+  Isuzu: {
+    'D-Max': 5, 'mu-X': 7,
+  },
+  Chevrolet: {
+    'Spark': 5, 'Malibu': 5, 'Trax': 5, 'Captiva': 7,
+    'Colorado': 5, 'Trailblazer': 7,
+  },
+  BMW: {
+    'M3': 5, 'M5': 5, '3 Series': 5, '5 Series': 5, '7 Series': 5,
+    'X3': 5, 'X5': 5, 'X7': 7,
+  },
+  'Mercedes-Benz': {
+    'A-Class': 5, 'C-Class': 5, 'E-Class': 5, 'S-Class': 5,
+    'GLC': 5, 'GLE': 5, 'G-Class': 5,
+  },
+  Audi: {
+    'A4': 5, 'A6': 5, 'Q3': 5, 'Q5': 5, 'Q7': 7, 'Q8': 5, 'e-tron': 5,
+  },
+  Volkswagen: {
+    'Polo': 5, 'Golf': 5, 'Jetta': 5, 'Passat': 5, 'Tiguan': 5, 'Touareg': 5,
+  },
+  Mazda: {
+    'Mazda2': 5, 'Mazda3': 5, 'Mazda6': 5, 'CX-3': 5, 'CX-5': 5,
+    'CX-8': 7, 'CX-9': 7, 'BT-50': 5,
+  },
+  Subaru: {
+    'Impreza': 5, 'WRX': 5, 'XV': 5, 'Levorg': 5, 'Forester': 5, 'Outback': 5,
+  },
+  Lexus: {
+    'IS': 5, 'ES': 5, 'LS': 5, 'NX': 5, 'RX': 5, 'GX': 7,
+  },
+  Jeep: {
+    'Renegade': 5, 'Cherokee': 5, 'Grand Cherokee': 5, 'Wrangler': 4, 'Gladiator': 5,
+  },
+  Dodge: {
+    'Challenger': 5, 'Charger': 5, 'Durango': 7, 'RAM 1500': 5,
+  },
+  RAM: {
+    '1500': 5, '2500': 5, '3500': 5,
+  },
+  Other: { 'Other': 5 },
+};
+
+// Flat model list per brand (for the dropdown)
+const CAR_MODELS = Object.fromEntries(
+  Object.entries(CAR_DATA).map(([brand, models]) => [brand, Object.keys(models)])
+);
+
+function populateCarModels() {
+  const brand = document.getElementById('car-brand').value;
+  const modelSel = document.getElementById('car-model');
+  const hint = document.getElementById('car-seats-hint');
+  if (!brand || !CAR_MODELS[brand]) {
+    modelSel.innerHTML = '<option value="">— Select brand first —</option>';
+    if (hint) { hint.style.display = 'none'; hint.textContent = ''; }
+    return;
+  }
+  modelSel.innerHTML = '<option value="">— Select model —</option>' +
+    CAR_MODELS[brand].map(m => `<option value="${m}">${m}</option>`).join('');
+  if (hint) { hint.style.display = 'none'; hint.textContent = ''; }
+}
+
+function autoDetectSeats() {
+  const brand = document.getElementById('car-brand').value;
+  const model = document.getElementById('car-model').value;
+  const seatSel = document.getElementById('car-seats');
+  const hint = document.getElementById('car-seats-hint');
+  if (!brand || !model || !CAR_DATA[brand] || !CAR_DATA[brand][model]) {
+    if (hint) { hint.style.display = 'none'; hint.textContent = ''; }
+    return;
+  }
+  const detected = CAR_DATA[brand][model];
+  // Set the dropdown to the detected value, or the closest available option
+  const options = Array.from(seatSel.options).map(o => parseInt(o.value));
+  const closest = options.reduce((prev, cur) =>
+    Math.abs(cur - detected) < Math.abs(prev - detected) ? cur : prev
+  );
+  seatSel.value = String(closest);
+  if (hint) {
+    hint.textContent = `✅ Auto-detected: ${detected}-seater (${brand} ${model})${closest !== detected ? ` — using closest option (${closest})` : ''}`;
+    hint.style.display = 'block';
+  }
+}
+
+// ──────────────────────────────────────────────
 // SAVE — CARS
 // ──────────────────────────────────────────────
 function saveCar() {
   const name = document.getElementById('car-name').value.trim();
   if (!name) { showToast('Car label is required.','⚠️'); return; }
-  const seats = parseInt(document.getElementById('car-seats').value);
-  const rawPass = document.getElementById('car-passengers').value;
-  const passengers = rawPass ? rawPass.split(',').map(s=>s.trim()).filter(Boolean) : [];
-  // fill to seat count
-  const seatArr = [];
-  for (let i=0;i<seats;i++) seatArr.push(passengers[i]||null);
+
+  // Enforce unique car label within this activity
+  const existingNames = (actData().cars || []).map(c => c.name.trim().toLowerCase());
+  if (existingNames.includes(name.toLowerCase())) {
+    showToast(`A car named "${name}" already exists. Use a unique label.`, '⚠️'); return;
+  }
+
+  const seats  = parseInt(document.getElementById('car-seats').value);
+  const driver = document.getElementById('car-driver').value.trim();
+  const brand  = document.getElementById('car-brand').value.trim();
+  const model  = document.getElementById('car-model').value.trim();
+  // Passenger slots = total seats minus 1 driver seat; filled as null initially
+  const seatArr = Array(seats - 1).fill(null);
 
   const entry = {
     id: uid(),
     name,
-    driver: document.getElementById('car-driver').value.trim(),
+    brand,
+    model,
+    driver,
     seatCount: seats,
-    type: document.getElementById('car-type').value,
-    seats: seatArr,
+    seats: seatArr, // passenger seats only (driver excluded)
   };
   actData().cars.push(entry);
   saveState();
   closeModal('modal-carseat');
+  // Reset form
+  document.getElementById('car-name').value = '';
+  document.getElementById('car-driver').value = '';
+  document.getElementById('car-brand').value = '';
+  document.getElementById('car-model').innerHTML = '<option value="">— Select brand first —</option>';
+  document.getElementById('car-seats').value = '4';
   showToast(`Car "${name}" added!`);
   renderPage(currentPage);
   updateCounts();
@@ -3995,6 +4202,91 @@ function deleteCar(id) {
 }
 
 // ──────────────────────────────────────────────
+// ADD PASSENGERS
+// ──────────────────────────────────────────────
+let _passengersCarId = null;
+
+function openAddPassengers(carId) {
+  _passengersCarId = carId;
+  const car = actData().cars.find(x => x.id === carId);
+  if (!car) return;
+
+  const totalPassengerSeats = car.seatCount - 1;
+  const available = car.seats.filter(s => !s).length;
+  const allNames = _attendeeNames();
+  // Names already in THIS car (driver + passengers)
+  const inThisCar = new Set([car.driver, ...car.seats.filter(Boolean)].map(n => (n||'').toLowerCase()));
+  // Names already in ANY OTHER car
+  const inOtherCars = _namesInAnyCar(carId);
+  const inCar = new Set([...inThisCar, ...inOtherCars]);
+
+  const body = document.getElementById('passengers-modal-body');
+  if (available === 0) {
+    body.innerHTML = `
+      <div style="text-align:center;padding:24px 0;">
+        <div style="font-size:32px;margin-bottom:8px;">🚗</div>
+        <div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px;">${car.name} is full</div>
+        <div style="font-size:12px;color:var(--muted);">All ${totalPassengerSeats} passenger seat${totalPassengerSeats!==1?'s':''} are occupied.</div>
+      </div>`;
+  } else {
+    const eligibleNames = allNames.filter(n => !inCar.has(n.toLowerCase()));
+    body.innerHTML = `
+      <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">
+        🚗 <strong style="color:var(--white);">${car.name}</strong>
+      </div>
+      <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:14px;">
+        ${available} of ${totalPassengerSeats} passenger seat${totalPassengerSeats!==1?'s':''} available
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select up to <strong>${available}</strong> passenger${available!==1?'s':''}:</div>
+      <div id="passenger-pick-list" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;">
+        ${eligibleNames.length ? eligibleNames.map(n => `
+          <label style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;font-size:13px;color:var(--white);transition:background 0.15s;"
+            onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+            <input type="checkbox" value="${n}" onchange="limitPassengerSelection(${available})" style="accent-color:var(--accent);width:15px;height:15px;flex-shrink:0;" />
+            ${n}
+          </label>`).join('') :
+          `<div style="font-size:13px;color:var(--muted);padding:12px;text-align:center;">All attendees are already assigned to this car.</div>`
+        }
+      </div>`;
+  }
+  openModal('modal-passengers');
+}
+
+function limitPassengerSelection(max) {
+  const checks = document.querySelectorAll('#passenger-pick-list input[type=checkbox]');
+  const checked = Array.from(checks).filter(c => c.checked);
+  if (checked.length > max) {
+    // Uncheck the last one that was just checked
+    const last = checked[checked.length - 1];
+    last.checked = false;
+    showToast(`Only ${max} passenger seat${max!==1?'s':''} available.`, '⚠️');
+  }
+}
+
+function confirmAddPassengers() {
+  if (!_passengersCarId) return;
+  const car = actData().cars.find(x => x.id === _passengersCarId);
+  if (!car) return;
+
+  const selected = Array.from(
+    document.querySelectorAll('#passenger-pick-list input[type=checkbox]:checked')
+  ).map(c => c.value);
+
+  if (!selected.length) { showToast('Select at least one passenger.', '⚠️'); return; }
+
+  let added = 0;
+  for (let i = 0; i < car.seats.length && added < selected.length; i++) {
+    if (!car.seats[i]) { car.seats[i] = selected[added]; added++; }
+  }
+
+  saveState();
+  closeModal('modal-passengers');
+  _passengersCarId = null;
+  showToast(`${added} passenger${added!==1?'s':''} added to ${car.name}! 🚗`);
+  renderPage(currentPage);
+}
+
+// ──────────────────────────────────────────────
 // ASSIGN SEAT
 // ──────────────────────────────────────────────
 function _attendeeNames() {
@@ -4006,13 +4298,28 @@ function _attendeeNames() {
   return fromAttendees.length ? fromAttendees : (state.people||[]).map(p=>p.name);
 }
 
-function _populateNameSelect(selectId, currentValue) {
+// Returns a Set of names (lowercase) already assigned to ANY car seat or driver role,
+// optionally excluding one car (so the current car's occupants aren't double-filtered).
+function _namesInAnyCar(excludeCarId) {
+  const taken = new Set();
+  (actData().cars || []).forEach(car => {
+    if (car.id === excludeCarId) return;
+    if (car.driver) taken.add(car.driver.toLowerCase());
+    (car.seats || []).filter(Boolean).forEach(s => taken.add(s.toLowerCase()));
+  });
+  return taken;
+}
+
+function _populateNameSelect(selectId, currentValue, excludeCarId) {
   const sel = document.getElementById(selectId);
   if (!sel) return;
-  const names = _attendeeNames();
+  const allNames = _attendeeNames();
+  const taken = _namesInAnyCar(excludeCarId);
+  // Keep names not taken in other cars; always keep the current value so it stays selectable
+  const names = allNames.filter(n => !taken.has(n.toLowerCase()) || n === currentValue);
   sel.innerHTML = `<option value="">— Clear —</option>` +
     names.map(n => `<option value="${n}"${n===currentValue?' selected':''}>${n}</option>`).join('');
-  // if current value exists but isn't in list, add it
+  // if current value exists but isn't in the filtered list, add it anyway
   if (currentValue && !names.includes(currentValue)) {
     sel.innerHTML += `<option value="${currentValue}" selected>${currentValue}</option>`;
   }
@@ -4027,7 +4334,7 @@ function openAssignSeat(carId, seatIdx) {
     ? `Assign Driver — ${car.name}`
     : `Assign Seat ${seatIdx+1} — ${car.name}`;
   const current = isDriver ? (car.driver||'') : (car.seats[seatIdx]||'');
-  _populateNameSelect('assign-seat-name', current);
+  _populateNameSelect('assign-seat-name', current, carId);
   openModal('modal-assign-seat');
 }
 
@@ -4287,11 +4594,11 @@ const THEME_META = {
 function themeBanner(a) {
   const t = a.theme || 'Party';
   const m = THEME_META[t] || THEME_META.Party;
+  const title = (a.name || a.title || '').trim();
   return `<div class="theme-banner ${m.cls}">
     <svg viewBox="0 0 400 88" preserveAspectRatio="none">${m.svg}</svg>
     <span class="theme-banner-label">
-      <span class="theme-banner-name">${t}</span>
-      <span class="theme-banner-sub">${m.sub}</span>
+      <span class="theme-banner-name">${title || t}</span>
     </span>
     <span class="theme-banner-icon">${m.icon}</span>
   </div>`;
@@ -4539,31 +4846,51 @@ function actContextBanner() {
 }
 
 // CARS
+function carDisplayName(car) {
+  const bm = [car.brand, car.model].filter(Boolean).join(' ');
+  return bm || car.name;
+}
+
 function renderCars() {
   const el = document.getElementById('carseats-list');
   if (!actData().cars.length) { el.innerHTML = actContextBanner() + emptyState('No car plans yet','Assign guests to vehicles','🚗'); return; }
 
-  const typeIcon = {Sedan:'🚗',SUV:'🚙',Van:'🚐',Limo:'🚘',Truck:'🛻'};
+  el.innerHTML = actData().cars.map(car => {
+    const passengerSeats = car.seatCount - 1;
+    const occupied = car.seats.filter(Boolean).length;
+    const available = passengerSeats - occupied;
+    const displayName = carDisplayName(car);
 
-  el.innerHTML = actData().cars.map(car=>{
-    const seatsHtml = car.seats.map((p,i)=>`
-      <div class="seat-cell ${p?'occupied':'empty-slot'}" onclick="openAssignSeat('${car.id}',${i})">
-        ${p ? `<span style="font-size:9px;word-break:break-all;">${p}</span>` : `<span class="seat-label">S${i+1}</span><span style="font-size:16px;">🪑</span>`}
+    const seatsHtml = car.seats.map((p, i) => `
+      <div class="seat-cell ${p ? 'occupied' : 'empty-slot'}" onclick="openAssignSeat('${car.id}',${i})">
+        ${p
+          ? `<span style="font-size:9px;word-break:break-all;">${p}</span>`
+          : `<span class="seat-label">S${i+1}</span><span style="font-size:16px;">🪑</span>`}
       </div>`).join('');
 
-    const occupied = car.seats.filter(Boolean).length;
     return `
     <div class="card">
       <div class="card-header">
-        <span class="card-title">${typeIcon[car.type]||'🚗'} ${car.name}</span>
-        <button class="btn btn-danger btn-sm" onclick="deleteCar('${car.id}')">🗑️</button>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--white);">🚗 ${displayName}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${car.name}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="btn btn-ghost btn-sm" onclick="openAddPassengers('${car.id}')">👥 Add Passengers</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteCar('${car.id}')">🗑️</button>
+        </div>
       </div>
-      ${car.driver?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">🧑‍✈️ Driver: <b style="color:var(--white)">${car.driver}</b></div>`:''}
+      <div style="font-size:13px;color:var(--muted);margin-top:8px;margin-bottom:4px;">
+        ${car.driver ? `🧑‍✈️ <b style="color:var(--white);">${car.driver}</b>` : '<span style="color:var(--muted2);">No driver assigned</span>'}
+      </div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">
-        ${occupied}/${car.seatCount} seats occupied · Click a seat to assign
+        ${occupied}/${passengerSeats} Passenger${passengerSeats!==1?'s':''}
+        · <span style="color:${available > 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:600;">
+            ${available > 0 ? `${available} slot${available!==1?'s':''} available` : 'Full'}
+          </span>
       </div>
       <div class="seat-grid-wrapper">
-        <div class="seat-grid" style="grid-template-columns:repeat(${Math.min(car.seatCount,4)},52px);">
+        <div class="seat-grid" style="grid-template-columns:repeat(${Math.min(passengerSeats, 4)},52px);">
           ${seatsHtml}
         </div>
       </div>
@@ -4627,16 +4954,20 @@ function renderGames() {
 // PEOPLE
 // ──────────────────────────────────────────────
 function deptClass(dept) {
-  if (dept === 'SEET - Dev') return 'dept-dev';
-  if (dept === 'SEET - QE') return 'dept-qe';
-  if (dept === 'SEET - OneInfra') return 'dept-oneinfra';
+  if (dept === 'SEET - QE')                return 'dept-qe';
+  if (dept === 'SEET - OneInfra')          return 'dept-oneinfra';
+  if (dept === 'SEET - SE')                return 'dept-se';
+  if (dept === 'SEET - Enterprise Tooling') return 'dept-tooling';
+  if (dept === 'SEET - Automation Sector')  return 'dept-automation';
   return 'dept-other';
 }
 
 function deptIcon(dept) {
-  if (dept === 'SEET - Dev') return '💻';
-  if (dept === 'SEET - QE') return '🧪';
-  if (dept === 'SEET - OneInfra') return '☁️';
+  if (dept === 'SEET - QE')                return '🧪';
+  if (dept === 'SEET - OneInfra')          return '☁️';
+  if (dept === 'SEET - SE')                return '🔬';
+  if (dept === 'SEET - Enterprise Tooling') return '🛠️';
+  if (dept === 'SEET - Automation Sector')  return '⚙️';
   return '📌';
 }
 
@@ -4646,7 +4977,7 @@ function renderPeople() {
   const el = document.getElementById('people-list');
   const filterRow = document.getElementById('people-filter-row');
   const actionsRow = document.getElementById('people-header-actions');
-  const depts = ['All', 'SEET - Dev', 'SEET - QE', 'SEET - OneInfra', 'Other'];
+  const depts = ['All', 'SEET - Automation Sector', 'SEET - Enterprise Tooling', 'SEET - OneInfra', 'SEET - QE', 'SEET - SE'];
   if (actionsRow) {
     actionsRow.innerHTML = `
       <button class="btn btn-ghost" onclick="importPeopleFromSurvey()" title="Import unique names from survey responses">📋 Import from Survey</button>`;
@@ -4711,14 +5042,14 @@ function importPeopleFromSurvey() {
     if (!snap.exists) { showToast('No survey data found.', '⚠️'); return; }
     const responses = snap.data().responses || [];
     if (!state.people) state.people = [];
-    // Dedup key = name (lowercase) + "|" + dept (lowercase)
+    // Dedup key = name (lowercase) + "|" + service line (lowercase)
     const existingKeys = new Set(
-      (state.people).map(p => (p.name.trim() + '|' + (p.dept||'Other')).toLowerCase())
+      (state.people).map(p => (p.name.trim() + '|' + (p.dept||'')).toLowerCase())
     );
     const seen = new Set();
     let added = 0;
     responses.forEach(r => {
-      const name = (r.name || '').trim();
+      const name = resolveNameFromEmail(r.name, r.email);
       if (!name) return;
       // Map survey serviceLine / dept fields to People dept
       const dept = r.service || r.serviceLine || r.service_line || r.dept || r.department || 'Other';
@@ -4860,7 +5191,7 @@ function fetchAttendeesFromSurvey() {
       const attend = (r.attend || '').trim().toLowerCase();
       if (attend !== 'yes') return; // only import "Yes" respondents
 
-      const name = (r.name || '').trim();
+      const name = resolveNameFromEmail(r.name, r.email);
       if (!name) return;
 
       const dept  = r.service || r.serviceLine || r.service_line || r.dept || r.department || 'Other';
@@ -5060,8 +5391,12 @@ function renderSidebarSurveyResults() {
 // ──────────────────────────────────────────────
 // SURVEY RESULTS FULL PAGE
 // ──────────────────────────────────────────────
-let _srPieChart  = null;
-let _srLineChart = null;
+let _srPieChart   = null;
+let _srLineChart  = null;
+let _srSvcChart   = null;
+let _srVenueChart = null;
+let _srThemeChart   = null;
+let _srTourChart    = null;
 
 function renderSurveyResultsPage() {
   const body = document.getElementById('survey-results-body');
@@ -5096,9 +5431,90 @@ function renderSurveyResultsPage() {
     const dateLabels = sortedDates;
     const dateValues = sortedDates.map(d => dateCounts[d]);
 
+    // ── Service line tallies (yes-only attendees) ──
+    const svcCounts = {};
+    responses.forEach(r => {
+      if ((r.attend || '').trim().toLowerCase() !== 'yes') return;
+      const svc = (r.service || r.serviceLine || r.service_line || r.dept || r.department || 'Other').trim();
+      svcCounts[svc] = (svcCounts[svc] || 0) + 1;
+    });
+    const svcLabels = Object.keys(svcCounts).sort();
+    const svcValues = svcLabels.map(s => svcCounts[s]);
+    const SVC_COLORS = ['#c084fc','#4ade80','#facc15','#fb7185','#22d3ee','#f472b6','#fb923c','#34d399','#a78bfa','#60a5fa'];
+
+    // ── Plus-one tally ──
+    let plusOne = 0;
+    responses.forEach(r => {
+      if ((r.tourType || '').toLowerCase().includes('with a plus-one')) plusOne++;
+    });
+
+    // ── South Luzon petition tally ──
+    let southPetitions = 0;
+    responses.forEach(r => {
+      const raw = (r.venue || '').toLowerCase();
+      if (raw.includes('petition for south')) southPetitions++;
+    });
+
+    // ── Day Tour vs Overnight tally ──
+    let dayTour = 0, overnight = 0;
+    responses.forEach(r => {
+      const t = (r.tourType || '').toLowerCase();
+      if (t.includes('overnight')) overnight++;
+      else if (t.includes('day tour')) dayTour++;
+    });
+
+    // ── Venue tallies (multi-select — comma-separated per response) ──
+    const VENUE_LABELS = [
+      'Aurora Private Resort',
+      'Villa Mari Private Farm and Resort',
+      'The Zen Resort',
+      'Casa Serdeña Nature Private Resort',
+      'Petition for South options. Laguna or Cavite, please!',
+      'I respectfully choose… none of the above 😂'
+    ];
+    const venueCounts = {};
+    responses.forEach(r => {
+      const raw = (r.venue || '').trim();
+      if (!raw) return;
+      // Match against known labels first (prevents "Petition for…, please!" splitting at its comma).
+      // Fall back to newline-only split for any unrecognised values.
+      let matched = false;
+      VENUE_LABELS.forEach(label => {
+        if (raw.toLowerCase().includes(label.toLowerCase())) {
+          venueCounts[label] = (venueCounts[label] || 0) + 1;
+          matched = true;
+        }
+      });
+      if (!matched) {
+        raw.split(/\n/).forEach(v => {
+          const venue = v.trim();
+          if (venue) venueCounts[venue] = (venueCounts[venue] || 0) + 1;
+        });
+      }
+    });
+    // Sort venues by count descending
+    const venueLabels = Object.keys(venueCounts).sort((a, b) => venueCounts[b] - venueCounts[a]);
+    const venueValues = venueLabels.map(v => venueCounts[v]);
+    const VENUE_COLORS = ['#818cf8','#fbbf24','#4ade80','#fb7185','#22d3ee','#e879f9','#fb923c','#34d399'];
+
+    // ── Theme tallies (all responses, not just yes) ──
+    const themeCounts = {};
+    responses.forEach(r => {
+      const raw = (r.partyTheme || r.theme || '').trim();
+      if (!raw) return;
+      raw.split(/,|\n/).forEach(t => {
+        const th = t.trim();
+        if (th) themeCounts[th] = (themeCounts[th] || 0) + 1;
+      });
+    });
+    const themeLabels = Object.keys(themeCounts).sort((a, b) => themeCounts[b] - themeCounts[a]);
+    const themeValues = themeLabels.map(t => themeCounts[t]);
+    const THEME_COLORS = ['#e879f9','#fbbf24','#38bdf8','#4ade80','#fb7185','#818cf8','#fb923c','#34d399','#f472b6','#60a5fa'];
+
     // ── Build layout ──
     body.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px;margin-top:8px;">
+      <!-- Row 1: attendance + dates + service line -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px;">
 
         <!-- Pie card -->
         <div class="card" style="padding:28px 24px;">
@@ -5132,32 +5548,131 @@ function renderSurveyResultsPage() {
           </div>
         </div>
 
+        <!-- Service Line Pie card -->
+        <div class="card" style="padding:28px 24px;">
+          <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Attendees per Service Line</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${yes} confirmed attendee${yes!==1?'s':''} · ${svcLabels.length} service line${svcLabels.length!==1?'s':''}</div>
+          <div style="position:relative;max-width:280px;margin:0 auto;">
+            <canvas id="sr-svc-canvas" height="280"></canvas>
+          </div>
+          <div style="display:flex;justify-content:center;gap:12px;margin-top:18px;flex-wrap:wrap;">
+            ${svcLabels.map((s,i) => `<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--white);">
+              <span style="width:10px;height:10px;border-radius:50%;background:${SVC_COLORS[i % SVC_COLORS.length]};display:inline-block;flex-shrink:0;"></span>
+              ${s} — <strong>${svcCounts[s]}</strong>
+            </div>`).join('')}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Row 2: venue + theme + day-tour -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:24px;">
+
+        <!-- Venue Pie card -->
+        <div class="card" style="padding:28px 24px;">
+          <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Top Venue Preference</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${venueLabels.length} venue${venueLabels.length!==1?'s':''} chosen across all responses</div>
+          <div style="position:relative;max-width:280px;margin:0 auto;">
+            <canvas id="sr-venue-canvas" height="280"></canvas>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:18px;">
+            ${venueLabels.map((v,i) => `<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--white);">
+              <span style="width:10px;height:10px;border-radius:50%;background:${VENUE_COLORS[i % VENUE_COLORS.length]};display:inline-block;flex-shrink:0;"></span>
+              <span style="flex:1;">${v}</span><strong>${venueCounts[v]}</strong>
+            </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Theme Pie card -->
+        <div class="card" style="padding:28px 24px;">
+          <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Preferred ODC SEET Yearend Party Theme</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${themeLabels.length} theme${themeLabels.length!==1?'s':''} preferred across all responses</div>
+          <div style="position:relative;max-width:280px;margin:0 auto;">
+            <canvas id="sr-theme-canvas" height="280"></canvas>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:18px;">
+            ${themeLabels.map((t,i) => `<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--white);">
+              <span style="width:10px;height:10px;border-radius:50%;background:${THEME_COLORS[i % THEME_COLORS.length]};display:inline-block;flex-shrink:0;"></span>
+              <span style="flex:1;">${t}</span><strong>${themeCounts[t]}</strong>
+            </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Day Tour vs Overnight Pie card -->
+        <div class="card" style="padding:28px 24px;">
+          <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Day Tour or Overnight</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${dayTour + overnight} response${(dayTour+overnight)!==1?'s':''} · ${overnight} overnight · ${dayTour} day tour</div>
+          <div style="position:relative;max-width:280px;margin:0 auto;">
+            <canvas id="sr-tour-canvas" height="280"></canvas>
+          </div>
+          <div style="display:flex;justify-content:center;gap:20px;margin-top:18px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--white);">
+              <span style="width:12px;height:12px;border-radius:50%;background:#fbbf24;display:inline-block;"></span>
+              Overnight — <strong>${overnight}</strong>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--white);">
+              <span style="width:12px;height:12px;border-radius:50%;background:#f87171;display:inline-block;"></span>
+              Day Tour — <strong>${dayTour}</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Row 3: stat tiles centred 2-up -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:24px;max-width:900px;margin-left:auto;margin-right:auto;width:100%;">
+
+        <!-- South Luzon petition stat tile -->
+        <div class="card" style="padding:36px 28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+          <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">South Luzon Venue Petitions</div>
+          <div style="font-size:72px;font-weight:900;line-height:1;background:linear-gradient(135deg,#34d399,#059669);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${southPetitions}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:12px;">respondent${southPetitions!==1?'s':''} petitioning for Laguna or Cavite</div>
+        </div>
+
+        <!-- Plus-one stat tile -->
+        <div class="card" style="padding:36px 28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+          <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Number of Additional Guests (non IBMers)</div>
+          <div style="font-size:72px;font-weight:900;line-height:1;background:linear-gradient(135deg,#a78bfa,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${plusOne}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:12px;">attendee${plusOne!==1?'s':''} bringing a Plus&#8209;1</div>
+        </div>
+
       </div>`;
 
     // destroy old charts before re-creating
-    if (_srPieChart)  { _srPieChart.destroy();  _srPieChart  = null; }
-    if (_srLineChart) { _srLineChart.destroy(); _srLineChart = null; }
+    if (_srPieChart)   { _srPieChart.destroy();   _srPieChart   = null; }
+    if (_srLineChart)  { _srLineChart.destroy();  _srLineChart  = null; }
+    if (_srSvcChart)   { _srSvcChart.destroy();   _srSvcChart   = null; }
+    if (_srVenueChart) { _srVenueChart.destroy(); _srVenueChart = null; }
+    if (_srThemeChart) { _srThemeChart.destroy(); _srThemeChart = null; }
+    if (_srTourChart)  { _srTourChart.destroy();  _srTourChart  = null; }
 
     // ── Pie chart ──
     const pieCtx = document.getElementById('sr-pie-canvas');
     if (pieCtx && typeof Chart !== 'undefined') {
       const pieData = [yes, no];
       const pieLabels = ['Yes', 'No'];
-      const pieColors = ['#22c55e', '#f87171'];
+      const pieColors = ['#4ade80', '#fb7185'];
       if (maybe > 0) { pieData.push(maybe); pieLabels.push('Maybe'); pieColors.push('#fbbf24'); }
 
       _srPieChart = new Chart(pieCtx, {
         type: 'doughnut',
         data: {
           labels: pieLabels,
-          datasets: [{ data: pieData, backgroundColor: pieColors, borderColor: '#1e2435', borderWidth: 3, hoverOffset: 8 }]
+          datasets: [{ data: pieData, backgroundColor: pieColors, borderColor: '#0f172a', borderWidth: 4, hoverOffset: 14,
+            borderRadius: 4 }]
         },
         options: {
           responsive: true,
-          cutout: '60%',
+          cutout: '62%',
           plugins: {
             legend: { display: false },
             tooltip: {
+              backgroundColor: 'rgba(15,23,42,0.92)',
+              titleColor: '#e2e8f0',
+              bodyColor: '#94a3b8',
+              borderColor: 'rgba(255,255,255,0.08)',
+              borderWidth: 1,
+              padding: 10,
               callbacks: {
                 label: ctx => ` ${ctx.label}: ${ctx.raw} (${total > 0 ? Math.round(ctx.raw/total*100) : 0}%)`
               }
@@ -5180,10 +5695,16 @@ function renderSurveyResultsPage() {
             datasets: [{
               label: 'Responses',
               data: dateValues,
-              backgroundColor: 'rgba(99,102,241,0.55)',
-              borderColor: '#6366f1',
+              backgroundColor: dateValues.map((_, i) => {
+                const palette = ['rgba(129,140,248,0.85)','rgba(251,191,36,0.85)','rgba(74,222,128,0.85)','rgba(251,113,133,0.85)','rgba(34,211,238,0.85)','rgba(232,121,249,0.85)'];
+                return palette[i % palette.length];
+              }),
+              borderColor: dateValues.map((_, i) => {
+                const palette = ['#818cf8','#fbbf24','#4ade80','#fb7185','#22d3ee','#e879f9'];
+                return palette[i % palette.length];
+              }),
               borderWidth: 2,
-              borderRadius: 6,
+              borderRadius: 8,
             }]
           },
           options: {
@@ -5202,8 +5723,181 @@ function renderSurveyResultsPage() {
             plugins: {
               legend: { display: false },
               tooltip: {
+                backgroundColor: 'rgba(15,23,42,0.92)',
+                titleColor: '#e2e8f0',
+                bodyColor: '#94a3b8',
+                borderColor: 'rgba(255,255,255,0.08)',
+                borderWidth: 1,
+                padding: 10,
                 callbacks: {
                   label: ctx => ` ${ctx.raw} response${ctx.raw !== 1 ? 's' : ''}`
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // ── Service Line Pie chart ──
+    const svcCtx = document.getElementById('sr-svc-canvas');
+    if (svcCtx && typeof Chart !== 'undefined') {
+      if (!svcLabels.length) {
+        svcCtx.parentElement.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:40px 0;">No service line data recorded yet.</div>`;
+      } else {
+        _srSvcChart = new Chart(svcCtx, {
+          type: 'doughnut',
+          data: {
+            labels: svcLabels,
+            datasets: [{
+              data: svcValues,
+              backgroundColor: svcLabels.map((_,i) => SVC_COLORS[i % SVC_COLORS.length]),
+              borderColor: '#0f172a',
+              borderWidth: 4,
+              hoverOffset: 14,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            cutout: '62%',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(15,23,42,0.92)',
+                titleColor: '#e2e8f0',
+                bodyColor: '#94a3b8',
+                borderColor: 'rgba(255,255,255,0.08)',
+                borderWidth: 1,
+                padding: 10,
+                callbacks: {
+                  label: ctx => ` ${ctx.label}: ${ctx.raw} (${total > 0 ? Math.round(ctx.raw/total*100) : 0}%)`
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // ── Venue Pie chart ──
+    const venueCtx = document.getElementById('sr-venue-canvas');
+    if (venueCtx && typeof Chart !== 'undefined') {
+      if (!venueLabels.length) {
+        venueCtx.parentElement.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:40px 0;">No venue preference data recorded yet.</div>`;
+      } else {
+        const vTotal = venueValues.reduce((a, b) => a + b, 0);
+        _srVenueChart = new Chart(venueCtx, {
+          type: 'doughnut',
+          data: {
+            labels: venueLabels,
+            datasets: [{
+              data: venueValues,
+              backgroundColor: venueLabels.map((_, i) => VENUE_COLORS[i % VENUE_COLORS.length]),
+              borderColor: '#0f172a',
+              borderWidth: 4,
+              hoverOffset: 14,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            cutout: '62%',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(15,23,42,0.92)',
+                titleColor: '#e2e8f0',
+                bodyColor: '#94a3b8',
+                borderColor: 'rgba(255,255,255,0.08)',
+                borderWidth: 1,
+                padding: 10,
+                callbacks: {
+                  label: ctx => ` ${ctx.label}: ${ctx.raw} vote${ctx.raw !== 1 ? 's' : ''} (${vTotal > 0 ? Math.round(ctx.raw / vTotal * 100) : 0}%)`
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // ── Theme Pie chart ──
+    const themeCtx = document.getElementById('sr-theme-canvas');
+    if (themeCtx && typeof Chart !== 'undefined') {
+      if (!themeLabels.length) {
+        themeCtx.parentElement.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:40px 0;">No theme preference data recorded yet.</div>`;
+      } else {
+        const tTotal = themeValues.reduce((a, b) => a + b, 0);
+        _srThemeChart = new Chart(themeCtx, {
+          type: 'doughnut',
+          data: {
+            labels: themeLabels,
+            datasets: [{
+              data: themeValues,
+              backgroundColor: themeLabels.map((_, i) => THEME_COLORS[i % THEME_COLORS.length]),
+              borderColor: '#0f172a',
+              borderWidth: 4,
+              hoverOffset: 14,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            cutout: '62%',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(15,23,42,0.92)',
+                titleColor: '#e2e8f0',
+                bodyColor: '#94a3b8',
+                borderColor: 'rgba(255,255,255,0.08)',
+                borderWidth: 1,
+                padding: 10,
+                callbacks: {
+                  label: ctx => ` ${ctx.label}: ${ctx.raw} vote${ctx.raw !== 1 ? 's' : ''} (${tTotal > 0 ? Math.round(ctx.raw / tTotal * 100) : 0}%)`
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // ── Day Tour vs Overnight Pie chart ──
+    const tourCtx = document.getElementById('sr-tour-canvas');
+    if (tourCtx && typeof Chart !== 'undefined') {
+      if (!dayTour && !overnight) {
+        tourCtx.parentElement.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:40px 0;">No tour type data recorded yet.</div>`;
+      } else {
+        const tourTotal = dayTour + overnight;
+        _srTourChart = new Chart(tourCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Overnight', 'Day Tour'],
+            datasets: [{
+              data: [overnight, dayTour],
+              backgroundColor: ['#fbbf24', '#f87171'],
+              borderColor: '#0f172a',
+              borderWidth: 4,
+              hoverOffset: 14,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            cutout: '62%',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(15,23,42,0.92)',
+                titleColor: '#e2e8f0',
+                bodyColor: '#94a3b8',
+                borderColor: 'rgba(255,255,255,0.08)',
+                borderWidth: 1,
+                padding: 10,
+                callbacks: {
+                  label: ctx => ` ${ctx.label}: ${ctx.raw} (${tourTotal > 0 ? Math.round(ctx.raw / tourTotal * 100) : 0}%)`
                 }
               }
             }
@@ -5220,6 +5914,22 @@ function renderSurveyResultsPage() {
 }
 
 // ──────────────────────────────────────────────
+// ──────────────────────────────────────────────
+// NAME RESOLUTION HELPER
+// ──────────────────────────────────────────────
+// Converts "Firstname.Lastname@ibm.com" → "Firstname Lastname"
+// Used when Monday.com returns "Incoming form answer" as the item name.
+function resolveNameFromEmail(name, email) {
+  const placeholder = (name || '').trim().toLowerCase();
+  const isPlaceholder = !placeholder || placeholder === 'incoming form answer';
+  if (!isPlaceholder) return name.trim();
+  // Derive from email: take the local part before @, split on dot, capitalise each word
+  const local = (email || '').split('@')[0].trim();
+  if (!local) return name.trim(); // can't resolve — keep original
+  return local.split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+// ──────────────────────────────────────────────
 // MONDAY.COM SYNC
 // ──────────────────────────────────────────────
 const MONDAY_API_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjcwMDEwOTc5MywiYWFpIjoxMSwidWlkIjo2Njc0NjIyOSwiaWFkIjoiMjAyNi0wOS0wM1QxNDo1NTo0NS44NTBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MTM1MzY5ODEsInJnbiI6InVzZTEifQ.LcEDVhxnSTbcSumOwsgnDL84_Nmy7IQ535gBCpCBDuM';
@@ -5227,10 +5937,13 @@ const MONDAY_BOARD_ID  = '18429558495'; // ODC SEET Yearend Party
 
 // Column ID → field mapping for ODC SEET Yearend Party board
 const MONDAY_COL_MAP = {
-  emailulmvrvwk:        'email',   // Email
-  single_select3vv68hv: 'attend',  // Will you attend? (Yes/No)
-  single_select7zfnxfz: 'service', // Service Line
-  single_selectihumw27: 'date',    // Preferred date
+  emailulmvrvwk:          'email',      // Email
+  single_select3vv68hv:   'attend',     // Will you be able to attend?
+  single_select7zfnxfz:   'service',    // Service Line
+  single_selectihumw27:   'date',       // Preferred date
+  multi_selectf9953y2n:   'venue',      // Top venue choice (multi-select, up to 2)
+  single_selectebtb3bn:   'partyTheme', // Preferred Party Theme
+  single_selectwoqs24d:   'tourType',   // Day Tour or Overnight (includes plus-one variants)
 };
 
 function syncFromMonday() {
@@ -5243,7 +5956,7 @@ function syncFromMonday() {
         items {
           id
           name
-          column_values(ids: ["emailulmvrvwk","single_select3vv68hv","single_select7zfnxfz","single_selectihumw27"]) {
+          column_values(ids: ["emailulmvrvwk","single_select3vv68hv","single_select7zfnxfz","single_selectihumw27","multi_selectf9953y2n","single_selectebtb3bn","single_selectwoqs24d"]) {
             id
             text
           }
@@ -5273,13 +5986,15 @@ function syncFromMonday() {
       return;
     }
 
-    // Build responses array
+    // Build responses array — resolve name from email if Monday returns placeholder
     const responses = items.map(item => {
       const r = { id: item.id, name: item.name };
       item.column_values.forEach(cv => {
         const field = MONDAY_COL_MAP[cv.id];
         if (field) r[field] = cv.text || '';
       });
+      // If Monday sends "Incoming form answer" (or blank), derive name from email
+      r.name = resolveNameFromEmail(r.name, r.email);
       return r;
     });
 
@@ -5635,19 +6350,15 @@ function renderOverview() {
   if (!actData().cars.length) {
     carEl.innerHTML = emptyState('No car plans yet','Add cars in the Car Seat Plan section','🚗');
   } else {
-    const typeIcon = {Sedan:'🚗',SUV:'🚙',Van:'🚐',Limo:'🚘',Truck:'🛻'};
     carEl.innerHTML = actData().cars.map(car => {
-      // Build seat layout rows
-      // Row 0: driver seat (index 0) + front passenger (index 1)
-      // Remaining seats split into rows of 2 (with aisle)
       const seats = car.seats;
-      const seatCount = car.seatCount;
+      const passengerSeats = car.seatCount - 1;
 
       function seatCell(idx, isDriver) {
-        const name = seats[idx];
+        const name = isDriver ? car.driver : seats[idx];
         const cls = isDriver ? 'driver' : (name ? 'occupied' : 'empty');
-        const icon = isDriver ? '🧑‍✈️' : (name ? '🪑' : '🪑');
-        const label = isDriver ? (car.driver || 'Driver') : (name || `S${idx+1}`);
+        const icon = isDriver ? '🧑‍✈️' : '🪑';
+        const label = name || (isDriver ? 'Driver' : `S${idx+1}`);
         const clickIdx = isDriver ? -1 : idx;
         return `<div class="seat-vis ${cls}" style="cursor:pointer;" title="${isDriver?'Edit driver':'Edit seat '+(idx+1)}" onclick="openAssignSeat('${car.id}',${clickIdx})">
           <div class="seat-vis-icon">${icon}</div>
@@ -5656,32 +6367,31 @@ function renderOverview() {
       }
 
       let rows = '';
-      // Front row: driver + front passenger
-      if (seatCount >= 1) {
-        rows += `<div class="car-seat-row">
-          ${seatCell(0, true)}
-          <div class="seat-aisle">│</div>
-          ${seatCount >= 2 ? seatCell(1, false) : ''}
-        </div>`;
-      }
-      // Back rows: pairs
-      for (let i = 2; i < seatCount; i += 2) {
-        const hasRight = i+1 < seatCount;
+      // Front row: driver + seat 0 (first passenger)
+      rows += `<div class="car-seat-row">
+        ${seatCell(0, true)}
+        <div class="seat-aisle">│</div>
+        ${passengerSeats >= 1 ? seatCell(0, false) : ''}
+      </div>`;
+      // Back rows: pairs of passenger seats (indices 1+)
+      for (let i = 1; i < passengerSeats; i += 2) {
+        const hasRight = i + 1 < passengerSeats;
         rows += `<div class="car-seat-row">
           ${seatCell(i, false)}
           <div class="seat-aisle">│</div>
-          ${hasRight ? seatCell(i+1, false) : '<div style="width:58px;"></div>'}
+          ${hasRight ? seatCell(i+1, false) : '<div style="width:72px;"></div>'}
         </div>`;
       }
 
-      const occupied = seats.filter(Boolean).length + (car.driver ? 1 : 0);
+      const passOccupied = seats.filter(Boolean).length;
+      const displayName = carDisplayName(car);
       return `
         <div class="car-overview-card">
           <div class="car-overview-header">
-            <div class="car-overview-icon">${typeIcon[car.type]||'🚗'}</div>
+            <div class="car-overview-icon">🚗</div>
             <div class="car-overview-meta">
-              <div class="car-overview-name">${car.name}</div>
-              <div class="car-overview-sub">${car.type}${car.driver?' · Driver: '+car.driver:''} · ${car.seats.filter(Boolean).length}/${seatCount} passengers</div>
+              <div class="car-overview-name">${displayName}</div>
+              <div class="car-overview-sub">${car.driver ? '🧑‍✈️ ' + car.driver : 'No driver'} · ${passOccupied}/${passengerSeats} Passenger${passengerSeats!==1?'s':''}</div>
             </div>
           </div>
           <div class="car-seat-visual">
@@ -6567,16 +7277,20 @@ function renderCarVisualize() {
     return;
   }
 
-  const typeIcon = {Sedan:'🚗',SUV:'🚙',Van:'🚐',Limo:'🚘',Truck:'🛻'};
-
-  const listHtml = cars.map(c => `
+  const listHtml = cars.map(c => {
+    const dn = carDisplayName(c);
+    const passOcc = (c.seats||[]).filter(Boolean).length;
+    const passTot = c.seatCount - 1;
+    return `
     <div class="vis-car-list-item${c.id===_selectedCarId?' selected':''}" onclick="selectVisCar('${c.id}')">
-      <div class="vis-car-list-icon">${typeIcon[c.type]||'🚗'}</div>
-      <div>
-        <div>${c.name}</div>
-        <div class="vis-car-list-sub">${c.type} · ${c.seatCount} seats${c.driver?' · Driver: '+c.driver:''}</div>
+      <div class="vis-car-list-icon">🚗</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:600;">${dn}</div>
+        <div class="vis-car-list-sub">${c.driver||'No driver'} · ${passOcc}/${passTot} Passengers</div>
       </div>
-    </div>`).join('');
+      <button class="btn btn-danger btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();deleteCar('${c.id}')">🗑️</button>
+    </div>`;
+  }).join('');
 
   const car = cars.find(c => c.id === _selectedCarId) || cars[0];
   const diagramHtml = car ? buildCarDiagram(car) : `<div style="font-size:13px;color:var(--muted);">Select a car to visualize</div>`;
@@ -6595,46 +7309,80 @@ function renderCarVisualize() {
 
 function selectVisCar(carId) {
   _selectedCarId = carId;
-  // re-render just the list selection + diagram
   renderCarVisualize();
 }
 
 function buildCarDiagram(car) {
-  const seats  = car.seats || [];
-  const count  = car.seatCount || seats.length;
-  const typeIcon = {Sedan:'🚗',SUV:'🚙',Van:'🚐',Limo:'🚘',Truck:'🛻'};
+  const seats = car.seats || [];
+  const total = car.seatCount || 4; // total including driver
+
+  // Seat-row layout map: total seats → array of passenger counts per "column"
+  // Each column is rendered left→right (front→back of car, landscape view)
+  // First column always has driver + 1 (or 0) front passenger
+  // Remaining columns are rear rows
+  const LAYOUT = {
+    2: [[1, 0]],           // driver only (1 passenger seat = 0 here because front row handled separately)
+    4: [[1], [1]],         // 2+2: front-pass col, rear col each 1 per side
+    5: [[1], [2]],         // 2+3: front 1 pass, rear bench 2 pass
+    6: [[1], [2], [1]],    // 2+3+... variants
+    7: [[1], [2], [2]],    // 2+3+2
+    8: [[1], [2], [2], [1]], // 2+3+2+1 or similar
+  };
+
+  // Build a flat array of seat slot definitions
+  // Each slot: { isDriver, passengerIdx }
+  // Driver is always index -1, front-right passenger is index 0,
+  // then rear rows follow
+
+  // Use layout to build columns: each column = array of seat descriptors
+  // col 0: [driver, front-passenger(idx 0)] — always
+  // col 1+: rear row seats
+
+  let pIdx = 0; // passenger seat array index
 
   function visSeat(idx, isDriver) {
-    const name  = isDriver ? (car.driver || 'Driver') : (seats[idx] || '');
+    const name  = isDriver ? (car.driver || '') : (seats[idx] || '');
     const cls   = isDriver ? 'driver' : (name ? 'occupied' : 'empty');
-    const label = name || (isDriver ? 'Driver' : `S${idx+1}`);
-    return `<div class="vis-seat ${cls}">
-      <div class="vis-seat-name">${label}</div>
-    </div>`;
+    const label = name || (isDriver ? 'Driver' : `S${idx + 1}`);
+    return `<div class="vis-seat ${cls}"><div class="vis-seat-name">${label}</div></div>`;
   }
 
-  let rows = '';
-  // Front row with steering wheel overlay
-  rows += `<div class="vis-car-row" style="position:relative;">
-    ${count >= 1 ? visSeat(0, true) : ''}
-    <div class="vis-car-aisle"></div>
-    ${count >= 2 ? visSeat(1, false) : '<div style="width:58px;"></div>'}
-    <div class="vis-steering"></div>
+  // Build columns: each column = one seat-row rendered vertically (driver row + rear rows)
+  const layout = LAYOUT[total] || LAYOUT[4];
+  const colsHtml = [];
+  const maxPassenger = total - 1; // exclude driver
+
+  // Column 0: driver (top) + front passenger (bottom)
+  const frontPassHtml = pIdx < maxPassenger ? visSeat(pIdx++, false) : '';
+  const col0 = `<div class="vis-seat-col">
+    ${visSeat(0, true)}
+    ${frontPassHtml ? `<div class="vis-aisle-h"></div>${frontPassHtml}` : ''}
   </div>`;
+  colsHtml.push(`<div style="position:relative;">${col0}<div class="vis-steering-h"></div></div>`);
 
-  for (let i = 2; i < count; i += 2) {
-    const hasRight = i + 1 < count;
-    rows += `<div class="vis-car-row">
-      ${visSeat(i, false)}
-      <div class="vis-car-aisle">│</div>
-      ${hasRight ? visSeat(i+1, false) : '<div style="width:58px;"></div>'}
-    </div>`;
+  // Remaining rear columns from layout (skip first front-row entry)
+  for (const colDef of layout.slice(1)) {
+    const n = colDef[0]; // seats in this rear column
+    let colSeats = '';
+    for (let r = 0; r < n; r++) {
+      if (r > 0) colSeats += `<div class="vis-aisle-h"></div>`;
+      if (pIdx < maxPassenger) colSeats += visSeat(pIdx++, false);
+    }
+    colsHtml.push(`<div class="vis-seat-col">${colSeats}</div>`);
   }
 
+  // Inter-column separators (aisle lines between col groups)
+  const shellInner = colsHtml.join(`<div style="width:10px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted2);">│</div>`);
+
+  const displayName = carDisplayName(car);
   return `
     <div class="vis-car-body">
-      <div class="vis-car-name-plate">${typeIcon[car.type]||'🚗'} ${car.name} <span>(Top View)</span></div>
-      <div class="vis-car-shell">${rows}</div>
+      <div class="vis-car-name-plate">🚗 ${displayName} <span>(Side view — front left)</span></div>
+      <div class="vis-car-horiz">
+        <div class="vis-car-bonnet">FRONT</div>
+        <div class="vis-car-shell-h">${shellInner}</div>
+        <div class="vis-car-boot"></div>
+      </div>
     </div>`;
 }
 
