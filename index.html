@@ -2175,19 +2175,6 @@
           <option value="">— None —</option>
         </select>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <select class="form-select" id="act-category">
-            <option value="Ceremony">💍 Ceremony</option>
-            <option value="Reception">🥂 Reception</option>
-            <option value="Pre-Event">🌸 Pre-Event</option>
-            <option value="Post-Event">🎉 Post-Event</option>
-            <option value="Game">🎮 Game</option>
-            <option value="Other">📌 Other</option>
-          </select>
-        </div>
-      </div>
       <div class="form-group">
         <label class="form-label">Activity Theme</label>
         <div class="theme-picker" id="act-theme-picker">
@@ -2853,7 +2840,6 @@ function openEditActivity(id) {
   document.getElementById('act-date').value     = a.date || '';
   document.getElementById('act-time').value     = a.time || '';
   document.getElementById('act-location').value = a.locationId || '';
-  document.getElementById('act-category').value = a.category;
   document.getElementById('act-desc').value     = a.desc || '';
   selectTheme(a.theme || 'Party');
   document.getElementById('modal-activity-title').textContent = '✏️ Edit Activity';
@@ -2874,7 +2860,6 @@ function saveActivity() {
       a.date       = document.getElementById('act-date').value;
       a.time       = document.getElementById('act-time').value;
       a.locationId = document.getElementById('act-location').value;
-      a.category   = document.getElementById('act-category').value;
       a.theme      = document.getElementById('act-theme').value;
       a.icon       = '💍';
       a.desc       = document.getElementById('act-desc').value.trim();
@@ -2895,7 +2880,6 @@ function saveActivity() {
       date:       document.getElementById('act-date').value,
       time:       document.getElementById('act-time').value,
       locationId: document.getElementById('act-location').value,
-      category:   document.getElementById('act-category').value,
       theme:      document.getElementById('act-theme').value,
       icon:       '💍',
       desc:       document.getElementById('act-desc').value.trim(),
@@ -3161,7 +3145,6 @@ function renderActivityItem(a) {
         <div class="activity-name">${a.name}</div>
         <div class="activity-meta">
           <span class="tag tag-blue">${a.quarter}</span>
-          <span class="tag ${tagColor(a.category)}">${a.category}</span>
           ${dateStr?`<span>📅 ${dateStr}</span>`:''}
           ${a.time?`<span>⏰ ${a.time}</span>`:''}
           ${loc?`<span>${loc}</span>`:''}
@@ -3215,7 +3198,7 @@ function renderDashboard() {
   recent.innerHTML = `<div class="timeline">${sorted.map(a=>`
     <div class="timeline-item" style="cursor:pointer;" onclick="navigateToActivity('${a.id}')" title="Open overview for this activity">
       <div class="timeline-dot"></div>
-      <div class="timeline-date">${a.quarter} · ${a.category}</div>
+      <div class="timeline-date">${a.quarter}${a.theme ? ' · ' + a.theme : ''}</div>
       <div class="timeline-content">${a.name}</div>
       ${a.date?`<div class="timeline-sub">📅 ${new Date(a.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric'})}</div>`:''}
     </div>`).join('')}
@@ -3614,7 +3597,7 @@ function renderOverview() {
       const selAct = currentActivityId ? activities.find(a => a.id === currentActivityId) : null;
       if (titleEl) titleEl.textContent = selAct ? selAct.name : 'Full Plan Overview';
       if (subEl) subEl.textContent = selAct
-        ? `${selAct.quarter} · ${selAct.category}${selAct.date ? ' · ' + new Date(selAct.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : ''}`
+        ? `${selAct.quarter}${selAct.theme ? ' · ' + selAct.theme : ''}${selAct.date ? ' · ' + new Date(selAct.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : ''}`
         : 'Select an activity to view its overview';
       selEl.innerHTML = `<div class="act-selector">
         ${activities.map(a => {
@@ -3718,7 +3701,6 @@ function renderOverview() {
               <div class="ov-item-name">${a.name}</div>
               <div class="ov-item-meta">
                 <span class="tag tag-blue">${a.quarter}</span>
-                <span class="tag ${tagColor(a.category)}">${a.category}</span>
                 ${dateStr?`<span>📅 ${dateStr}</span>`:''}
                 ${a.time?`<span>⏰ ${a.time}</span>`:''}
                 ${loc?`<span>${loc}</span>`:''}
