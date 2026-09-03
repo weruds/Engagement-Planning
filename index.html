@@ -2295,9 +2295,8 @@
       <div class="section-header">
         <div>
           <div class="section-title" id="overview-page-title">Full Plan Overview</div>
-          <div class="section-subtitle" id="overview-page-subtitle">Your complete engagement plan at a glance</div>
+          <div class="section-subtitle" id="overview-page-subtitle"></div>
         </div>
-        <button class="btn btn-ghost" onclick="openModal('modal-setdate')">📅 Set Date</button>
       </div>
 
       <!-- Activity selector -->
@@ -5227,13 +5226,7 @@ function renderCountdownHero(containerId) {
   const selAct = currentActivityId ? (state.activities||[]).find(a => a.id === currentActivityId) : null;
   const actDate = selAct ? (selAct.dateStart || selAct.date || null) : (state.engagement ? state.engagement.date : null);
   if (!actDate && !state.engagement) {
-    el.innerHTML = `
-      <div class="countdown-hero">
-        <div class="countdown-label">Countdown</div>
-        <div class="countdown-event-name">No engagement date set</div>
-        <div class="countdown-event-date">Set your big day to start the countdown</div>
-        <button class="btn btn-primary countdown-set-btn" onclick="openModal('modal-setdate')">📅 Set Engagement Date</button>
-      </div>`;
+    el.innerHTML = '';
     return;
   }
   const name = selAct ? selAct.name : (state.engagement ? state.engagement.name || 'Our Engagement' : 'Our Engagement');
@@ -5382,7 +5375,7 @@ function renderOverview() {
       if (titleEl) titleEl.textContent = selAct ? selAct.name : 'Full Plan Overview';
       if (subEl) subEl.textContent = selAct
         ? `${selAct.quarter}${selAct.theme ? ' · ' + selAct.theme : ''}${selAct.date ? ' · ' + new Date(selAct.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : ''}`
-        : 'Select an activity to view its overview';
+        : '';
       selEl.innerHTML = `<div class="act-selector">
         ${activities.map(a => {
           const isActive = a.id === currentActivityId;
