@@ -2432,10 +2432,7 @@
           <div class="section-title">People</div>
           <div class="section-subtitle">Employee list across SEET departments</div>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-ghost" onclick="importPeopleFromSurvey()" title="Import unique names from survey responses">📋 Import from Survey</button>
-          <button class="btn btn-primary" onclick="openModal('modal-person')">＋ Add Person</button>
-        </div>
+        <div id="people-header-actions" style="display:flex;gap:8px;"></div>
       </div>
       <div class="people-filter-row" id="people-filter-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"></div>
       <div style="display:flex;flex-direction:column;gap:10px;" id="people-list"></div>
@@ -4465,7 +4462,13 @@ let _peopleFilterDept = 'All';
 function renderPeople() {
   const el = document.getElementById('people-list');
   const filterRow = document.getElementById('people-filter-row');
+  const actionsRow = document.getElementById('people-header-actions');
   const depts = ['All', 'SEET - Dev', 'SEET - QE', 'SEET - OneInfra', 'Other'];
+  if (actionsRow) {
+    actionsRow.innerHTML = `
+      <button class="btn btn-ghost" onclick="importPeopleFromSurvey()" title="Import unique names from survey responses">📋 Import from Survey</button>
+      <button class="btn btn-primary" onclick="openModal('modal-person')">＋ Add Person</button>`;
+  }
   if (filterRow) {
     filterRow.innerHTML = depts.map(d => `
       <button class="btn btn-sm ${_peopleFilterDept===d?'btn-primary':'btn-ghost'}" onclick="_peopleFilterDept='${d}';renderPeople();">${d==='All'?'👥 All':deptIcon(d)+' '+d}</button>
@@ -4526,25 +4529,30 @@ function importPeopleFromSurvey() {
     if (!snap.exists) { showToast('No survey data found.', '⚠️'); return; }
     const responses = snap.data().responses || [];
     if (!state.people) state.people = [];
-    const existingNames = new Set((state.people).map(p => p.name.trim().toLowerCase()));
+    // Dedup key = name (lowercase) + "|" + dept (lowercase)
+    const existingKeys = new Set(
+      (state.people).map(p => (p.name.trim() + '|' + (p.dept||'Other')).toLowerCase())
+    );
     const seen = new Set();
     let added = 0;
     responses.forEach(r => {
       const name = (r.name || '').trim();
       if (!name) return;
-      const key = name.toLowerCase();
-      if (existingNames.has(key) || seen.has(key)) return;
+      // Map survey serviceLine / dept fields to People dept
+      const dept = r.serviceLine || r.service_line || r.dept || r.department || 'Other';
+      const key = (name + '|' + dept).toLowerCase();
+      if (existingKeys.has(key) || seen.has(key)) return;
       seen.add(key);
       state.people.push({
         id:        uid(),
         name:      name,
-        dept:      r.dept || 'Other',
+        dept:      dept,
         role:      '',
         contact:   '',
         email:     r.email || '',
         createdAt: new Date().toISOString(),
       });
-      existingNames.add(key);
+      existingKeys.add(key);
       added++;
     });
     if (added === 0) {
