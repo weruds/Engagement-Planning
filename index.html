@@ -261,12 +261,50 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px 20px;
-    display: flex; align-items: flex-start; gap: 14px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
     transition: all 0.18s;
     cursor: pointer;
   }
   .activity-card:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .activity-card-body { padding: 16px 20px; display: flex; align-items: flex-start; gap: 14px; }
+  /* ── Theme banners ── */
+  .theme-banner {
+    width: 100%; height: 56px; flex-shrink: 0; position: relative; overflow: hidden;
+    display: flex; align-items: center; padding: 0 16px; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.3px;
+  }
+  .theme-banner-label { position: relative; z-index: 1; }
+  .theme-banner svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  /* Party */
+  .theme-party { background: linear-gradient(120deg,#7c3aed,#c026d3,#f43f5e); color: #fff; }
+  /* Casual */
+  .theme-casual { background: linear-gradient(120deg,#0ea5e9,#3b82f6,#6366f1); color: #fff; }
+  /* Beach */
+  .theme-beach { background: linear-gradient(120deg,#0891b2,#06b6d4,#38bdf8); color: #fff; }
+  /* Indoor */
+  .theme-indoor { background: linear-gradient(120deg,#6d28d9,#4f46e5,#3730a3); color: #ede9fe; }
+  /* Outdoor */
+  .theme-outdoor { background: linear-gradient(120deg,#16a34a,#15803d,#166534); color: #dcfce7; }
+  /* Recreation */
+  .theme-recreation { background: linear-gradient(120deg,#ea580c,#d97706,#ca8a04); color: #fff; }
+  /* Theme picker chips */
+  .theme-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .theme-chip {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 20px; border: 2px solid transparent;
+    cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.15s;
+    background: var(--surface2);
+  }
+  .theme-chip:hover { border-color: var(--border2); }
+  .theme-chip.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(139,92,246,0.25); }
+  .theme-chip-swatch { width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; }
+  .tc-party      { background: linear-gradient(120deg,#7c3aed,#c026d3,#f43f5e); }
+  .tc-casual     { background: linear-gradient(120deg,#0ea5e9,#3b82f6,#6366f1); }
+  .tc-beach      { background: linear-gradient(120deg,#0891b2,#06b6d4,#38bdf8); }
+  .tc-indoor     { background: linear-gradient(120deg,#6d28d9,#4f46e5,#3730a3); }
+  .tc-outdoor    { background: linear-gradient(120deg,#16a34a,#15803d,#166534); }
+  .tc-recreation { background: linear-gradient(120deg,#ea580c,#d97706,#ca8a04); }
   .activity-icon {
     width: 40px; height: 40px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
@@ -528,11 +566,6 @@
     .stats-row { grid-template-columns: repeat(2, 1fr); }
     .stat-value { font-size: 22px; }
 
-    /* Budget — stack vertically on small screens */
-    .budget-hero-row { flex-direction: column; align-items: stretch; gap: 12px; }
-    .budget-stat { min-width: unset; }
-    .budget-stat-value { font-size: 20px; }
-
     /* Expense table — horizontal scroll */
     .expense-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
@@ -578,16 +611,15 @@
     .stats-row { grid-template-columns: 1fr 1fr; }
     .countdown-unit { padding: 8px 8px; min-width: 52px; }
     .countdown-num { font-size: 22px; }
-    .budget-stat-value { font-size: 17px; }
   }
 
   /* ─── GLOW LINE ─── */
   .glow-line {
     height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--purple));
+    background: var(--ov-grad, linear-gradient(90deg, var(--accent), var(--purple)));
     margin-bottom: 24px;
     border-radius: 2px;
-    opacity: 0.35;
+    opacity: 0.45;
   }
 
   /* Timeline */
@@ -613,9 +645,22 @@
   .countdown-hero::before {
     content: '';
     position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.07), transparent 60%);
+    background: var(--theme-glow, radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.07), transparent 60%));
     pointer-events: none;
   }
+  /* Theme-coloured top border accent on countdown hero */
+  .countdown-hero::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--theme-bar, var(--accent));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  /* Per-theme glow + bar variables */
+  .countdown-hero.th-party      { --theme-glow: radial-gradient(ellipse at 50% 0%, rgba(192,38,211,0.13), transparent 65%); --theme-bar: linear-gradient(90deg,#7c3aed,#c026d3,#f43f5e); }
+  .countdown-hero.th-casual     { --theme-glow: radial-gradient(ellipse at 50% 0%, rgba(14,165,233,0.12), transparent 65%); --theme-bar: linear-gradient(90deg,#0ea5e9,#3b82f6,#6366f1); }
+  .countdown-hero.th-beach      { --theme-glow: radial-gradient(ellipse at 50% 0%, rgba(6,182,212,0.13), transparent 65%);  --theme-bar: linear-gradient(90deg,#0891b2,#06b6d4,#38bdf8); }
+  .countdown-hero.th-indoor     { --theme-glow: radial-gradient(ellipse at 50% 0%, rgba(109,40,217,0.13), transparent 65%); --theme-bar: linear-gradient(90deg,#6d28d9,#4f46e5,#3730a3); }
+  .countdown-hero.th-outdoor    { --theme-glow: radial-gradient(ellipse at 50% 0%, rgba(22,163,74,0.12), transparent 65%);  --theme-bar: linear-gradient(90deg,#16a34a,#15803d,#166534); }
+  .countdown-hero.th-recreation { --theme-glow: radial-gradient(ellipse at 50% 0%, rgba(234,88,12,0.13), transparent 65%);  --theme-bar: linear-gradient(90deg,#ea580c,#d97706,#ca8a04); }
   .countdown-label {
     font-size: 11px; font-weight: 700; letter-spacing: 2px;
     text-transform: uppercase; color: var(--accent);
@@ -660,6 +705,28 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  .cd-editable {
+    cursor: text;
+    border-radius: 6px;
+    padding: 2px 6px;
+    margin: 0 auto;
+    transition: background 0.15s;
+    display: inline-block;
+  }
+  .cd-editable:hover { background: var(--accent-glow2); outline: 1px dashed var(--accent3); }
+  .cd-inline-input {
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    border-radius: 6px;
+    color: var(--white);
+    font-family: var(--font);
+    font-size: inherit;
+    font-weight: inherit;
+    text-align: center;
+    padding: 4px 10px;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  }
   .countdown-set-btn {
     margin-top: 20px;
     font-size: 12px;
@@ -681,71 +748,230 @@
   .sidebar-cd-lbl { font-size: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
   .sidebar-cd-none { font-size: 11px; color: var(--muted2); }
 
-  /* ─── OVERVIEW PLAN ─── */
-  .overview-section { margin-bottom: 32px; }
-  /* Base title — plain label + underline divider, no flex tricks */
-  .overview-section-title {
-    font-size: 13px; font-weight: 700; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  /* ─── ACTIVITY SELECTOR ─── */
+  .act-selector {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 20px;
   }
-  /* Remove old ::after line — border-bottom replaces it */
-  .overview-section-title::after { display: none; }
-
-  /* ─── BUDGET TRACKER ─── */
-  .budget-hero {
+  .act-sel-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
     background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-lg);
-    padding: 24px 28px;
-    margin-bottom: 24px;
+    font-family: var(--font);
+    font-size: 12px; font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+  }
+  .act-sel-btn:hover { border-color: var(--border2); color: var(--white); }
+  .act-sel-btn.active {
+    background: var(--accent-glow);
+    border-color: rgba(37,99,235,0.3);
+    color: var(--accent);
+  }
+  .act-sel-date { font-size: 10px; color: var(--muted2); font-weight: 400; }
+  .act-sel-btn.active .act-sel-date { color: var(--accent2); }
+  .act-sel-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-party      { background: linear-gradient(135deg,#7c3aed,#f43f5e); }
+  .dot-casual     { background: linear-gradient(135deg,#0ea5e9,#6366f1); }
+  .dot-beach      { background: linear-gradient(135deg,#0891b2,#38bdf8); }
+  .dot-indoor     { background: linear-gradient(135deg,#6d28d9,#3730a3); }
+  .dot-outdoor    { background: linear-gradient(135deg,#16a34a,#166534); }
+  .dot-recreation { background: linear-gradient(135deg,#ea580c,#ca8a04); }
+
+  /* ─── OVERVIEW PLAN ─── */
+
+  /* Stats strip */
+  .ov-stats-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .ov-stat-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
     position: relative; overflow: hidden;
   }
-  .budget-hero::before {
+  .ov-stat-chip::before {
     content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 100% 0%, rgba(34,211,165,0.08), transparent 60%);
-    pointer-events: none;
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+    background: linear-gradient(180deg, var(--accent), var(--purple));
   }
-  .budget-hero-row {
-    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-    margin-bottom: 16px;
-  }
-  .budget-stat { flex: 1; min-width: 100px; }
-  .budget-stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .budget-stat-value { font-size: 26px; font-weight: 800; line-height: 1; }
-  .budget-stat-value.total  { color: var(--white); }
-  .budget-stat-value.spent  { color: var(--danger); }
-  .budget-stat-value.remain.ok   { color: var(--success); }
-  .budget-stat-value.remain.warn { color: var(--warning); }
-  .budget-stat-value.remain.over { color: var(--danger); }
-  .budget-progress-wrap { height: 8px; background: var(--surface3); border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
-  .budget-progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-  .budget-progress-fill.ok   { background: linear-gradient(90deg, var(--accent), var(--success)); }
-  .budget-progress-fill.warn { background: linear-gradient(90deg, var(--warning), var(--accent)); }
-  .budget-progress-fill.over { background: var(--danger); }
-  .budget-pct-label { font-size: 11px; color: var(--muted); }
+  .ov-stat-chip.green::before  { background: linear-gradient(180deg, var(--success), #34d399); }
+  .ov-stat-chip.orange::before { background: linear-gradient(180deg, var(--warning), #fbbf24); }
+  .ov-stat-chip.cyan::before   { background: linear-gradient(180deg, var(--cyan), #22d3ee); }
+  .ov-stat-icon { font-size: 22px; flex-shrink: 0; }
+  .ov-stat-body { flex: 1; min-width: 0; }
+  .ov-stat-value { font-size: 20px; font-weight: 800; color: var(--white); line-height: 1; }
+  .ov-stat-label { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; }
 
-  /* Expense table */
-  .expense-table { width: 100%; border-collapse: collapse; }
-  .expense-table th {
+  /* Accordion panels */
+  .ov-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+  }
+  .ov-panel:hover { box-shadow: var(--shadow); }
+  .ov-panel-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid transparent;
+    transition: background 0.15s, border-color 0.15s;
+    position: relative;
+  }
+  .ov-panel-header::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0;
+    background: var(--ov-grad, linear-gradient(180deg, var(--accent), var(--purple)));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .ov-panel.open > .ov-panel-header::before { opacity: 1; }
+  .ov-panel.open > .ov-panel-header {
+    border-bottom-color: var(--border);
+    background: var(--ov-tint, var(--surface2));
+  }
+  .ov-panel-icon { font-size: 20px; flex-shrink: 0; width: 36px; height: 36px; background: var(--surface3); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .ov-panel-title { font-size: 14px; font-weight: 700; color: var(--white); flex: 1; }
+  .ov-panel-count {
+    font-size: 11px; font-weight: 600;
+    background: var(--surface3); color: var(--muted);
+    padding: 2px 8px; border-radius: 20px;
+    flex-shrink: 0;
+  }
+  .ov-panel.open .ov-panel-count { background: var(--ov-count-bg, var(--accent-glow)); color: var(--ov-count-fg, var(--accent)); }
+
+  /* ── Overview page theme skins ── */
+  #page-overview[data-theme="Party"]      { --ov-grad: linear-gradient(90deg,#7c3aed,#c026d3,#f43f5e); --ov-tint: rgba(192,38,211,0.05); --ov-count-bg: rgba(192,38,211,0.10); --ov-count-fg: #c026d3; --ov-page-glow: rgba(192,38,211,0.06); }
+  #page-overview[data-theme="Casual"]     { --ov-grad: linear-gradient(90deg,#0ea5e9,#3b82f6,#6366f1); --ov-tint: rgba(14,165,233,0.05);  --ov-count-bg: rgba(14,165,233,0.10);  --ov-count-fg: #0ea5e9; --ov-page-glow: rgba(14,165,233,0.05); }
+  #page-overview[data-theme="Beach"]      { --ov-grad: linear-gradient(90deg,#0891b2,#06b6d4,#38bdf8); --ov-tint: rgba(6,182,212,0.05);   --ov-count-bg: rgba(6,182,212,0.10);   --ov-count-fg: #06b6d4; --ov-page-glow: rgba(6,182,212,0.05); }
+  #page-overview[data-theme="Indoor"]     { --ov-grad: linear-gradient(90deg,#6d28d9,#4f46e5,#3730a3); --ov-tint: rgba(109,40,217,0.05);  --ov-count-bg: rgba(109,40,217,0.10);  --ov-count-fg: #6d28d9; --ov-page-glow: rgba(109,40,217,0.06); }
+  #page-overview[data-theme="Outdoor"]    { --ov-grad: linear-gradient(90deg,#16a34a,#15803d,#166534); --ov-tint: rgba(22,163,74,0.05);   --ov-count-bg: rgba(22,163,74,0.10);   --ov-count-fg: #16a34a; --ov-page-glow: rgba(22,163,74,0.05); }
+  #page-overview[data-theme="Recreation"] { --ov-grad: linear-gradient(90deg,#ea580c,#d97706,#ca8a04); --ov-tint: rgba(234,88,12,0.05);   --ov-count-bg: rgba(234,88,12,0.10);   --ov-count-fg: #ea580c; --ov-page-glow: rgba(234,88,12,0.05); }
+  /* Subtle page-level background wash */
+  #page-overview[data-theme] { background: radial-gradient(ellipse at 50% 0%, var(--ov-page-glow, transparent) 0%, transparent 55%); }
+  .ov-panel-action { flex-shrink: 0; }
+  .ov-panel-chevron {
+    font-size: 12px; color: var(--muted); flex-shrink: 0;
+    transition: transform 0.25s ease;
+    margin-left: 4px;
+  }
+  .ov-panel.open .ov-panel-chevron { transform: rotate(180deg); }
+  .ov-panel-body {
+    display: none;
+    padding: 20px;
+  }
+  .ov-panel.open .ov-panel-body { display: block; }
+
+  /* Keep old class for backwards-compat with grocery progress element */
+  .overview-section { margin-bottom: 0; }
+  .overview-section-title { display: none; }
+
+  /* ─── EXPENSE LEDGER ─── */
+  .exp-ledger { width: 100%; font-size: 13px; }
+  .exp-ledger-header {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--border2);
+  }
+  .exp-ledger-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .exp-ledger-summary { display: flex; gap: 20px; flex-wrap: wrap; }
+  .exp-ledger-sum-item { text-align: right; }
+  .exp-ledger-sum-label { font-size: 10px; color: var(--muted2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .exp-ledger-sum-value { font-size: 16px; font-weight: 800; color: var(--danger); }
+  .exp-ledger-sum-value.ok { color: var(--success); }
+
+  .exp-ledger-wrap {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    overflow: hidden;
+  }
+
+  /* Column headers */
+  .exp-table { width: 100%; border-collapse: collapse; }
+  .exp-table thead th {
+    font-size: 10px; font-weight: 700; color: var(--muted2);
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 8px 14px;
+    text-align: left;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .exp-table thead th.num { text-align: right; }
+
+  /* Category group header row */
+  .exp-table tr.exp-group-head td {
+    padding: 7px 14px;
     font-size: 10px; font-weight: 700; color: var(--muted);
     text-transform: uppercase; letter-spacing: 1px;
-    padding: 8px 12px; text-align: left;
-    border-bottom: 1px solid var(--border);
     background: var(--surface2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
   }
-  .expense-table td {
-    padding: 10px 12px; font-size: 13px; color: var(--white);
+
+  /* Data rows */
+  .exp-table tr.exp-row td {
+    padding: 10px 14px;
+    font-size: 13px; color: var(--white);
     border-bottom: 1px solid var(--border);
     vertical-align: middle;
   }
-  .expense-table tr:last-child td { border-bottom: none; }
-  .expense-table tr:hover td { background: var(--surface2); }
-  .expense-cat-pill {
+  .exp-table tr.exp-row:last-of-type td { border-bottom: none; }
+  .exp-table tr.exp-row:hover td { background: var(--surface2); }
+
+  /* Row number */
+  .exp-num { font-size: 10px; color: var(--muted2); font-weight: 600; width: 28px; text-align: right; }
+
+  /* Subtotal row */
+  .exp-table tr.exp-subtotal td {
+    padding: 7px 14px;
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    border-bottom: 2px solid var(--border2);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .exp-table tr.exp-subtotal td.exp-subtotal-amt { color: var(--white); font-size: 13px; text-align: right; }
+
+  /* Grand total row */
+  .exp-table tr.exp-grand-total td {
+    padding: 12px 14px;
+    font-size: 13px; font-weight: 800;
+    background: var(--surface3);
+    color: var(--white);
+    border-top: 2px solid var(--border2);
+  }
+  .exp-table tr.exp-grand-total td.exp-total-amt {
+    font-size: 16px; color: var(--danger);
+    text-align: right; white-space: nowrap;
+  }
+
+  .exp-amount { font-weight: 600; color: var(--danger); white-space: nowrap; text-align: right; }
+  .exp-source-tag { font-size: 10px; color: var(--muted2); font-style: italic; }
+
+  .exp-cat-pill {
     display: inline-block; padding: 2px 8px; border-radius: 20px;
     font-size: 10px; font-weight: 700;
   }
@@ -754,48 +980,46 @@
   .exp-cat-gas        { background: rgba(217,119,6,0.10);  color: var(--warning); }
   .exp-cat-grocery    { background: rgba(8,145,178,0.10);  color: var(--cyan); }
   .exp-cat-other      { background: rgba(37,99,235,0.10);  color: var(--accent); }
+
+  /* Legacy aliases kept so nothing else breaks */
+  .expense-cat-pill { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+  .exp-cat-staycation, .expense-cat-pill.exp-cat-staycation { background: rgba(124,58,237,0.10); color: var(--purple); }
   .expense-amount { font-weight: 700; color: var(--danger); white-space: nowrap; }
-  .expense-table-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
+  .expense-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 
   /* Car visual */
+  /* ── Car overview — compact inline layout ── */
   .car-overview-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 18px;
-    margin-bottom: 12px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
   }
   .car-overview-header {
     display: flex; align-items: center; gap: 10px;
-    margin-bottom: 14px;
+    flex-shrink: 0; min-width: 160px;
   }
   .car-overview-icon {
-    font-size: 24px;
-    width: 44px; height: 44px;
+    font-size: 20px;
+    width: 36px; height: 36px;
     background: var(--surface3);
-    border-radius: 10px;
+    border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
   }
   .car-overview-meta { flex: 1; }
-  .car-overview-name { font-size: 14px; font-weight: 700; color: var(--white); }
-  .car-overview-sub { font-size: 12px; color: var(--muted); }
-  .car-seat-visual {
-    display: grid;
-    gap: 6px;
-  }
-  .car-seat-row { display: flex; gap: 6px; align-items: center; justify-content: center; }
+  .car-overview-name { font-size: 13px; font-weight: 700; color: var(--white); }
+  .car-overview-sub { font-size: 11px; color: var(--muted); }
+  .car-seat-visual { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+  .car-seat-row { display: flex; gap: 5px; align-items: center; }
   .seat-vis {
-    width: 58px; height: 58px;
-    border-radius: 10px;
+    width: 52px; height: 48px;
+    border-radius: 8px;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 600; text-align: center; padding: 4px;
-    line-height: 1.3;
-    transition: all 0.15s;
+    font-size: 9px; font-weight: 600; text-align: center; padding: 3px;
+    line-height: 1.2;
   }
   .seat-vis.driver {
     background: rgba(124,58,237,0.10);
@@ -812,48 +1036,52 @@
     border: 1.5px dashed var(--border2);
     color: var(--muted2);
   }
-  .seat-vis-icon { font-size: 18px; margin-bottom: 2px; }
-  .seat-vis-name { font-size: 9px; word-break: break-word; }
+  .seat-vis-icon { font-size: 15px; margin-bottom: 1px; }
+  .seat-vis-name { font-size: 8px; word-break: break-word; max-width: 48px; }
   .seat-aisle {
-    width: 16px; height: 58px;
+    width: 10px; height: 48px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 8px; color: var(--muted2);
-    letter-spacing: 1px;
+    font-size: 7px; color: var(--muted2);
   }
 
-  /* Room visual */
+  /* ── Room / Bed visual ── */
   .room-overview-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 18px;
-    margin-bottom: 12px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
   }
   .room-overview-header {
     display: flex; align-items: center; gap: 10px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
-  .bed-visual-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .bed-visual-grid { display: flex; flex-wrap: wrap; gap: 8px; }
   .bed-vis {
-    width: 110px;
-    border-radius: var(--radius);
+    flex: 1 1 120px;          /* grow to fill, min 120px */
+    max-width: 200px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
     border: 1px solid var(--border);
   }
   .bed-vis-head {
-    height: 28px;
+    padding: 5px 8px;
     background: var(--surface3);
     display: flex; align-items: center; justify-content: center;
     font-size: 10px; font-weight: 700; color: var(--muted);
     border-bottom: 1px solid var(--border);
+    white-space: nowrap;
   }
   .bed-vis-body {
-    padding: 8px;
+    padding: 8px 10px;
     background: var(--surface2);
-    min-height: 52px;
+    min-height: 48px;
     display: flex; align-items: center; justify-content: center;
     text-align: center;
     font-size: 11px; font-weight: 600;
+    word-break: break-word;
+    white-space: normal;
+    line-height: 1.4;
   }
   .bed-vis.occupied .bed-vis-body { color: var(--success); }
   .bed-vis.empty .bed-vis-body { color: var(--muted2); font-style: italic; }
@@ -1037,6 +1265,215 @@
   .meal-slot-add:hover { color: var(--white); }
   .meal-type-icon { font-size: 14px; }
 
+  /* ─── TOP-VIEW VISUALIZER ─── */
+
+  /* Shared */
+  .vis-wrap { padding: 8px 0; }
+  .vis-btn-active { background: var(--accent-glow) !important; border-color: rgba(37,99,235,0.3) !important; color: var(--accent) !important; }
+
+  /* ── BED VISUALIZER ── */
+  .vis-rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .vis-room {
+    background: var(--surface2);
+    border: 2px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 16px;
+    position: relative;
+  }
+  .vis-room-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .vis-room-type-badge {
+    font-size: 10px; background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: 20px; padding: 1px 7px;
+    color: var(--muted2); font-weight: 600;
+  }
+  /* top-view room floor area */
+  .vis-floor {
+    background: #f8f9ff;
+    border: 1.5px solid var(--border2);
+    border-radius: 8px;
+    padding: 14px 10px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 80px;
+    position: relative;
+  }
+  /* door indicator */
+  .vis-floor::after {
+    content: '🚪';
+    position: absolute; bottom: -10px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+  }
+  /* top-view bed */
+  .vis-bed {
+    background: var(--surface);
+    border: 1.5px solid var(--border2);
+    border-radius: 6px;
+    display: flex; align-items: stretch;
+    overflow: hidden;
+    min-height: 52px;
+  }
+  .vis-bed.occupied { border-color: var(--accent3); background: rgba(37,99,235,0.04); }
+  .vis-bed-headboard {
+    width: 12px;
+    background: var(--border2);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; color: var(--muted2); writing-mode: vertical-rl;
+    letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
+  }
+  .vis-bed.occupied .vis-bed-headboard { background: var(--accent3); }
+  .vis-bed-body {
+    flex: 1; padding: 6px 10px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .vis-bed-num { font-size: 9px; color: var(--muted2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .vis-bed-occupant { font-size: 12px; font-weight: 600; color: var(--white); margin-top: 2px; }
+  .vis-bed.empty .vis-bed-occupant { color: var(--muted2); font-style: italic; font-weight: 400; }
+  .vis-pillow-row { display: flex; gap: 4px; margin-top: 4px; }
+  .vis-pillow {
+    width: 14px; height: 10px; background: var(--surface3);
+    border-radius: 3px; border: 1px solid var(--border);
+  }
+  .vis-bed.occupied .vis-pillow { background: var(--accent3); opacity: 0.5; }
+
+  /* ── CAR VISUALIZER ── */
+  .vis-car-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 600px) { .vis-car-layout { grid-template-columns: 1fr; } }
+
+  .vis-car-list { display: flex; flex-direction: column; gap: 8px; }
+  .vis-car-list-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 13px; font-weight: 600; color: var(--white);
+    transition: all 0.15s;
+  }
+  .vis-car-list-item:hover { border-color: var(--border2); }
+  .vis-car-list-item.selected {
+    background: var(--accent-glow);
+    border-color: rgba(37,99,235,0.35);
+    color: var(--accent);
+  }
+  .vis-car-list-icon { font-size: 20px; }
+  .vis-car-list-sub { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 1px; }
+
+  /* top-view car body */
+  .vis-car-diagram {
+    background: var(--surface2);
+    border: 2px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 20px;
+    min-height: 200px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .vis-car-body {
+    position: relative;
+    width: 160px;
+  }
+  .vis-car-shell {
+    background: linear-gradient(180deg, var(--surface3) 0%, #e8ecff 100%);
+    border: 2px solid var(--border2);
+    border-radius: 24px 24px 18px 18px;
+    padding: 14px 10px 14px;
+    display: flex; flex-direction: column; gap: 6px;
+    position: relative;
+  }
+  /* bonnet */
+  .vis-car-shell::before {
+    content: '';
+    position: absolute; top: -18px; left: 20px; right: 20px;
+    height: 20px;
+    background: var(--surface3);
+    border: 2px solid var(--border2);
+    border-bottom: none;
+    border-radius: 14px 14px 0 0;
+  }
+  /* boot */
+  .vis-car-shell::after {
+    content: '';
+    position: absolute; bottom: -14px; left: 24px; right: 24px;
+    height: 14px;
+    background: var(--surface3);
+    border: 2px solid var(--border2);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+  /* steering wheel */
+  .vis-steering {
+    position: absolute;
+    left: 14px; top: 14px;
+    width: 22px; height: 22px;
+    border: 3px solid var(--accent3);
+    border-radius: 50%;
+    background: var(--surface);
+    z-index: 1;
+  }
+  .vis-steering::after {
+    content: '';
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 8px; height: 2px;
+    background: var(--accent3);
+    border-radius: 1px;
+  }
+  .vis-car-row {
+    display: flex; gap: 6px; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .vis-car-aisle {
+    width: 12px; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; color: var(--muted2);
+  }
+  /* individual seat top-view */
+  .vis-seat {
+    width: 58px; height: 44px;
+    border-radius: 8px 8px 5px 5px;
+    border: 1.5px solid var(--border2);
+    background: var(--surface);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 600; text-align: center; padding: 2px 3px;
+    line-height: 1.2; color: var(--muted);
+    position: relative;
+  }
+  /* headrest bump */
+  .vis-seat::before {
+    content: '';
+    position: absolute; top: -5px; left: 10px; right: 10px;
+    height: 5px;
+    background: var(--border2);
+    border-radius: 4px 4px 0 0;
+  }
+  .vis-seat.driver { background: rgba(124,58,237,0.08); border-color: rgba(124,58,237,0.3); color: var(--purple); }
+  .vis-seat.driver::before { background: rgba(124,58,237,0.25); }
+  .vis-seat.occupied { background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.3); color: var(--accent); }
+  .vis-seat.occupied::before { background: rgba(37,99,235,0.2); }
+  .vis-seat.empty { background: var(--surface2); color: var(--muted2); }
+  .vis-seat-name { font-size: 8px; word-break: break-word; max-width: 54px; }
+  .vis-car-name-plate {
+    text-align: center; margin-bottom: 10px;
+    font-size: 12px; font-weight: 700; color: var(--white);
+  }
+  .vis-car-name-plate span { font-size: 10px; color: var(--muted); font-weight: 400; }
+
   /* ─── FIREBASE STATUS ─── */
   .fb-status-bar {
     padding: 8px 20px;
@@ -1059,16 +1496,6 @@
 <div class="app">
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-mark">
-        <div class="logo-icon">💍</div>
-        <div>
-          <div class="logo-text">EngagePlanner</div>
-          <div class="logo-sub">Your big day, organized.</div>
-        </div>
-      </div>
-    </div>
-
     <div class="sidebar-date">
       <div class="date-chip">
         <div class="date-main" id="sidebar-date-text"></div>
@@ -1287,95 +1714,129 @@
       <div class="glow-line"></div>
       <div class="section-header">
         <div>
-          <div class="section-title">Full Plan Overview</div>
-          <div class="section-subtitle">Your complete engagement plan — countdown, activities, transport & rooms</div>
+          <div class="section-title" id="overview-page-title">Full Plan Overview</div>
+          <div class="section-subtitle" id="overview-page-subtitle">Your complete engagement plan at a glance</div>
         </div>
-        <button class="btn btn-ghost" onclick="openModal('modal-setdate')">📅 Set Engagement Date</button>
+        <button class="btn btn-ghost" onclick="openModal('modal-setdate')">📅 Set Date</button>
       </div>
+
+      <!-- Activity selector -->
+      <div id="overview-activity-selector"></div>
 
       <!-- Countdown Hero -->
       <div id="overview-countdown-hero"></div>
 
-      <!-- Budget Tracker -->
-      <div class="overview-section">
-        <div class="overview-section-title">
-          <span>💰 Budget Tracker</span>
-          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-setbudget')">⚙️ Set Budget</button>
-        </div>
-        <div id="overview-budget"></div>
-      </div>
+      <!-- Stats Strip -->
+      <div class="ov-stats-strip" id="overview-stats-strip"></div>
 
-      <!-- Activities Timeline -->
-      <div class="overview-section">
-        <div class="overview-section-title">
-          <span>📋 All Activities</span>
-          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-activity')">＋ Add Activity</button>
-        </div>
+      <!-- Activities -->
+      <!-- Activities panel hidden — activity name surfaces in the countdown hero -->
+      <div style="display:none" id="panel-activities">
         <div id="overview-activities"></div>
-      </div>
-
-      <!-- Car Seat Plans -->
-      <div class="overview-section">
-        <div class="overview-section-title">
-          <span>🚗 Car Seat Plans</span>
-          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-carseat')">＋ Add Car</button>
-        </div>
-        <div id="overview-cars"></div>
-      </div>
-
-      <!-- Bed Plans -->
-      <div class="overview-section">
-        <div class="overview-section-title">
-          <span>🛏️ Bed Plans</span>
-          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-bed')">＋ Add Room</button>
-        </div>
-        <div id="overview-beds"></div>
-      </div>
-
-      <!-- Games -->
-      <div class="overview-section">
-        <div class="overview-section-title">
-          <span>🎮 Engagement Games</span>
-          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-game')">＋ Add Game</button>
-        </div>
-        <div class="games-overview-grid" id="overview-games"></div>
-      </div>
-
-      <!-- Committee -->
-      <div class="overview-section">
-        <div class="overview-section-title">
-          <span>👥 Organizing Committee</span>
-          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-committee')">＋ New Committee</button>
-        </div>
-        <div class="card-grid" id="overview-committee"></div>
+        <span id="pcount-activities"></span>
       </div>
 
       <!-- Grocery List -->
-      <div class="overview-section">
-        <div class="overview-section-title">
-          <span>🛒 Grocery List</span>
-          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-grocery')">＋ Add Item</button>
+      <div class="ov-panel open" id="panel-grocery">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-grocery')">
+          <div class="ov-panel-icon">🛒</div>
+          <div class="ov-panel-title">Grocery List</div>
+          <span class="ov-panel-count" id="pcount-grocery">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-grocery')">＋ Add</button>
+          <span class="ov-panel-chevron">▼</span>
         </div>
-        <div id="overview-grocery-progress"></div>
-        <div id="overview-grocery"></div>
+        <div class="ov-panel-body">
+          <div id="overview-grocery-progress"></div>
+          <div id="overview-grocery"></div>
+        </div>
       </div>
 
       <!-- Meal Plan -->
-      <div class="overview-section">
-        <div class="overview-section-title">
-          <span>🍽️ Meal Plan</span>
-          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-mealday')">＋ Add Day</button>
+      <div class="ov-panel open" id="panel-meals">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-meals')">
+          <div class="ov-panel-icon">🍽️</div>
+          <div class="ov-panel-title">Meal Plan</div>
+          <span class="ov-panel-count" id="pcount-meals">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-mealday')">＋ Add Day</button>
+          <span class="ov-panel-chevron">▼</span>
         </div>
-        <div id="overview-meals"></div>
+        <div class="ov-panel-body">
+          <div id="overview-meals"></div>
+        </div>
+      </div>
+
+      <!-- Car Seat Plans -->
+      <div class="ov-panel" id="panel-cars">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-cars')">
+          <div class="ov-panel-icon">🚗</div>
+          <div class="ov-panel-title">Car Seat Plans</div>
+          <span class="ov-panel-count" id="pcount-cars">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-carseat')">＋ Add Car</button>
+          <button class="btn btn-ghost btn-sm ov-panel-action" id="cars-vis-btn" onclick="event.stopPropagation();toggleCarVis()">👁 Visualize</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div id="overview-cars"></div>
+          <div id="overview-cars-vis" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Bed Plans -->
+      <div class="ov-panel" id="panel-beds">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-beds')">
+          <div class="ov-panel-icon">🛏️</div>
+          <div class="ov-panel-title">Bed Plans</div>
+          <span class="ov-panel-count" id="pcount-beds">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-bed')">＋ Add Room</button>
+          <button class="btn btn-ghost btn-sm ov-panel-action" id="beds-vis-btn" onclick="event.stopPropagation();toggleBedVis()">👁 Visualize</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div id="overview-beds"></div>
+          <div id="overview-beds-vis" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Games -->
+      <div class="ov-panel" id="panel-games">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-games')">
+          <div class="ov-panel-icon">🎮</div>
+          <div class="ov-panel-title">Engagement Games</div>
+          <span class="ov-panel-count" id="pcount-games">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-game')">＋ Add Game</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div class="games-overview-grid" id="overview-games"></div>
+        </div>
+      </div>
+
+      <!-- Committee -->
+      <div class="ov-panel" id="panel-committee">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-committee')">
+          <div class="ov-panel-icon">👥</div>
+          <div class="ov-panel-title">Organizing Committee</div>
+          <span class="ov-panel-count" id="pcount-committee">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-committee')">＋ New</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div class="card-grid" id="overview-committee"></div>
+        </div>
       </div>
 
       <!-- Expenses -->
-      <div class="overview-section">
-        <div class="overview-section-title">
-          <span>💸 Expenses</span>
-          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-expense')">＋ Add Expense</button>
+      <div class="ov-panel" id="panel-expenses">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-expenses')">
+          <div class="ov-panel-icon">💸</div>
+          <div class="ov-panel-title">Expenses</div>
+          <span class="ov-panel-count" id="pcount-expenses">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-expense')">＋ Add</button>
+          <span class="ov-panel-chevron">▼</span>
         </div>
-        <div id="overview-expenses"></div>
+        <div class="ov-panel-body">
+          <div id="overview-expenses"></div>
+        </div>
       </div>
     </div>
 
@@ -1600,30 +2061,6 @@
 </div>
 
 
-<!-- Set Budget Modal -->
-<div class="modal-overlay" id="modal-setbudget">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">💰 Set Budget</div>
-      <button class="modal-close" onclick="closeModal('modal-setbudget')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Total Budget (₱) *</label>
-        <input class="form-input" id="budget-total" type="number" min="0" placeholder="e.g. 50000" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Budget Label</label>
-        <input class="form-input" id="budget-label" placeholder="e.g. Engagement Party Budget" />
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('modal-setbudget')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveBudget()">Save Budget</button>
-    </div>
-  </div>
-</div>
-
 <!-- Add Expense Modal -->
 <div class="modal-overlay" id="modal-expense">
   <div class="modal">
@@ -1750,10 +2187,18 @@
             <option value="Other">📌 Other</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Icon / Emoji</label>
-          <input class="form-input" id="act-icon" placeholder="💍" maxlength="4" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Activity Theme</label>
+        <div class="theme-picker" id="act-theme-picker">
+          <div class="theme-chip selected" data-theme="Party"      onclick="selectTheme('Party')">      <div class="theme-chip-swatch tc-party"></div>      🎉 Party</div>
+          <div class="theme-chip"          data-theme="Casual"     onclick="selectTheme('Casual')">     <div class="theme-chip-swatch tc-casual"></div>     ☕ Casual</div>
+          <div class="theme-chip"          data-theme="Beach"      onclick="selectTheme('Beach')">      <div class="theme-chip-swatch tc-beach"></div>      🏖️ Beach</div>
+          <div class="theme-chip"          data-theme="Indoor"     onclick="selectTheme('Indoor')">     <div class="theme-chip-swatch tc-indoor"></div>     🏠 Indoor</div>
+          <div class="theme-chip"          data-theme="Outdoor"    onclick="selectTheme('Outdoor')">    <div class="theme-chip-swatch tc-outdoor"></div>    🌿 Outdoor</div>
+          <div class="theme-chip"          data-theme="Recreation" onclick="selectTheme('Recreation')"> <div class="theme-chip-swatch tc-recreation"></div> 🏃 Recreation</div>
         </div>
+        <input type="hidden" id="act-theme" value="Party" />
       </div>
       <div class="form-group">
         <label class="form-label">Description</label>
@@ -1886,6 +2331,19 @@
           <input class="form-input" id="bed-room" placeholder="e.g. Master Suite" />
         </div>
         <div class="form-group">
+          <label class="form-label">Room Type</label>
+          <select class="form-select" id="bed-room-type">
+            <option value="Master">🛏️ Master Room</option>
+            <option value="Single">🛏 Single Room</option>
+            <option value="Twin">🛏🛏 Twin Room</option>
+            <option value="Suite">🌟 Suite</option>
+            <option value="Common">🏠 Common Area</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="grid-column:1">
           <label class="form-label">Bed Count</label>
           <select class="form-select" id="bed-count">
             <option value="1">1 bed</option>
@@ -2000,6 +2458,26 @@
   </div>
 </div>
 
+<!-- Assign Bed Modal -->
+<div class="modal-overlay" id="modal-assign-bed">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="assign-bed-title">Assign Bed</div>
+      <button class="modal-close" onclick="closeModal('modal-assign-bed')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Occupant(s)</label>
+        <input class="form-input" id="assign-bed-name" placeholder="e.g. Alice & Bob" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-assign-bed')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAssignBed()">Assign</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ──────────────────────────────────────────────
 // FIREBASE (Firestore — hardcoded config)
@@ -2042,16 +2520,9 @@ function initFirebase() {
     _fbUnsubscribe = _fbDocRef.onSnapshot(snapshot => {
       if (snapshot.exists) {
         const data = snapshot.data();
-        state = data;
+        state = migrateState(data);
         state.activities  = state.activities  || [];
         state.locations   = state.locations   || [];
-        state.cars        = state.cars        || [];
-        state.beds        = state.beds        || [];
-        state.games       = state.games       || [];
-        state.committees  = state.committees  || [];
-        state.grocery     = state.grocery     || [];
-        state.meals       = state.meals       || [];
-        state.expenses    = state.expenses    || [];
       } else {
         // Document doesn't exist yet — seed it with current local state
         _fbDocRef.set(state).catch(e => console.warn('Firestore seed error:', e));
@@ -2077,12 +2548,70 @@ function initFirebase() {
 // ──────────────────────────────────────────────
 const STORAGE_KEY = 'engage_planner_v1';
 
+function emptyActData() {
+  return { cars: [], beds: [], games: [], committees: [], grocery: [], meals: [], expenses: [] };
+}
+
+function migrateState(s) {
+  // One-time migration: move flat global arrays into the first activity's sub-object
+  if (s._migrated) return s;
+  const hasFlatData = (s.cars&&s.cars.length) || (s.beds&&s.beds.length) ||
+    (s.games&&s.games.length) || (s.committees&&s.committees.length) ||
+    (s.grocery&&s.grocery.length) || (s.meals&&s.meals.length) || (s.expenses&&s.expenses.length);
+  if (hasFlatData && s.activities && s.activities.length) {
+    const first = s.activities[0];
+    if (!first.cars)       { first.cars       = s.cars       || []; }
+    if (!first.beds)       { first.beds       = s.beds       || []; }
+    if (!first.games)      { first.games      = s.games      || []; }
+    if (!first.committees) { first.committees = s.committees || []; }
+    if (!first.grocery)    { first.grocery    = s.grocery    || []; }
+    if (!first.meals)      { first.meals      = s.meals      || []; }
+    if (!first.expenses)   { first.expenses   = s.expenses   || []; }
+  }
+  // Ensure every activity has sub-arrays
+  (s.activities||[]).forEach(a => {
+    if (!a.cars)       a.cars       = a.cars       || [];
+    if (!a.beds)       a.beds       = a.beds       || [];
+    if (!a.games)      a.games      = a.games      || [];
+    if (!a.committees) a.committees = a.committees || [];
+    if (!a.grocery)    a.grocery    = a.grocery    || [];
+    if (!a.meals)      a.meals      = a.meals      || [];
+    if (!a.expenses)   a.expenses   = a.expenses   || [];
+  });
+  // Remove flat arrays from root (they now live on each activity)
+  delete s.cars; delete s.beds; delete s.games; delete s.committees;
+  delete s.grocery; delete s.meals; delete s.expenses;
+  s._migrated = true;
+  return s;
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return migrateState(JSON.parse(raw));
   } catch(e) {}
-  return { activities: [], locations: [], cars: [], beds: [], games: [], committees: [], grocery: [], meals: [], budget: null, expenses: [] };
+  return { activities: [], locations: [], _migrated: true };
+}
+
+// Returns the sub-data object for the currently selected activity.
+// Falls back to a temporary object attached to state for safety when no activity is selected.
+function actData() {
+  if (currentActivityId) {
+    const a = (state.activities||[]).find(x => x.id === currentActivityId);
+    if (a) {
+      if (!a.cars)       a.cars       = [];
+      if (!a.beds)       a.beds       = [];
+      if (!a.games)      a.games      = [];
+      if (!a.committees) a.committees = [];
+      if (!a.grocery)    a.grocery    = [];
+      if (!a.meals)      a.meals      = [];
+      if (!a.expenses)   a.expenses   = [];
+      return a;
+    }
+  }
+  // No activity selected — use a root-level fallback so nothing crashes
+  if (!state._fallback) state._fallback = emptyActData();
+  return state._fallback;
 }
 
 function saveState() {
@@ -2166,8 +2695,15 @@ const ADD_LABELS = {
 };
 
 let currentPage = 'dashboard';
+let currentActivityId = null; // which activity the overview is scoped to
+
+function navigateToActivity(id) {
+  currentActivityId = id;
+  navigate('overview');
+}
 
 function navigate(page) {
+  if (page !== 'overview') { currentActivityId = null; _bedVisOpen = false; _carVisOpen = false; document.getElementById('page-overview').removeAttribute('data-theme'); }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
@@ -2213,18 +2749,13 @@ function handleTopbarAdd() {
 function openModal(id) {
   document.getElementById(id).classList.add('open');
   // populate location dropdowns
-  if (id === 'modal-activity') populateLocationSelect('act-location');
+  if (id === 'modal-activity') { populateLocationSelect('act-location'); selectTheme(document.getElementById('act-theme').value || 'Party'); }
   if (id === 'modal-bed') populateLocationSelect('bed-location');
   // pre-fill set-date modal with existing values
   if (id === 'modal-setdate' && state.engagement) {
     document.getElementById('setdate-name').value = state.engagement.name || '';
     document.getElementById('setdate-date').value = state.engagement.date || '';
     document.getElementById('setdate-time').value = state.engagement.time || '';
-  }
-  // pre-fill budget modal
-  if (id === 'modal-setbudget' && state.budget) {
-    document.getElementById('budget-total').value = state.budget.total || '';
-    document.getElementById('budget-label').value = state.budget.label || '';
   }
 }
 
@@ -2242,6 +2773,14 @@ function closeModal(id) {
 function clearModalFields(id) {
   document.querySelectorAll(`#${id} input, #${id} textarea`).forEach(el => { el.value = ''; });
   document.querySelectorAll(`#${id} select`).forEach(el => { el.selectedIndex = 0; });
+  if (id === 'modal-activity') selectTheme('Party');
+}
+
+function selectTheme(theme) {
+  document.getElementById('act-theme').value = theme;
+  document.querySelectorAll('#act-theme-picker .theme-chip').forEach(el => {
+    el.classList.toggle('selected', el.dataset.theme === theme);
+  });
 }
 
 // Close modal on overlay click
@@ -2315,8 +2854,8 @@ function openEditActivity(id) {
   document.getElementById('act-time').value     = a.time || '';
   document.getElementById('act-location').value = a.locationId || '';
   document.getElementById('act-category').value = a.category;
-  document.getElementById('act-icon').value     = a.icon || '';
   document.getElementById('act-desc').value     = a.desc || '';
+  selectTheme(a.theme || 'Party');
   document.getElementById('modal-activity-title').textContent = '✏️ Edit Activity';
   document.querySelector('#modal-activity .btn-primary').textContent = 'Save Changes';
   document.getElementById('modal-activity').classList.add('open');
@@ -2336,7 +2875,8 @@ function saveActivity() {
       a.time       = document.getElementById('act-time').value;
       a.locationId = document.getElementById('act-location').value;
       a.category   = document.getElementById('act-category').value;
-      a.icon       = document.getElementById('act-icon').value || '💍';
+      a.theme      = document.getElementById('act-theme').value;
+      a.icon       = '💍';
       a.desc       = document.getElementById('act-desc').value.trim();
     }
     _editActivityId = null;
@@ -2356,7 +2896,8 @@ function saveActivity() {
       time:       document.getElementById('act-time').value,
       locationId: document.getElementById('act-location').value,
       category:   document.getElementById('act-category').value,
-      icon:       document.getElementById('act-icon').value || '💍',
+      theme:      document.getElementById('act-theme').value,
+      icon:       '💍',
       desc:       document.getElementById('act-desc').value.trim(),
       createdAt:  new Date().toISOString(),
     };
@@ -2435,7 +2976,7 @@ function saveCar() {
     type: document.getElementById('car-type').value,
     seats: seatArr,
   };
-  state.cars.push(entry);
+  actData().cars.push(entry);
   saveState();
   closeModal('modal-carseat');
   showToast(`Car "${name}" added!`);
@@ -2444,9 +2985,9 @@ function saveCar() {
 }
 
 function deleteCar(id) {
-  const c = state.cars.find(x=>x.id===id);
+  const c = actData().cars.find(x=>x.id===id);
   if (!c) return;
-  state.cars = state.cars.filter(x=>x.id!==id);
+  actData().cars = actData().cars.filter(x=>x.id!==id);
   saveState();
   showToast(`"${c.name}" removed.`,'🗑️');
   renderPage(currentPage);
@@ -2458,24 +2999,68 @@ function deleteCar(id) {
 // ──────────────────────────────────────────────
 function openAssignSeat(carId, seatIdx) {
   _assignCtx = { carId, seatIdx };
-  const car = state.cars.find(x=>x.id===carId);
-  document.getElementById('assign-seat-title').textContent = `Assign Seat ${seatIdx+1} — ${car.name}`;
-  document.getElementById('assign-seat-name').value = car.seats[seatIdx]||'';
+  const car = actData().cars.find(x=>x.id===carId);
+  if (!car) return;
+  const isDriver = seatIdx === -1;
+  document.getElementById('assign-seat-title').textContent = isDriver
+    ? `Assign Driver — ${car.name}`
+    : `Assign Seat ${seatIdx+1} — ${car.name}`;
+  document.getElementById('assign-seat-name').value = isDriver ? (car.driver||'') : (car.seats[seatIdx]||'');
   openModal('modal-assign-seat');
 }
 
 function confirmAssignSeat() {
   if (!_assignCtx) return;
   const { carId, seatIdx } = _assignCtx;
-  const car = state.cars.find(x=>x.id===carId);
+  const car = actData().cars.find(x=>x.id===carId);
   if (!car) return;
   const name = document.getElementById('assign-seat-name').value.trim();
-  car.seats[seatIdx] = name || null;
+  const isDriver = seatIdx === -1;
+  if (isDriver) {
+    car.driver = name || '';
+  } else {
+    car.seats[seatIdx] = name || null;
+  }
   saveState();
   closeModal('modal-assign-seat');
-  showToast(name ? `Seat ${seatIdx+1} assigned to ${name}` : `Seat ${seatIdx+1} cleared.`);
+  showToast(name
+    ? (isDriver ? `Driver set to ${name}` : `Seat ${seatIdx+1} assigned to ${name}`)
+    : (isDriver ? 'Driver cleared.' : `Seat ${seatIdx+1} cleared.`));
   renderPage(currentPage);
   _assignCtx = null;
+}
+
+let _assignBedCtx = null; // { bedId, bedIdx }
+
+function openAssignBed(bedId, bedIdx) {
+  _assignBedCtx = { bedId, bedIdx };
+  const b = actData().beds.find(x => x.id === bedId);
+  if (!b) return;
+  const lines = b.occupants ? b.occupants.split('\n') : [];
+  const raw = lines[bedIdx] || '';
+  const current = raw.replace(/^bed\s*\d+:\s*/i, '').trim();
+  document.getElementById('assign-bed-title').textContent = `Assign Bed ${bedIdx + 1} — ${b.room}`;
+  document.getElementById('assign-bed-name').value = current;
+  openModal('modal-assign-bed');
+}
+
+function confirmAssignBed() {
+  if (!_assignBedCtx) return;
+  const { bedId, bedIdx } = _assignBedCtx;
+  const b = actData().beds.find(x => x.id === bedId);
+  if (!b) return;
+  const name = document.getElementById('assign-bed-name').value.trim();
+  // Rebuild the occupants string, preserving all other lines
+  const lines = b.occupants ? b.occupants.split('\n') : [];
+  // Ensure array is long enough
+  while (lines.length <= bedIdx) lines.push('');
+  lines[bedIdx] = name ? `Bed ${bedIdx + 1}: ${name}` : '';
+  b.occupants = lines.join('\n').replace(/\n+$/, ''); // trim trailing blank lines
+  saveState();
+  closeModal('modal-assign-bed');
+  showToast(name ? `Bed ${bedIdx + 1} assigned to ${name}` : `Bed ${bedIdx + 1} cleared.`);
+  renderPage(currentPage);
+  _assignBedCtx = null;
 }
 
 // ──────────────────────────────────────────────
@@ -2489,12 +3074,13 @@ function saveBed() {
   const entry = {
     id: uid(),
     room,
+    roomType: document.getElementById('bed-room-type').value,
     bedCount: count,
     occupants,
     locationId: document.getElementById('bed-location').value,
     notes: document.getElementById('bed-notes').value.trim(),
   };
-  state.beds.push(entry);
+  actData().beds.push(entry);
   saveState();
   closeModal('modal-bed');
   showToast(`Room "${room}" added!`);
@@ -2503,9 +3089,9 @@ function saveBed() {
 }
 
 function deleteBed(id) {
-  const b = state.beds.find(x=>x.id===id);
+  const b = actData().beds.find(x=>x.id===id);
   if (!b) return;
-  state.beds = state.beds.filter(x=>x.id!==id);
+  actData().beds = actData().beds.filter(x=>x.id!==id);
   saveState();
   showToast(`"${b.room}" removed.`,'🗑️');
   renderPage(currentPage);
@@ -2528,7 +3114,7 @@ function saveGame() {
     duration: document.getElementById('game-duration').value.trim(),
     quarter: document.getElementById('game-quarter').value,
   };
-  state.games.push(entry);
+  actData().games.push(entry);
   saveState();
   closeModal('modal-game');
   showToast(`Game "${name}" added!`);
@@ -2537,9 +3123,9 @@ function saveGame() {
 }
 
 function deleteGame(id) {
-  const g = state.games.find(x=>x.id===id);
+  const g = actData().games.find(x=>x.id===id);
   if (!g) return;
-  state.games = state.games.filter(x=>x.id!==id);
+  actData().games = actData().games.filter(x=>x.id!==id);
   saveState();
   showToast(`"${g.name}" removed.`,'🗑️');
   renderPage(currentPage);
@@ -2549,26 +3135,44 @@ function deleteGame(id) {
 // ──────────────────────────────────────────────
 // RENDER HELPERS
 // ──────────────────────────────────────────────
+const THEME_META = {
+  Party:      { cls: 'theme-party',      icon: '🎉', svg: '<circle cx="30" cy="44" r="18" fill="rgba(255,255,255,0.10)"/><circle cx="370" cy="10" r="26" fill="rgba(255,255,255,0.07)"/><circle cx="180" cy="60" r="12" fill="rgba(255,255,255,0.08)"/><circle cx="80" cy="8" r="8" fill="rgba(255,255,255,0.12)"/><circle cx="300" cy="30" r="6" fill="rgba(255,255,255,0.10)"/>' },
+  Casual:     { cls: 'theme-casual',     icon: '☕', svg: '<rect x="0" y="36" width="400" height="20" fill="rgba(255,255,255,0.08)"/><rect x="30" y="20" width="80" height="3" rx="2" fill="rgba(255,255,255,0.12)"/><rect x="160" y="12" width="60" height="3" rx="2" fill="rgba(255,255,255,0.10)"/><rect x="280" y="28" width="90" height="3" rx="2" fill="rgba(255,255,255,0.09)"/>' },
+  Beach:      { cls: 'theme-beach',      icon: '🏖️', svg: '<path d="M0 44 Q50 28 100 44 Q150 58 200 44 Q250 28 300 44 Q350 58 400 44 L400 56 L0 56 Z" fill="rgba(255,255,255,0.13)"/><circle cx="340" cy="14" r="14" fill="rgba(255,240,120,0.22)"/><circle cx="340" cy="14" r="8" fill="rgba(255,240,120,0.18)"/>' },
+  Indoor:     { cls: 'theme-indoor',     icon: '🏠', svg: '<rect x="20" y="8" width="36" height="40" rx="3" fill="rgba(255,255,255,0.08)"/><rect x="70" y="18" width="24" height="30" rx="3" fill="rgba(255,255,255,0.06)"/><rect x="110" y="4" width="44" height="44" rx="3" fill="rgba(255,255,255,0.07)"/><rect x="320" y="12" width="60" height="34" rx="3" fill="rgba(255,255,255,0.06)"/><rect x="0" y="48" width="400" height="8" fill="rgba(255,255,255,0.10)"/>' },
+  Outdoor:    { cls: 'theme-outdoor',    icon: '🌿', svg: '<path d="M0 56 Q40 18 80 38 Q120 56 160 24 Q200 4 240 30 Q280 52 320 20 Q360 0 400 28 L400 56 Z" fill="rgba(255,255,255,0.10)"/><circle cx="70" cy="8" r="10" fill="rgba(200,255,200,0.15)"/><circle cx="220" cy="4" r="8" fill="rgba(200,255,200,0.12)"/><circle cx="360" cy="10" r="12" fill="rgba(200,255,200,0.13)"/>' },
+  Recreation: { cls: 'theme-recreation', icon: '🏃', svg: '<line x1="0" y1="56" x2="400" y2="0" stroke="rgba(255,255,255,0.12)" stroke-width="3"/><line x1="60" y1="56" x2="400" y2="12" stroke="rgba(255,255,255,0.08)" stroke-width="2"/><line x1="140" y1="56" x2="400" y2="26" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/><circle cx="360" cy="14" r="16" fill="rgba(255,255,255,0.10)"/>' },
+};
+
+function themeBanner(a) {
+  const t = a.theme || 'Party';
+  const m = THEME_META[t] || THEME_META.Party;
+  return `<div class="theme-banner ${m.cls}"><svg viewBox="0 0 400 56" preserveAspectRatio="none">${m.svg}</svg><span class="theme-banner-label">${m.icon} ${t}</span></div>`;
+}
+
 function renderActivityItem(a) {
   const loc = a.locationId ? getLocationName(a.locationId) : '';
   const dateStr = a.date ? new Date(a.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : '';
   return `
-  <div class="activity-card">
-    <div class="activity-icon">${a.icon||'💍'}</div>
-    <div class="activity-info">
-      <div class="activity-name">${a.name}</div>
-      <div class="activity-meta">
-        <span class="tag tag-blue">${a.quarter}</span>
-        <span class="tag ${tagColor(a.category)}">${a.category}</span>
-        ${dateStr?`<span>📅 ${dateStr}</span>`:''}
-        ${a.time?`<span>⏰ ${a.time}</span>`:''}
-        ${loc?`<span>${loc}</span>`:''}
+  <div class="activity-card" onclick="navigateToActivity('${a.id}')" title="Open overview for this activity">
+    ${themeBanner(a)}
+    <div class="activity-card-body">
+      <div class="activity-info">
+        <div class="activity-name">${a.name}</div>
+        <div class="activity-meta">
+          <span class="tag tag-blue">${a.quarter}</span>
+          <span class="tag ${tagColor(a.category)}">${a.category}</span>
+          ${dateStr?`<span>📅 ${dateStr}</span>`:''}
+          ${a.time?`<span>⏰ ${a.time}</span>`:''}
+          ${loc?`<span>${loc}</span>`:''}
+        </div>
+        ${a.desc?`<div style="font-size:12px;color:var(--muted);margin-top:6px;">${a.desc}</div>`:''}
       </div>
-      ${a.desc?`<div style="font-size:12px;color:var(--muted);margin-top:6px;">${a.desc}</div>`:''}
-    </div>
-    <div class="activity-actions">
-      <button class="btn btn-ghost btn-sm btn-icon" onclick="openEditActivity('${a.id}')" title="Edit">✏️</button>
-      <button class="btn btn-danger btn-sm btn-icon" onclick="deleteActivity('${a.id}')" title="Delete">🗑️</button>
+      <div class="activity-actions" onclick="event.stopPropagation()">
+        <button class="btn btn-ghost btn-sm" onclick="navigateToActivity('${a.id}')" title="View overview">🗺️ View</button>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="openEditActivity('${a.id}')" title="Edit">✏️</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="deleteActivity('${a.id}')" title="Delete">🗑️</button>
+      </div>
     </div>
   </div>`;
 }
@@ -2591,12 +3195,16 @@ function renderPage(page) {
 }
 
 // DASHBOARD
+function sumAcross(field) {
+  return (state.activities||[]).reduce((t, a) => t + ((a[field]||[]).length), 0);
+}
+
 function renderDashboard() {
   document.getElementById('stat-activities').textContent = state.activities.length;
   document.getElementById('stat-locations').textContent = state.locations.length;
-  document.getElementById('stat-carseats').textContent = state.cars.length;
-  document.getElementById('stat-beds').textContent = state.beds.length;
-  document.getElementById('stat-games').textContent = state.games.length;
+  document.getElementById('stat-carseats').textContent = sumAcross('cars');
+  document.getElementById('stat-beds').textContent = sumAcross('beds');
+  document.getElementById('stat-games').textContent = sumAcross('games');
 
   const recent = document.getElementById('dash-recent-visible');
   const sorted = [...state.activities].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
@@ -2605,10 +3213,10 @@ function renderDashboard() {
     return;
   }
   recent.innerHTML = `<div class="timeline">${sorted.map(a=>`
-    <div class="timeline-item" style="cursor:pointer;" onclick="navigate('overview')" title="Open Full Overview">
+    <div class="timeline-item" style="cursor:pointer;" onclick="navigateToActivity('${a.id}')" title="Open overview for this activity">
       <div class="timeline-dot"></div>
       <div class="timeline-date">${a.quarter} · ${a.category}</div>
-      <div class="timeline-content">${a.icon||'💍'} ${a.name}</div>
+      <div class="timeline-content">${a.name}</div>
       ${a.date?`<div class="timeline-sub">📅 ${new Date(a.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric'})}</div>`:''}
     </div>`).join('')}
   </div>`;
@@ -2674,14 +3282,25 @@ function renderLocations() {
     </div>`).join('');
 }
 
+function actContextBanner() {
+  if (!currentActivityId) return '';
+  const a = (state.activities||[]).find(x => x.id === currentActivityId);
+  if (!a) return '';
+  const dateStr = a.date ? ' · ' + new Date(a.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : '';
+  return `<div style="background:var(--accent-glow);border:1px solid rgba(37,99,235,0.2);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:18px;font-size:12px;color:var(--accent);font-weight:600;">
+    📋 Viewing: ${a.name}<span style="color:var(--muted);font-weight:400;">${dateStr}</span>
+    <button class="btn btn-ghost btn-sm" style="margin-left:10px;font-size:11px;" onclick="navigate('overview')">← Back to Overview</button>
+  </div>`;
+}
+
 // CARS
 function renderCars() {
   const el = document.getElementById('carseats-list');
-  if (!state.cars.length) { el.innerHTML = emptyState('No car plans yet','Assign guests to vehicles','🚗'); return; }
+  if (!actData().cars.length) { el.innerHTML = actContextBanner() + emptyState('No car plans yet','Assign guests to vehicles','🚗'); return; }
 
   const typeIcon = {Sedan:'🚗',SUV:'🚙',Van:'🚐',Limo:'🚘',Truck:'🛻'};
 
-  el.innerHTML = state.cars.map(car=>{
+  el.innerHTML = actData().cars.map(car=>{
     const seatsHtml = car.seats.map((p,i)=>`
       <div class="seat-cell ${p?'occupied':'empty-slot'}" onclick="openAssignSeat('${car.id}',${i})">
         ${p ? `<span style="font-size:9px;word-break:break-all;">${p}</span>` : `<span class="seat-label">S${i+1}</span><span style="font-size:16px;">🪑</span>`}
@@ -2705,13 +3324,14 @@ function renderCars() {
       </div>
     </div>`;
   }).join('');
+  el.innerHTML = actContextBanner() + el.innerHTML;
 }
 
 // BEDS
 function renderBeds() {
   const el = document.getElementById('bedplan-list');
-  if (!state.beds.length) { el.innerHTML = emptyState('No room plans yet','Assign guests to rooms and beds','🛏️'); return; }
-  el.innerHTML = state.beds.map(b=>{
+  if (!actData().beds.length) { el.innerHTML = actContextBanner() + emptyState('No room plans yet','Assign guests to rooms and beds','🛏️'); return; }
+  el.innerHTML = actContextBanner() + actData().beds.map(b=>{
     const loc = b.locationId ? getLocationName(b.locationId) : '';
     const lines = b.occupants ? b.occupants.split('\n') : [];
     const bedCards = Array.from({length:b.bedCount},(_, i)=>{
@@ -2739,8 +3359,8 @@ function renderBeds() {
 // GAMES
 function renderGames() {
   const el = document.getElementById('games-list');
-  if (!state.games.length) { el.innerHTML = emptyState('No games yet','Add fun games for the engagement party','🎮'); return; }
-  el.innerHTML = state.games.map(g=>`
+  if (!actData().games.length) { el.innerHTML = actContextBanner() + emptyState('No games yet','Add fun games for the engagement party','🎮'); return; }
+  el.innerHTML = actContextBanner() + actData().games.map(g=>`
     <div class="game-card">
       <div class="game-emoji">${g.icon||'🎮'}</div>
       <div class="game-name">${g.name}</div>
@@ -2763,12 +3383,12 @@ function renderGames() {
 function updateCounts() {
   document.getElementById('nav-count-activities').textContent = state.activities.length;
   document.getElementById('nav-count-locations').textContent = state.locations.length;
-  document.getElementById('nav-count-carseats').textContent = state.cars.length;
-  document.getElementById('nav-count-beds').textContent = state.beds.length;
-  document.getElementById('nav-count-games').textContent = state.games.length;
-  document.getElementById('nav-count-committee').textContent = (state.committees||[]).length;
-  document.getElementById('nav-count-grocery').textContent = (state.grocery||[]).length;
-  document.getElementById('nav-count-meals').textContent = (state.meals||[]).length;
+  document.getElementById('nav-count-carseats').textContent = sumAcross('cars');
+  document.getElementById('nav-count-beds').textContent = sumAcross('beds');
+  document.getElementById('nav-count-games').textContent = sumAcross('games');
+  document.getElementById('nav-count-committee').textContent = sumAcross('committees');
+  document.getElementById('nav-count-grocery').textContent = sumAcross('grocery');
+  document.getElementById('nav-count-meals').textContent = sumAcross('meals');
 }
 
 // ──────────────────────────────────────────────
@@ -2803,10 +3423,16 @@ function saveEngagementDate() {
   if (currentPage === 'overview') renderOverview();
 }
 
-function getCountdownParts() {
-  if (!state.engagement) return null;
-  const { date, time } = state.engagement;
-  const target = new Date(`${date}T${time||'00:00'}`);
+function getCountdownParts(overrideDate, overrideTime) {
+  let d, t;
+  if (overrideDate) {
+    d = overrideDate; t = overrideTime || '00:00';
+  } else if (state.engagement) {
+    d = state.engagement.date; t = state.engagement.time || '00:00';
+  } else {
+    return null;
+  }
+  const target = new Date(`${d}T${t}`);
   const now = new Date();
   const diff = target - now;
   if (diff <= 0) return { done: true };
@@ -2852,13 +3478,19 @@ function renderCountdownHero(containerId) {
       </div>`;
     return;
   }
-  const { name, date, time } = state.engagement;
-  const target = new Date(`${date}T${time||'00:00'}`);
+  const { date, time } = state.engagement;
+  // Use selected activity if one is active, else fall back to engagement name/date
+  const selAct = currentActivityId ? (state.activities||[]).find(a => a.id === currentActivityId) : null;
+  const name = selAct ? selAct.name : (state.engagement.name || 'Our Engagement');
+  const actDate = selAct && selAct.date ? selAct.date : date;
+  const actTime = selAct && selAct.time ? selAct.time : (time || '00:00');
+  const target = new Date(`${actDate}T${actTime}`);
   const dateStr = target.toLocaleDateString('default',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  const parts = getCountdownParts();
+  const parts = getCountdownParts(actDate, actTime);
+  const displayTime = actTime && actTime !== '00:00' ? actTime : '';
 
   let unitsHtml = '';
-  if (parts.done) {
+  if (!parts || parts.done) {
     unitsHtml = `<div class="countdown-done">🎉 The day is here!</div>`;
   } else {
     unitsHtml = `
@@ -2870,14 +3502,59 @@ function renderCountdownHero(containerId) {
       </div>`;
   }
 
+  const themeClass = selAct && selAct.theme ? 'th-' + selAct.theme.toLowerCase() : '';
   el.innerHTML = `
-    <div class="countdown-hero">
+    <div class="countdown-hero ${themeClass}">
       <div class="countdown-label">Counting down to</div>
-      <div class="countdown-event-name">${name}</div>
-      <div class="countdown-event-date">${dateStr}${time&&time!=='00:00'?' · '+time:''}</div>
+      <div class="countdown-event-name cd-editable" title="Click to edit name"
+           onclick="cdInlineEdit(this,'name','${containerId}')">${name}</div>
+      <div class="countdown-event-date cd-editable" title="Click to edit date &amp; time"
+           onclick="cdInlineEdit(this,'datetime','${containerId}')">${dateStr}${displayTime?' · '+displayTime:''}</div>
       ${unitsHtml}
-      <button class="btn btn-ghost countdown-set-btn" onclick="openModal('modal-setdate')">✏️ Edit Date</button>
     </div>`;
+}
+
+function cdInlineEdit(el, field, containerId) {
+  if (el.querySelector('input')) return; // already editing
+  // Determine whether we're editing an activity or the global engagement
+  const act = currentActivityId ? (state.activities||[]).find(a => a.id === currentActivityId) : null;
+  if (field === 'name') {
+    const cur = act ? act.name : (state.engagement ? state.engagement.name : '');
+    el.innerHTML = `<input class="cd-inline-input" type="text" value="${cur}" maxlength="80" placeholder="Event name" />`;
+    const inp = el.querySelector('input');
+    inp.focus(); inp.select();
+    const save = () => {
+      const val = inp.value.trim() || 'Our Engagement';
+      if (act) { act.name = val; } else if (state.engagement) { state.engagement.name = val; }
+      saveState();
+      renderCountdownHero(containerId);
+      if (currentPage === 'overview') renderOverview();
+    };
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); save(); } if (e.key === 'Escape') renderCountdownHero(containerId); });
+    inp.addEventListener('blur', save);
+  } else {
+    const curDate = act ? (act.date || '') : (state.engagement ? state.engagement.date : '');
+    const curTime = act ? (act.time || '00:00') : (state.engagement ? state.engagement.time : '00:00');
+    el.innerHTML = `
+      <input class="cd-inline-input" type="date" value="${curDate}" style="width:150px;" />
+      <input class="cd-inline-input" type="time" value="${curTime}" style="width:110px;margin-left:8px;" />`;
+    const [dInp, tInp] = el.querySelectorAll('input');
+    dInp.focus();
+    const save = () => {
+      const d = dInp.value; const t = tInp.value || '00:00';
+      if (!d) { renderCountdownHero(containerId); return; }
+      if (act) { act.date = d; act.time = t; }
+      else if (state.engagement) { state.engagement.date = d; state.engagement.time = t; }
+      saveState();
+      startCountdown();
+      renderCountdownHero(containerId);
+      if (currentPage === 'overview') renderOverview();
+    };
+    [dInp, tInp].forEach(i => {
+      i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); save(); } if (e.key === 'Escape') renderCountdownHero(containerId); });
+      i.addEventListener('blur', () => setTimeout(save, 150));
+    });
+  }
 }
 
 function startCountdown() {
@@ -2907,12 +3584,110 @@ function startCountdown() {
 // ──────────────────────────────────────────────
 // OVERVIEW RENDER
 // ──────────────────────────────────────────────
+function toggleOvPanel(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
 function renderOverview() {
+  // apply theme to the whole overview page
+  const _pageOv = document.getElementById('page-overview');
+  const _selActTheme = currentActivityId ? ((state.activities||[]).find(a=>a.id===currentActivityId)||{}).theme : null;
+  if (_pageOv) _pageOv.setAttribute('data-theme', _selActTheme || '');
+
+  // reset vis panels to list view on re-render (e.g. activity switch)
+  const _carsListEl = document.getElementById('overview-cars');
+  const _carsVisEl  = document.getElementById('overview-cars-vis');
+  const _bedsListEl = document.getElementById('overview-beds');
+  const _bedsVisEl  = document.getElementById('overview-beds-vis');
+  if (_carsListEl && _carsVisEl && !_carVisOpen) { _carsListEl.style.display='block'; _carsVisEl.style.display='none'; }
+  if (_bedsListEl && _bedsVisEl && !_bedVisOpen) { _bedsListEl.style.display='block'; _bedsVisEl.style.display='none'; }
+  if (_carVisOpen && _carsVisEl) { _carsListEl.style.display='none'; _carsVisEl.style.display='block'; }
+  if (_bedVisOpen && _bedsVisEl) { _bedsListEl.style.display='none'; _bedsVisEl.style.display='block'; }
+
+  // 0 — activity selector + page title
+  const selEl = document.getElementById('overview-activity-selector');
+  const titleEl = document.getElementById('overview-page-title');
+  const subEl = document.getElementById('overview-page-subtitle');
+  const activities = state.activities || [];
+  if (selEl) {
+    if (activities.length) {
+      const selAct = currentActivityId ? activities.find(a => a.id === currentActivityId) : null;
+      if (titleEl) titleEl.textContent = selAct ? selAct.name : 'Full Plan Overview';
+      if (subEl) subEl.textContent = selAct
+        ? `${selAct.quarter} · ${selAct.category}${selAct.date ? ' · ' + new Date(selAct.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : ''}`
+        : 'Select an activity to view its overview';
+      selEl.innerHTML = `<div class="act-selector">
+        ${activities.map(a => {
+          const isActive = a.id === currentActivityId;
+          const dateStr = a.date ? new Date(a.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : '';
+          const dotCls = a.theme ? 'dot-' + a.theme.toLowerCase() : 'dot-party';
+          return `<button class="act-sel-btn${isActive?' active':''}" onclick="navigateToActivity('${a.id}')">
+            <div class="act-sel-dot ${dotCls}"></div>
+            <div>
+              <div>${a.name}</div>
+              ${dateStr ? `<div class="act-sel-date">📅 ${dateStr}</div>` : `<div class="act-sel-date">${a.quarter}</div>`}
+            </div>
+          </button>`;
+        }).join('')}
+      </div>`;
+    } else {
+      selEl.innerHTML = '';
+      if (titleEl) titleEl.textContent = 'Full Plan Overview';
+      if (subEl) subEl.textContent = 'Your complete engagement plan at a glance';
+    }
+  }
+
   // 1 — countdown hero
   renderCountdownHero('overview-countdown-hero');
 
-  // 1b — budget tracker
-  renderBudget('overview-budget');
+  // 1b — stats strip
+  const grocTotal = (actData().grocery||[]).length;
+  const grocDone  = (actData().grocery||[]).filter(x=>x.checked).length;
+  const grocPct   = grocTotal > 0 ? Math.round((grocDone/grocTotal)*100) : 0;
+  const expCount  = (actData().expenses||[]).length;
+  const statsEl   = document.getElementById('overview-stats-strip');
+  if (statsEl) {
+    statsEl.innerHTML = `
+      <div class="ov-stat-chip">
+        <div class="ov-stat-icon">📋</div>
+        <div class="ov-stat-body">
+          <div class="ov-stat-value">${state.activities.length}</div>
+          <div class="ov-stat-label">${state.activities.length === 1 ? 'Activity' : 'Activities'}</div>
+        </div>
+      </div>
+      <div class="ov-stat-chip green">
+        <div class="ov-stat-icon">🛒</div>
+        <div class="ov-stat-body">
+          <div class="ov-stat-value">${grocDone}/${grocTotal}</div>
+          <div class="ov-stat-label">Grocery ${grocPct}% done</div>
+        </div>
+      </div>
+      <div class="ov-stat-chip orange">
+        <div class="ov-stat-icon">🚗</div>
+        <div class="ov-stat-body">
+          <div class="ov-stat-value">${actData().cars.length}</div>
+          <div class="ov-stat-label">Cars · ${actData().beds.length} Room${actData().beds.length!==1?'s':''}</div>
+        </div>
+      </div>
+      <div class="ov-stat-chip cyan">
+        <div class="ov-stat-icon">💸</div>
+        <div class="ov-stat-body">
+          <div class="ov-stat-value">${expCount}</div>
+          <div class="ov-stat-label">Expense${expCount!==1?'s':''} logged</div>
+        </div>
+      </div>`;
+  }
+
+  // panel counts
+  function setPCount(id, n) { const el = document.getElementById(id); if (el) el.textContent = n; }
+  setPCount('pcount-activities', state.activities.length);
+  setPCount('pcount-grocery', grocTotal);
+  setPCount('pcount-meals', (actData().meals||[]).length);
+  setPCount('pcount-cars', actData().cars.length);
+  setPCount('pcount-beds', actData().beds.length);
+  setPCount('pcount-games', actData().games.length);
+  setPCount('pcount-committee', (actData().committees||[]).length);
+  setPCount('pcount-expenses', expCount);
 
   // 2 — activities (sorted by date, then by quarter)
   const actEl = document.getElementById('overview-activities');
@@ -2939,7 +3714,6 @@ function renderOverview() {
         <div class="ov-timeline-item">
           <div class="ov-dot ${dotClass}"></div>
           <div class="ov-item-inner">
-            <div class="ov-item-icon">${a.icon||'💍'}</div>
             <div>
               <div class="ov-item-name">${a.name}</div>
               <div class="ov-item-meta">
@@ -2958,11 +3732,11 @@ function renderOverview() {
 
   // 3 — car seat visual
   const carEl = document.getElementById('overview-cars');
-  if (!state.cars.length) {
+  if (!actData().cars.length) {
     carEl.innerHTML = emptyState('No car plans yet','Add cars in the Car Seat Plan section','🚗');
   } else {
     const typeIcon = {Sedan:'🚗',SUV:'🚙',Van:'🚐',Limo:'🚘',Truck:'🛻'};
-    carEl.innerHTML = state.cars.map(car => {
+    carEl.innerHTML = actData().cars.map(car => {
       // Build seat layout rows
       // Row 0: driver seat (index 0) + front passenger (index 1)
       // Remaining seats split into rows of 2 (with aisle)
@@ -2973,8 +3747,9 @@ function renderOverview() {
         const name = seats[idx];
         const cls = isDriver ? 'driver' : (name ? 'occupied' : 'empty');
         const icon = isDriver ? '🧑‍✈️' : (name ? '🪑' : '🪑');
-        const label = isDriver ? (car.driver || name || 'Driver') : (name || `S${idx+1}`);
-        return `<div class="seat-vis ${cls}">
+        const label = isDriver ? (car.driver || 'Driver') : (name || `S${idx+1}`);
+        const clickIdx = isDriver ? -1 : idx;
+        return `<div class="seat-vis ${cls}" style="cursor:pointer;" title="${isDriver?'Edit driver':'Edit seat '+(idx+1)}" onclick="openAssignSeat('${car.id}',${clickIdx})">
           <div class="seat-vis-icon">${icon}</div>
           <div class="seat-vis-name">${label}</div>
         </div>`;
@@ -3009,7 +3784,7 @@ function renderOverview() {
               <div class="car-overview-sub">${car.type}${car.driver?' · Driver: '+car.driver:''} · ${car.seats.filter(Boolean).length}/${seatCount} passengers</div>
             </div>
           </div>
-          <div class="car-seat-visual" style="max-width:200px;margin:0 auto;">
+          <div class="car-seat-visual">
             ${rows}
           </div>
         </div>`;
@@ -3018,17 +3793,17 @@ function renderOverview() {
 
   // 4 — bed plan visual
   const bedEl = document.getElementById('overview-beds');
-  if (!state.beds.length) {
+  if (!actData().beds.length) {
     bedEl.innerHTML = emptyState('No room plans yet','Add rooms in the Bed Plan section','🛏️');
   } else {
-    bedEl.innerHTML = state.beds.map(b => {
+    bedEl.innerHTML = actData().beds.map(b => {
       const lines = b.occupants ? b.occupants.split('\n') : [];
       const loc = b.locationId ? getLocationName(b.locationId) : '';
       const bedsHtml = Array.from({length: b.bedCount}, (_, i) => {
         const raw = lines[i] || '';
         const occ = raw.replace(/^bed\s*\d+:\s*/i, '').trim();
         return `
-          <div class="bed-vis ${occ ? 'occupied' : 'empty'}">
+          <div class="bed-vis ${occ ? 'occupied' : 'empty'}" style="cursor:pointer;" onclick="openAssignBed('${b.id}', ${i})">
             <div class="bed-vis-head">🛏️ Bed ${i+1}</div>
             <div class="bed-vis-body">${occ || 'Unassigned'}</div>
           </div>`;
@@ -3049,10 +3824,10 @@ function renderOverview() {
 
   // 5 — games
   const gamesEl = document.getElementById('overview-games');
-  if (!state.games.length) {
+  if (!actData().games.length) {
     gamesEl.innerHTML = emptyState('No games yet','Click "+ Add Game" to get started','🎮');
   } else {
-    gamesEl.innerHTML = state.games.map(g => `
+    gamesEl.innerHTML = actData().games.map(g => `
       <div class="game-ov-card">
         <div class="game-ov-icon">${g.icon||'🎮'}</div>
         <div>
@@ -3068,7 +3843,7 @@ function renderOverview() {
 
   // 6 — organizing committee
   const comEl = document.getElementById('overview-committee');
-  const committees = state.committees || [];
+  const committees = actData().committees || [];
   if (!committees.length) {
     comEl.innerHTML = emptyState('No committees yet','Click "+ New Committee" to create one','👥');
   } else {
@@ -3111,7 +3886,7 @@ function renderOverview() {
   // 7 — grocery list
   const grocProgEl = document.getElementById('overview-grocery-progress');
   const grocEl = document.getElementById('overview-grocery');
-  const grocery = state.grocery || [];
+  const grocery = actData().grocery || [];
   if (!grocery.length) {
     grocProgEl.innerHTML = '';
     grocEl.innerHTML = emptyState('No grocery items yet','Click "+ Add Item" to start your list','🛒');
@@ -3156,7 +3931,7 @@ function renderOverview() {
 
   // 8 — meal plan
   const mealsEl = document.getElementById('overview-meals');
-  const meals = state.meals || [];
+  const meals = actData().meals || [];
   if (!meals.length) {
     mealsEl.innerHTML = emptyState('No meal days yet','Click "+ Add Day" to plan meals','🍽️');
   } else {
@@ -3202,7 +3977,7 @@ let _memberCtx = null; // committee id for pending member add
 function saveCommittee() {
   const name = document.getElementById('com-name').value.trim();
   if (!name) { showToast('Committee name is required.','⚠️'); return; }
-  if (!state.committees) state.committees = [];
+  actData().committees = actData().committees || [];
   const entry = {
     id: uid(),
     name,
@@ -3210,7 +3985,7 @@ function saveCommittee() {
     desc: document.getElementById('com-desc').value.trim(),
     members: [],
   };
-  state.committees.push(entry);
+  actData().committees.push(entry);
   saveState();
   closeModal('modal-committee');
   showToast(`Committee "${name}" created!`);
@@ -3219,9 +3994,9 @@ function saveCommittee() {
 }
 
 function deleteCommittee(id) {
-  const c = (state.committees||[]).find(x=>x.id===id);
+  const c = (actData().committees||[]).find(x=>x.id===id);
   if (!c) return;
-  state.committees = state.committees.filter(x=>x.id!==id);
+  actData().committees = actData().committees.filter(x=>x.id!==id);
   saveState();
   showToast(`"${c.name}" removed.`,'🗑️');
   if (currentPage === 'overview') renderOverview(); else renderCommittee();
@@ -3230,7 +4005,7 @@ function deleteCommittee(id) {
 
 function openAddMember(committeeId) {
   _memberCtx = committeeId;
-  const c = (state.committees||[]).find(x=>x.id===committeeId);
+  const c = (actData().committees||[]).find(x=>x.id===committeeId);
   document.getElementById('modal-member-title').textContent = `Add Member — ${c ? c.name : ''}`;
   openModal('modal-member');
 }
@@ -3239,7 +4014,7 @@ function saveMember() {
   const name = document.getElementById('mem-name').value.trim();
   if (!name) { showToast('Member name is required.','⚠️'); return; }
   if (!_memberCtx) return;
-  const c = (state.committees||[]).find(x=>x.id===_memberCtx);
+  const c = (actData().committees||[]).find(x=>x.id===_memberCtx);
   if (!c) return;
   const member = {
     id: uid(),
@@ -3258,7 +4033,7 @@ function saveMember() {
 }
 
 function deleteMember(committeeId, memberId) {
-  const c = (state.committees||[]).find(x=>x.id===committeeId);
+  const c = (actData().committees||[]).find(x=>x.id===committeeId);
   if (!c) return;
   const m = c.members.find(x=>x.id===memberId);
   if (!m) return;
@@ -3270,11 +4045,11 @@ function deleteMember(committeeId, memberId) {
 
 function renderCommittee() {
   const el = document.getElementById('committee-list');
-  if (!state.committees || !state.committees.length) {
-    el.innerHTML = emptyState('No committees yet','Create a committee like "Events Team" or "Catering"','👥');
+  if (!actData().committees.length) {
+    el.innerHTML = actContextBanner() + emptyState('No committees yet','Create a committee like "Events Team" or "Catering"','👥');
     return;
   }
-  el.innerHTML = state.committees.map(c => {
+  el.innerHTML = actContextBanner() + actData().committees.map(c => {
     const initials = (name) => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     const membersHtml = c.members.length
       ? `<div class="member-list">${c.members.map(m => `
@@ -3320,7 +4095,7 @@ function renderCommittee() {
 function saveGrocery() {
   const name = document.getElementById('groc-name').value.trim();
   if (!name) { showToast('Item name is required.','⚠️'); return; }
-  if (!state.grocery) state.grocery = [];
+  actData().grocery = actData().grocery || [];
   const entry = {
     id: uid(),
     name,
@@ -3330,7 +4105,7 @@ function saveGrocery() {
     note: document.getElementById('groc-note').value.trim(),
     checked: false,
   };
-  state.grocery.push(entry);
+  actData().grocery.push(entry);
   saveState();
   closeModal('modal-grocery');
   showToast(`"${name}" added to grocery list!`);
@@ -3339,7 +4114,7 @@ function saveGrocery() {
 }
 
 function toggleGrocery(id) {
-  const item = (state.grocery||[]).find(x=>x.id===id);
+  const item = (actData().grocery||[]).find(x=>x.id===id);
   if (!item) return;
   item.checked = !item.checked;
   saveState();
@@ -3347,9 +4122,9 @@ function toggleGrocery(id) {
 }
 
 function deleteGrocery(id) {
-  const item = (state.grocery||[]).find(x=>x.id===id);
+  const item = (actData().grocery||[]).find(x=>x.id===id);
   if (!item) return;
-  state.grocery = state.grocery.filter(x=>x.id!==id);
+  actData().grocery = actData().grocery.filter(x=>x.id!==id);
   saveState();
   showToast(`"${item.name}" removed.`,'🗑️');
   if (currentPage === 'overview') renderOverview(); else renderGrocery();
@@ -3357,21 +4132,20 @@ function deleteGrocery(id) {
 }
 
 function renderGrocery() {
-  const grocery = state.grocery || [];
+  const grocery = actData().grocery || [];
   const progressWrap = document.getElementById('grocery-progress-wrap');
   const el = document.getElementById('grocery-list');
 
   if (!grocery.length) {
-    progressWrap.innerHTML = '';
+    progressWrap.innerHTML = actContextBanner();
     el.innerHTML = emptyState('No grocery items yet','Start adding everything you need to buy','🛒');
     return;
   }
-
   const total = grocery.length;
   const done = grocery.filter(x=>x.checked).length;
   const pct = Math.round((done/total)*100);
 
-  progressWrap.innerHTML = `
+  progressWrap.innerHTML = actContextBanner() + `
     <div class="grocery-progress">
       <div style="font-size:13px;font-weight:600;color:var(--white);white-space:nowrap;">🛒 ${done}/${total} bought</div>
       <div class="grocery-progress-bar-wrap">
@@ -3425,7 +4199,7 @@ const MEAL_SLOTS = [
 function saveMealDay() {
   const label = document.getElementById('meal-label').value.trim();
   if (!label) { showToast('Day label is required.','⚠️'); return; }
-  if (!state.meals) state.meals = [];
+  actData().meals = actData().meals || [];
   const entry = {
     id: uid(),
     label,
@@ -3437,7 +4211,7 @@ function saveMealDay() {
     dinner:    document.getElementById('meal-dinner').value.trim(),
     midnight:  document.getElementById('meal-midnight').value.trim(),
   };
-  state.meals.push(entry);
+  actData().meals.push(entry);
   saveState();
   closeModal('modal-mealday');
   showToast(`Meal plan for "${label}" saved!`);
@@ -3446,9 +4220,9 @@ function saveMealDay() {
 }
 
 function deleteMealDay(id) {
-  const m = (state.meals||[]).find(x=>x.id===id);
+  const m = (actData().meals||[]).find(x=>x.id===id);
   if (!m) return;
-  state.meals = state.meals.filter(x=>x.id!==id);
+  actData().meals = actData().meals.filter(x=>x.id!==id);
   saveState();
   showToast(`"${m.label}" removed.`,'🗑️');
   if (currentPage === 'overview') renderOverview(); else renderMealPlan();
@@ -3457,16 +4231,16 @@ function deleteMealDay(id) {
 
 function renderMealPlan() {
   const el = document.getElementById('mealplan-list');
-  const meals = state.meals || [];
+  const meals = actData().meals || [];
   if (!meals.length) {
-    el.innerHTML = emptyState('No meal days yet','Add a day and plan from breakfast to dinner','🍽️');
+    el.innerHTML = actContextBanner() + emptyState('No meal days yet','Add a day and plan from breakfast to dinner','🍽️');
     return;
   }
   const sorted = [...meals].sort((a,b) => {
     if (a.date && b.date) return new Date(a.date) - new Date(b.date);
     if (a.date) return -1; if (b.date) return 1; return 0;
   });
-  el.innerHTML = sorted.map(day => {
+  el.innerHTML = actContextBanner() + sorted.map(day => {
     const dateStr = day.date ? new Date(day.date+'T00:00').toLocaleDateString('default',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '';
     const slotsHtml = MEAL_SLOTS.map(s => {
       const content = day[s.key];
@@ -3493,27 +4267,14 @@ function renderMealPlan() {
 }
 
 // ──────────────────────────────────────────────
-// BUDGET & EXPENSES
+// EXPENSES
 // ──────────────────────────────────────────────
-function saveBudget() {
-  const total = parseFloat(document.getElementById('budget-total').value);
-  if (!total || total <= 0) { showToast('Enter a valid budget amount.','⚠️'); return; }
-  state.budget = {
-    total,
-    label: document.getElementById('budget-label').value.trim() || 'Engagement Budget',
-  };
-  saveState();
-  closeModal('modal-setbudget');
-  showToast(`Budget set to ₱${fmt(total)} 💰`);
-  if (currentPage === 'overview') renderOverview();
-}
-
 function saveExpense() {
   const label = document.getElementById('exp-label').value.trim();
   const amount = parseFloat(document.getElementById('exp-amount').value);
   if (!label) { showToast('Description is required.','⚠️'); return; }
   if (!amount || amount <= 0) { showToast('Enter a valid amount.','⚠️'); return; }
-  if (!state.expenses) state.expenses = [];
+  actData().expenses = actData().expenses || [];
   const entry = {
     id: uid(),
     label,
@@ -3523,7 +4284,7 @@ function saveExpense() {
     note: document.getElementById('exp-note').value.trim(),
     source: 'manual',
   };
-  state.expenses.push(entry);
+  actData().expenses.push(entry);
   saveState();
   closeModal('modal-expense');
   showToast(`Expense "${label}" added!`);
@@ -3531,9 +4292,9 @@ function saveExpense() {
 }
 
 function deleteExpense(id) {
-  const e = (state.expenses||[]).find(x=>x.id===id);
+  const e = (actData().expenses||[]).find(x=>x.id===id);
   if (!e) return;
-  state.expenses = state.expenses.filter(x=>x.id!==id);
+  actData().expenses = actData().expenses.filter(x=>x.id!==id);
   saveState();
   showToast(`"${e.label}" removed.`,'🗑️');
   if (currentPage === 'overview') renderOverview();
@@ -3544,72 +4305,15 @@ function fmt(n) {
   return Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// Compute total expenses: manual expenses + grocery items with costs
-function getTotalSpent() {
-  const manual = (state.expenses||[]).reduce((s,e) => s + (parseFloat(e.amount)||0), 0);
-  const grocery = (state.grocery||[]).reduce((s,g) => {
-    const n = parseFloat((g.cost||'').replace(/[^0-9.]/g,''));
-    return s + (isNaN(n) ? 0 : n);
-  }, 0);
-  return manual + grocery;
-}
-
-function renderBudget(containerId) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  if (!state.budget) {
-    el.innerHTML = `
-      <div class="budget-hero" style="text-align:center;">
-        <div style="font-size:32px;margin-bottom:10px;">💰</div>
-        <div style="font-size:15px;font-weight:600;color:var(--white);margin-bottom:6px;">No budget set yet</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">Set your total budget to start tracking expenses</div>
-        <button class="btn btn-primary" onclick="openModal('modal-setbudget')">⚙️ Set Budget</button>
-      </div>`;
-    return;
-  }
-  const total   = parseFloat(state.budget.total) || 0;
-  const spent   = getTotalSpent();
-  const remain  = total - spent;
-  const pct     = total > 0 ? Math.min((spent/total)*100, 100) : 0;
-  const status  = pct >= 100 ? 'over' : pct >= 80 ? 'warn' : 'ok';
-  const remainClass = remain < 0 ? 'over' : remain < total*0.2 ? 'warn' : 'ok';
-
-  el.innerHTML = `
-    <div class="budget-hero">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:600;">${state.budget.label}</div>
-      <div class="budget-hero-row">
-        <div class="budget-stat">
-          <div class="budget-stat-label">Total Budget</div>
-          <div class="budget-stat-value total">₱${fmt(total)}</div>
-        </div>
-        <div class="budget-stat">
-          <div class="budget-stat-label">Total Spent</div>
-          <div class="budget-stat-value spent">₱${fmt(spent)}</div>
-        </div>
-        <div class="budget-stat">
-          <div class="budget-stat-label">Remaining</div>
-          <div class="budget-stat-value remain ${remainClass}">₱${fmt(remain)}</div>
-        </div>
-        <button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="openModal('modal-setbudget')">✏️ Edit</button>
-      </div>
-      <div class="budget-progress-wrap">
-        <div class="budget-progress-fill ${status}" style="width:${pct.toFixed(1)}%"></div>
-      </div>
-      <div class="budget-pct-label">${pct.toFixed(1)}% of budget used</div>
-    </div>`;
-}
-
 function renderExpenses(containerId) {
   const el = document.getElementById(containerId);
   if (!el) return;
 
-  // Manual expenses
-  const manual = state.expenses || [];
-  // Grocery items that have a cost
-  const grocWithCost = (state.grocery||[]).filter(g => g.cost && g.cost.trim());
+  const manual = actData().expenses || [];
+  const grocWithCost = (actData().grocery||[]).filter(g => g.cost && g.cost.trim());
 
   if (!manual.length && !grocWithCost.length) {
-    el.innerHTML = `<div style="padding:20px;text-align:center;font-size:13px;color:var(--muted);">No expenses logged yet. Use "+ Add Expense" or add costs to grocery items.</div>`;
+    el.innerHTML = `<div style="padding:28px;text-align:center;font-size:13px;color:var(--muted);">No expenses logged yet. Use "+ Add Expense" or add costs to grocery items.</div>`;
     return;
   }
 
@@ -3621,49 +4325,281 @@ function renderExpenses(containerId) {
     Other:      { label:'Other', css:'exp-cat-other', icon:'📌' },
   };
 
-  // Build rows: manual expenses
-  const manualRows = manual.map(e => {
-    const m = catMeta[e.category] || catMeta.Other;
-    const dateStr = e.date ? new Date(e.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : '—';
-    return `
-      <tr>
-        <td><span class="expense-cat-pill ${m.css}">${m.icon} ${m.label}</span></td>
-        <td>${e.label}${e.note?`<div style="font-size:11px;color:var(--muted);">${e.note}</div>`:''}</td>
-        <td>${dateStr}</td>
-        <td class="expense-amount">₱${fmt(e.amount)}</td>
-        <td><button class="btn btn-danger btn-sm btn-icon" onclick="deleteExpense('${e.id}')">🗑️</button></td>
-      </tr>`;
-  }).join('');
+  // Group manual entries by category
+  const groups = {};
+  manual.forEach(e => {
+    const cat = e.category || 'Other';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(e);
+  });
+  // Grocery items as their own group
+  if (grocWithCost.length) {
+    if (!groups['Grocery']) groups['Grocery'] = [];
+    grocWithCost.forEach(g => {
+      const cost = parseFloat((g.cost||'').replace(/[^0-9.]/g,''));
+      groups['Grocery'].push({ _grocItem: true, label: g.name + (g.qty ? ` (${g.qty})` : ''), amount: isNaN(cost) ? 0 : cost, amountDisplay: isNaN(cost) ? g.cost : null });
+    });
+  }
 
-  // Grocery cost rows
-  const grocRows = grocWithCost.map(g => {
-    const cost = parseFloat((g.cost||'').replace(/[^0-9.]/g,''));
-    return `
-      <tr>
-        <td><span class="expense-cat-pill exp-cat-grocery">🛒 Grocery</span></td>
-        <td>${g.name}${g.qty?` <span style="color:var(--muted);font-size:11px;">(${g.qty})</span>`:''}</td>
-        <td>—</td>
-        <td class="expense-amount">${isNaN(cost)?g.cost:'₱'+fmt(cost)}</td>
-        <td><span style="font-size:11px;color:var(--muted2);">via list</span></td>
-      </tr>`;
-  }).join('');
+  let rowNum = 0;
+  let grandTotal = 0;
+  let tableBody = '';
 
+  Object.entries(groups).forEach(([cat, items]) => {
+    const meta = catMeta[cat] || catMeta.Other;
+    const subtotal = items.reduce((s, e) => s + (parseFloat(e.amount)||0), 0);
+    grandTotal += subtotal;
+
+    // Category group header
+    tableBody += `<tr class="exp-group-head"><td colspan="6"><span class="exp-cat-pill ${meta.css}">${meta.icon} ${meta.label}</span></td></tr>`;
+
+    items.forEach(e => {
+      rowNum++;
+      const dateStr = e.date ? new Date(e.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : '—';
+      const amtDisplay = e.amountDisplay || ('₱' + fmt(e.amount));
+      const deleteBtn = e._grocItem
+        ? `<td><span class="exp-source-tag">via grocery</span></td>`
+        : `<td><button class="btn btn-danger btn-sm btn-icon" onclick="deleteExpense('${e.id}')">🗑️</button></td>`;
+      tableBody += `
+        <tr class="exp-row">
+          <td class="exp-num">${rowNum}</td>
+          <td>${e.label}${e.note?`<div style="font-size:11px;color:var(--muted);margin-top:2px;">↳ ${e.note}</div>`:''}</td>
+          <td style="color:var(--muted);font-size:12px;white-space:nowrap;">${dateStr}</td>
+          <td class="exp-amount">${amtDisplay}</td>
+          ${deleteBtn}
+        </tr>`;
+    });
+
+    // Subtotal row
+    tableBody += `
+      <tr class="exp-subtotal">
+        <td colspan="3">Subtotal — ${meta.label}</td>
+        <td class="exp-subtotal-amt">₱${fmt(subtotal)}</td>
+        <td></td>
+      </tr>`;
+  });
+
+  // Grand total row
+  tableBody += `
+    <tr class="exp-grand-total">
+      <td colspan="3">Grand Total</td>
+      <td class="exp-total-amt">₱${fmt(grandTotal)}</td>
+      <td></td>
+    </tr>`;
+
+  const entryCount = rowNum;
   el.innerHTML = `
-    <div class="expense-table-wrap">
-      <table class="expense-table">
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>Description</th>
-            <th>Date</th>
-            <th>Amount</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>${manualRows}${grocRows}</tbody>
-      </table>
+    <div class="exp-ledger">
+      <div class="exp-ledger-header">
+        <div class="exp-ledger-title">📒 Expense Ledger</div>
+        <div class="exp-ledger-summary">
+          <div class="exp-ledger-sum-item">
+            <div class="exp-ledger-sum-label">Entries</div>
+            <div class="exp-ledger-sum-value ok">${entryCount}</div>
+          </div>
+          <div class="exp-ledger-sum-item">
+            <div class="exp-ledger-sum-label">Total Spent</div>
+            <div class="exp-ledger-sum-value">₱${fmt(grandTotal)}</div>
+          </div>
+        </div>
+      </div>
+      <div class="exp-ledger-wrap">
+        <table class="exp-table">
+          <thead>
+            <tr>
+              <th class="num">#</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th class="num">Amount</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>${tableBody}</tbody>
+        </table>
+      </div>
     </div>`;
 }
+
+
+// ──────────────────────────────────────────────
+// VISUALIZERS — BED & CAR
+// ──────────────────────────────────────────────
+let _bedVisOpen = false;
+let _carVisOpen = false;
+let _selectedCarId = null;
+
+function toggleBedVis() {
+  _bedVisOpen = !_bedVisOpen;
+  const listEl = document.getElementById('overview-beds');
+  const visEl  = document.getElementById('overview-beds-vis');
+  const btn    = document.getElementById('beds-vis-btn');
+  if (!listEl || !visEl || !btn) return;
+  if (_bedVisOpen) {
+    listEl.style.display = 'none';
+    visEl.style.display  = 'block';
+    btn.classList.add('vis-btn-active');
+    btn.textContent = '📋 List View';
+    renderBedVisualize();
+    // open panel if collapsed
+    document.getElementById('panel-beds').classList.add('open');
+  } else {
+    listEl.style.display = 'block';
+    visEl.style.display  = 'none';
+    btn.classList.remove('vis-btn-active');
+    btn.textContent = '👁 Visualize';
+  }
+}
+
+function toggleCarVis() {
+  _carVisOpen = !_carVisOpen;
+  const listEl = document.getElementById('overview-cars');
+  const visEl  = document.getElementById('overview-cars-vis');
+  const btn    = document.getElementById('cars-vis-btn');
+  if (!listEl || !visEl || !btn) return;
+  if (_carVisOpen) {
+    listEl.style.display = 'none';
+    visEl.style.display  = 'block';
+    btn.classList.add('vis-btn-active');
+    btn.textContent = '📋 List View';
+    _selectedCarId = actData().cars.length ? actData().cars[0].id : null;
+    renderCarVisualize();
+    document.getElementById('panel-cars').classList.add('open');
+  } else {
+    listEl.style.display = 'block';
+    visEl.style.display  = 'none';
+    btn.classList.remove('vis-btn-active');
+    btn.textContent = '👁 Visualize';
+  }
+}
+
+function renderBedVisualize() {
+  const el = document.getElementById('overview-beds-vis');
+  if (!el) return;
+  const beds = actData().beds || [];
+  if (!beds.length) {
+    el.innerHTML = `<div style="padding:20px;text-align:center;font-size:13px;color:var(--muted);">No rooms added yet.</div>`;
+    return;
+  }
+
+  const roomTypeIcons = {
+    Master:'🛏️', Single:'🛏', Twin:'🛏🛏', Suite:'🌟', Common:'🏠', Other:'📦'
+  };
+
+  el.innerHTML = `<div class="vis-wrap"><div class="vis-rooms-grid">${beds.map(b => {
+    const lines = b.occupants ? b.occupants.split('\n') : [];
+    const loc   = b.locationId ? getLocationName(b.locationId) : '';
+    const rtype = b.roomType || 'Other';
+    const icon  = roomTypeIcons[rtype] || '🏠';
+
+    const bedsHtml = Array.from({length: b.bedCount}, (_, i) => {
+      const raw = lines[i] || '';
+      const occ = raw.replace(/^bed\s*\d+:\s*/i, '').trim();
+      const pillows = Array.from({length: Math.min(occ.split(/[,&]/).length + 1, 3)}, () =>
+        `<div class="vis-pillow"></div>`).join('');
+      return `
+        <div class="vis-bed ${occ ? 'occupied' : 'empty'}">
+          <div class="vis-bed-headboard">HEAD</div>
+          <div class="vis-bed-body">
+            <div class="vis-bed-num">Bed ${i+1}</div>
+            <div class="vis-bed-occupant">${occ || 'Unassigned'}</div>
+            <div class="vis-pillow-row">${pillows}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="vis-room">
+        <div class="vis-room-label">
+          ${icon} ${b.room}
+          <span class="vis-room-type-badge">${rtype}</span>
+          ${loc ? `<span class="vis-room-type-badge">📍 ${loc}</span>` : ''}
+        </div>
+        <div class="vis-floor">${bedsHtml}</div>
+        ${b.notes ? `<div style="font-size:11px;color:var(--muted);margin-top:10px;">📝 ${b.notes}</div>` : ''}
+      </div>`;
+  }).join('')}</div></div>`;
+}
+
+function renderCarVisualize() {
+  const el = document.getElementById('overview-cars-vis');
+  if (!el) return;
+  const cars = actData().cars || [];
+  if (!cars.length) {
+    el.innerHTML = `<div style="padding:20px;text-align:center;font-size:13px;color:var(--muted);">No cars added yet.</div>`;
+    return;
+  }
+
+  const typeIcon = {Sedan:'🚗',SUV:'🚙',Van:'🚐',Limo:'🚘',Truck:'🛻'};
+
+  const listHtml = cars.map(c => `
+    <div class="vis-car-list-item${c.id===_selectedCarId?' selected':''}" onclick="selectVisCar('${c.id}')">
+      <div class="vis-car-list-icon">${typeIcon[c.type]||'🚗'}</div>
+      <div>
+        <div>${c.name}</div>
+        <div class="vis-car-list-sub">${c.type} · ${c.seatCount} seats${c.driver?' · Driver: '+c.driver:''}</div>
+      </div>
+    </div>`).join('');
+
+  const car = cars.find(c => c.id === _selectedCarId) || cars[0];
+  const diagramHtml = car ? buildCarDiagram(car) : `<div style="font-size:13px;color:var(--muted);">Select a car to visualize</div>`;
+
+  el.innerHTML = `
+    <div class="vis-wrap">
+      <div class="vis-car-layout">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Select Car</div>
+          <div class="vis-car-list">${listHtml}</div>
+        </div>
+        <div class="vis-car-diagram" id="vis-car-diagram-area">${diagramHtml}</div>
+      </div>
+    </div>`;
+}
+
+function selectVisCar(carId) {
+  _selectedCarId = carId;
+  // re-render just the list selection + diagram
+  renderCarVisualize();
+}
+
+function buildCarDiagram(car) {
+  const seats  = car.seats || [];
+  const count  = car.seatCount || seats.length;
+  const typeIcon = {Sedan:'🚗',SUV:'🚙',Van:'🚐',Limo:'🚘',Truck:'🛻'};
+
+  function visSeat(idx, isDriver) {
+    const name  = isDriver ? (car.driver || 'Driver') : (seats[idx] || '');
+    const cls   = isDriver ? 'driver' : (name ? 'occupied' : 'empty');
+    const label = name || (isDriver ? 'Driver' : `S${idx+1}`);
+    return `<div class="vis-seat ${cls}">
+      <div class="vis-seat-name">${label}</div>
+    </div>`;
+  }
+
+  let rows = '';
+  // Front row with steering wheel overlay
+  rows += `<div class="vis-car-row" style="position:relative;">
+    ${count >= 1 ? visSeat(0, true) : ''}
+    <div class="vis-car-aisle"></div>
+    ${count >= 2 ? visSeat(1, false) : '<div style="width:58px;"></div>'}
+    <div class="vis-steering"></div>
+  </div>`;
+
+  for (let i = 2; i < count; i += 2) {
+    const hasRight = i + 1 < count;
+    rows += `<div class="vis-car-row">
+      ${visSeat(i, false)}
+      <div class="vis-car-aisle">│</div>
+      ${hasRight ? visSeat(i+1, false) : '<div style="width:58px;"></div>'}
+    </div>`;
+  }
+
+  return `
+    <div class="vis-car-body">
+      <div class="vis-car-name-plate">${typeIcon[car.type]||'🚗'} ${car.name} <span>(Top View)</span></div>
+      <div class="vis-car-shell">${rows}</div>
+    </div>`;
+}
+
 
 // ──────────────────────────────────────────────
 // INIT
