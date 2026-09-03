@@ -4117,12 +4117,12 @@ function renderCountdownHero(containerId) {
   // Use selected activity if one is active, else fall back to engagement name/date
   const selAct = currentActivityId ? (state.activities||[]).find(a => a.id === currentActivityId) : null;
   const name = selAct ? selAct.name : (state.engagement.name || 'Our Engagement');
-  const actDate = selAct && selAct.date ? selAct.date : date;
-  const actTime = selAct && selAct.time ? selAct.time : (time || '00:00');
-  const target = new Date(`${actDate}T${actTime}`);
+  const actDate = selAct ? (selAct.dateStart || selAct.date || date) : date;
+  const actTime = time || '00:00';
+  const target = new Date(`${actDate}T00:00`);
   const dateStr = target.toLocaleDateString('default',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const parts = getCountdownParts(actDate, actTime);
-  const displayTime = actTime && actTime !== '00:00' ? actTime : '';
+  const displayTime = '';
 
   let unitsHtml = '';
   if (!parts || parts.done) {
@@ -4168,27 +4168,28 @@ function cdInlineEdit(el, field, containerId) {
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); save(); } if (e.key === 'Escape') renderCountdownHero(containerId); });
     inp.addEventListener('blur', save);
   } else {
-    const curDate = act ? (act.date || '') : (state.engagement ? state.engagement.date : '');
-    const curTime = act ? (act.time || '00:00') : (state.engagement ? state.engagement.time : '00:00');
-    el.innerHTML = `
-      <input class="cd-inline-input" type="date" value="${curDate}" style="width:150px;" />
-      <input class="cd-inline-input" type="time" value="${curTime}" style="width:110px;margin-left:8px;" />`;
-    const [dInp, tInp] = el.querySelectorAll('input');
+    // For activity: open the edit modal instead of inline-editing
+    if (act) {
+      renderCountdownHero(containerId);
+      openEditActivity(act.id);
+      return;
+    }
+    // For global engagement date only
+    const curDate = state.engagement ? state.engagement.date : '';
+    el.innerHTML = `<input class="cd-inline-input" type="date" value="${curDate}" style="width:150px;" />`;
+    const dInp = el.querySelector('input');
     dInp.focus();
     const save = () => {
-      const d = dInp.value; const t = tInp.value || '00:00';
+      const d = dInp.value;
       if (!d) { renderCountdownHero(containerId); return; }
-      if (act) { act.date = d; act.time = t; }
-      else if (state.engagement) { state.engagement.date = d; state.engagement.time = t; }
+      if (state.engagement) { state.engagement.date = d; }
       saveState();
       startCountdown();
       renderCountdownHero(containerId);
       if (currentPage === 'overview') renderOverview();
     };
-    [dInp, tInp].forEach(i => {
-      i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); save(); } if (e.key === 'Escape') renderCountdownHero(containerId); });
-      i.addEventListener('blur', () => setTimeout(save, 150));
-    });
+    dInp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); save(); } if (e.key === 'Escape') renderCountdownHero(containerId); });
+    dInp.addEventListener('blur', () => setTimeout(save, 150));
   }
 }
 
@@ -4894,7 +4895,11 @@ function activityDays(a) {
   const end   = a.dateEnd ? new Date(a.dateEnd + 'T00:00') : start;
   const days  = [];
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    days.push(d.toISOString().slice(0, 10));
+    // Use local date parts to avoid UTC timezone shift (fixes off-by-one in UTC+8)
+    const y  = d.getFullYear();
+    const m  = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    days.push(`${y}-${m}-${dd}`);
   }
   return days;
 }
