@@ -2360,7 +2360,7 @@
       </div>
 
       <!-- Games -->
-      <div class="ov-panel" id="panel-games">
+      <div class="ov-panel open" id="panel-games">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-games')">
           <div class="ov-panel-icon">🎮</div>
           <div class="ov-panel-title">Engagement Games</div>
@@ -2374,7 +2374,7 @@
       </div>
 
       <!-- Bed Plans -->
-      <div class="ov-panel" id="panel-beds">
+      <div class="ov-panel open" id="panel-beds">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-beds')">
           <div class="ov-panel-icon">🛏️</div>
           <div class="ov-panel-title">Bed Plans</div>
@@ -2390,7 +2390,7 @@
       </div>
 
       <!-- Car Seat Plans -->
-      <div class="ov-panel" id="panel-cars">
+      <div class="ov-panel open" id="panel-cars">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-cars')">
           <div class="ov-panel-icon">🚗</div>
           <div class="ov-panel-title">Car Seat Plans</div>
@@ -2435,7 +2435,7 @@
       </div>
 
       <!-- Expenses -->
-      <div class="ov-panel" id="panel-expenses">
+      <div class="ov-panel open" id="panel-expenses">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-expenses')">
           <div class="ov-panel-icon">💸</div>
           <div class="ov-panel-title">Expenses</div>
@@ -5352,6 +5352,14 @@ function renderOverview() {
   const _pageOv = document.getElementById('page-overview');
   const _selActTheme = currentActivityId ? ((state.activities||[]).find(a=>a.id===currentActivityId)||{}).theme : null;
   if (_pageOv) _pageOv.setAttribute('data-theme', _selActTheme || '');
+
+  // ensure all panels are open on every renderOverview call
+  ['panel-location','panel-committee','panel-attendees','panel-games',
+   'panel-beds','panel-cars','panel-meals','panel-grocery','panel-expenses'
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('open');
+  });
 
   // reset vis panels to list view on re-render (e.g. activity switch)
   const _carsListEl = document.getElementById('overview-cars');
