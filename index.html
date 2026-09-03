@@ -1919,6 +1919,13 @@
   @media (max-width: 768px) {
     .survey-panel { width: 100vw; }
   }
+
+  /* Dashboard 2-column grid collapses on small screens */
+  @media (max-width: 640px) {
+    #page-dashboard [style*="grid-template-columns:1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -1970,6 +1977,10 @@
           <span class="nav-icon">👤</span> People
           <span class="nav-count" id="nav-count-people">0</span>
         </div>
+        <div class="nav-item" data-page="survey">
+          <span class="nav-icon">📝</span> Survey
+          <span class="survey-nav-badge" id="survey-nav-badge" style="margin-left:auto;">NEW</span>
+        </div>
       </div>
       <!-- hidden count targets still needed by updateCounts() -->
       <span style="display:none;" id="nav-count-carseats"></span>
@@ -1980,15 +1991,6 @@
       <span style="display:none;" id="nav-count-meals"></span>
       <span style="display:none;" id="nav-count-expenses"></span>
     </nav>
-
-    <!-- Survey Trigger -->
-    <div style="padding: 8px 0 2px;">
-      <button class="survey-nav-btn" onclick="openSurvey()">
-        <span class="survey-nav-btn-icon">📋</span>
-        <span>Quick Survey</span>
-        <span class="survey-nav-badge" id="survey-nav-badge">NEW</span>
-      </button>
-    </div>
 
     <!-- Sidebar Countdown -->
     <div class="sidebar-countdown" id="sidebar-countdown-area">
@@ -2068,13 +2070,39 @@
         <div id="dash-recent"></div>
       </div>
 
-      <!-- Recent Activities — clickable, visible as a full-width card -->
-      <div class="card" style="cursor:pointer;" onclick="navigate('overview')" title="Click to view Full Overview">
-        <div class="card-header">
-          <span class="card-title">⏱️ Recent Activities</span>
-          <span style="font-size:11px;color:var(--accent2);">View Full Overview →</span>
+      <!-- Quick Actions -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header" style="margin-bottom:12px;">
+          <span class="card-title">⚡ Quick Actions</span>
         </div>
-        <div id="dash-recent-visible"></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-activity')">➕ New Activity</button>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('overview')">🗺️ Full Overview</button>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-location')">📍 Add Location</button>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('people')">👤 People</button>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('modal-expense')">💸 Log Expense</button>
+        </div>
+      </div>
+
+      <!-- Two-column row: Upcoming + Budget -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:0;">
+        <!-- Upcoming Activities -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📅 Upcoming Activities</span>
+            <span class="btn btn-ghost btn-sm" style="cursor:pointer;font-size:11px;" onclick="navigate('activities')">See all →</span>
+          </div>
+          <div id="dash-recent-visible"></div>
+        </div>
+
+        <!-- Budget Summary -->
+        <div class="card" style="cursor:pointer;" onclick="navigate('expenses')" title="View all expenses">
+          <div class="card-header">
+            <span class="card-title">💸 Budget Summary</span>
+            <span style="font-size:11px;color:var(--accent2);">All activities →</span>
+          </div>
+          <div id="dash-budget-visible"></div>
+        </div>
       </div>
     </div>
 
@@ -2283,6 +2311,7 @@
           <div class="ov-panel-icon">🍽️</div>
           <div class="ov-panel-title">Meal Plan</div>
           <span class="ov-panel-count" id="pcount-meals">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();navigate('mealplan')">Manage →</button>
           <span class="ov-panel-chevron">▼</span>
         </div>
         <div class="ov-panel-body">
@@ -2385,6 +2414,24 @@
         <button class="btn btn-primary" onclick="openModal('modal-expense')">＋ Add Expense</button>
       </div>
       <div id="expenses-page-list"></div>
+    </div>
+
+    <!-- ══════════════════ SURVEY PAGE ══════════════════ -->
+    <div class="page" id="page-survey">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">📝 Engagement Planning Survey</div>
+          <div class="section-subtitle">Share your feedback — takes less than 2 minutes</div>
+        </div>
+      </div>
+
+      <!-- Survey card -->
+      <div style="max-width:640px;">
+        <div id="survey-page-body">
+          <!-- rendered by renderSurveyPage() -->
+        </div>
+      </div>
     </div>
 
   </div><!-- /main -->
@@ -2748,6 +2795,72 @@
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modal-location')">Cancel</button>
       <button class="btn btn-primary" onclick="saveLocation()">Save Location</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Location Modal -->
+<div class="modal-overlay" id="modal-edit-location">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✏️ Edit Location</div>
+      <button class="modal-close" onclick="closeModal('modal-edit-location')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Venue Name *</label>
+          <input class="form-input" id="eloc-name" placeholder="e.g. Grand Ballroom" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon / Emoji</label>
+          <input class="form-input" id="eloc-icon" placeholder="🏛️" maxlength="4" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <input class="form-input" id="eloc-address" placeholder="e.g. 123 Rizal St., Brgy. San Antonio, Makati City, Metro Manila" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-select" id="eloc-type">
+            <option value="Indoor">🏛️ Indoor</option>
+            <option value="Outdoor">🌿 Outdoor</option>
+            <option value="Beach">🏖️ Beach</option>
+            <option value="Garden">🌸 Garden</option>
+            <option value="Restaurant">🍽️ Restaurant</option>
+            <option value="Hotel">🏨 Hotel</option>
+            <option value="Church">⛪ Church</option>
+            <option value="Other">📍 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Capacity</label>
+          <input class="form-input" id="eloc-capacity" type="number" placeholder="100" min="1" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="eloc-notes" placeholder="Parking, contact info, etc."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Photo (leave blank to keep existing)</label>
+        <label class="loc-upload-zone" id="eloc-upload-zone" for="eloc-image-input">
+          <input type="file" id="eloc-image-input" accept="image/*" onchange="previewELocImage(this)" />
+          <div class="loc-upload-icon">🖼️</div>
+          <div class="loc-upload-text">Click to replace venue photo</div>
+          <div class="loc-upload-hint">JPG, PNG, WEBP</div>
+        </label>
+        <div class="loc-img-preview" id="eloc-img-preview" style="display:none;">
+          <img id="eloc-img-preview-img" src="" alt="preview" />
+          <button type="button" class="loc-img-remove" onclick="clearELocImage()" title="Remove photo">✕</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-location')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditLocation()">Save Changes</button>
     </div>
   </div>
 </div>
@@ -3221,6 +3334,7 @@ const PAGE_TITLES = {
   expenses:   'Expenses',
   overview:   'Full Plan Overview',
   people:     'People',
+  survey:     'Survey',
 };
 
 const ADD_LABELS = {
@@ -3237,6 +3351,7 @@ const ADD_LABELS = {
   expenses:   ['Add Expense',     'modal-expense'],
   overview:   ['Set Date',        'modal-setdate'],
   people:     ['Add Person',      'modal-person'],
+  survey:     null,
 };
 
 let currentPage = 'dashboard';
@@ -3247,8 +3362,18 @@ function navigateToActivity(id) {
   navigate('overview');
 }
 
+// Pages that are scoped per-activity — preserve currentActivityId when entering them
+const ACTIVITY_SCOPED_PAGES = new Set(['carseats','bedplan','games','committee','grocery','mealplan','expenses']);
+
 function navigate(page) {
-  if (page !== 'overview') { currentActivityId = null; _bedVisOpen = false; _carVisOpen = false; document.getElementById('page-overview').removeAttribute('data-theme'); }
+  const keepCtx = page === 'overview' || ACTIVITY_SCOPED_PAGES.has(page);
+  if (!keepCtx) {
+    currentActivityId = null;
+  }
+  if (page !== 'overview') {
+    _bedVisOpen = false; _carVisOpen = false;
+    document.getElementById('page-overview').removeAttribute('data-theme');
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
@@ -3573,6 +3698,91 @@ function deleteLocation(id) {
   updateCounts();
 }
 
+let _editLocId = null;
+
+function openEditLocation(id) {
+  const l = state.locations.find(x=>x.id===id);
+  if (!l) return;
+  _editLocId = id;
+  document.getElementById('eloc-name').value     = l.name;
+  document.getElementById('eloc-icon').value     = l.icon || '';
+  document.getElementById('eloc-address').value  = l.address || '';
+  document.getElementById('eloc-type').value     = l.type || 'Indoor';
+  document.getElementById('eloc-capacity').value = l.capacity || '';
+  document.getElementById('eloc-notes').value    = l.notes || '';
+  // show current photo preview if exists
+  const preview = document.getElementById('eloc-img-preview');
+  const previewImg = document.getElementById('eloc-img-preview-img');
+  const zone = document.getElementById('eloc-upload-zone');
+  if (l.image) {
+    if (previewImg) previewImg.src = l.image;
+    if (preview)    preview.style.display = 'block';
+    if (zone)       zone.style.display = 'none';
+  } else {
+    if (preview)    preview.style.display = 'none';
+    if (zone)       zone.style.display = '';
+    const inp = document.getElementById('eloc-image-input');
+    if (inp) inp.value = '';
+  }
+  openModal('modal-edit-location');
+}
+
+function previewELocImage(input) {
+  const zone    = document.getElementById('eloc-upload-zone');
+  const preview = document.getElementById('eloc-img-preview');
+  const img     = document.getElementById('eloc-img-preview-img');
+  if (!input.files || !input.files[0]) { preview.style.display='none'; if(zone) zone.style.display=''; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    if (img) img.src = e.target.result;
+    preview.style.display = 'block';
+    if (zone) zone.style.display = 'none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function clearELocImage() {
+  const inp     = document.getElementById('eloc-image-input');
+  const zone    = document.getElementById('eloc-upload-zone');
+  const preview = document.getElementById('eloc-img-preview');
+  const img     = document.getElementById('eloc-img-preview-img');
+  if (inp) inp.value = '';
+  if (img) img.src = '';
+  if (preview) preview.style.display = 'none';
+  if (zone)    zone.style.display = '';
+}
+
+function saveEditLocation() {
+  if (!_editLocId) return;
+  const l = state.locations.find(x=>x.id===_editLocId);
+  if (!l) return;
+  const name = document.getElementById('eloc-name').value.trim();
+  if (!name) { showToast('Venue name is required.','⚠️'); return; }
+  const fileInput = document.getElementById('eloc-image-input');
+  const file = fileInput && fileInput.files[0];
+  function finish(imageData) {
+    l.name     = name;
+    l.icon     = document.getElementById('eloc-icon').value || '📍';
+    l.address  = document.getElementById('eloc-address').value.trim();
+    l.type     = document.getElementById('eloc-type').value;
+    l.capacity = document.getElementById('eloc-capacity').value;
+    l.notes    = document.getElementById('eloc-notes').value.trim();
+    if (imageData !== undefined) l.image = imageData; // only update if new file chosen; keep old otherwise
+    saveState();
+    closeModal('modal-edit-location');
+    showToast(`"${name}" updated!`,'✅');
+    renderPage(currentPage);
+    _editLocId = null;
+  }
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => finish(e.target.result);
+    reader.readAsDataURL(file);
+  } else {
+    finish(undefined); // no new image — keep existing
+  }
+}
+
 // ──────────────────────────────────────────────
 // SAVE — CARS
 // ──────────────────────────────────────────────
@@ -3799,6 +4009,8 @@ function renderActivityItem(a) {
     durationStr = `📅 ${fmtD(a.date)}`;
   }
   const daysTag = a.days > 1 ? `<span class="tag tag-purple">${a.days} days</span>` : '';
+  const attendeeCount = (a.attendees||[]).length;
+  const attendeeTag = attendeeCount ? `<span class="tag" style="background:var(--surface3);color:var(--muted);font-size:10px;">🙋 ${attendeeCount}</span>` : '';
   return `
   <div class="activity-card" onclick="navigateToActivity('${a.id}')" title="Open overview for this activity">
     ${themeBanner(a)}
@@ -3810,6 +4022,7 @@ function renderActivityItem(a) {
           ${daysTag}
           ${durationStr?`<span>${durationStr}</span>`:''}
           ${loc?`<span>${loc}</span>`:''}
+          ${attendeeTag}
         </div>
         ${a.desc?`<div style="font-size:12px;color:var(--muted);margin-top:6px;">${a.desc}</div>`:''}
       </div>
@@ -3839,6 +4052,7 @@ function renderPage(page) {
   else if (page === 'mealplan')   renderMealPlan();
   else if (page === 'people')     renderPeople();
   else if (page === 'expenses')   renderExpensesPage();
+  else if (page === 'survey')     renderSurveyPage();
 }
 
 // DASHBOARD
@@ -3854,19 +4068,98 @@ function renderDashboard() {
   document.getElementById('stat-games').textContent = sumAcross('games');
 
   const recent = document.getElementById('dash-recent-visible');
-  const sorted = [...state.activities].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
-  if (!sorted.length) {
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Upcoming = activities with a future dateStart, sorted soonest first
+  const upcoming = [...state.activities]
+    .filter(a => {
+      if (!a.dateStart) return false;
+      const d = new Date(a.dateStart + 'T00:00');
+      return d >= today;
+    })
+    .sort((a,b) => new Date(a.dateStart) - new Date(b.dateStart))
+    .slice(0, 5);
+
+  // Fallback to recently-added if nothing upcoming
+  const display = upcoming.length
+    ? upcoming
+    : [...state.activities].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+
+  if (!display.length) {
     recent.innerHTML = `<div style="padding:12px 0;font-size:13px;color:var(--muted);text-align:center;">No activities yet — click to open Full Overview</div>`;
     return;
   }
-  recent.innerHTML = `<div class="timeline">${sorted.map(a=>`
+
+  const fmtShort = d => new Date(d + 'T00:00').toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
+  const daysUntil = d => {
+    const diff = new Date(d + 'T00:00') - today;
+    const n = Math.round(diff / 86400000);
+    if (n === 0) return `<span style="color:var(--success);font-weight:700;">Today!</span>`;
+    if (n === 1) return `<span style="color:var(--warning);font-weight:700;">Tomorrow</span>`;
+    return `<span style="color:var(--muted2);">in ${n} day${n!==1?'s':''}</span>`;
+  };
+
+  recent.innerHTML = `<div class="timeline">${display.map(a => {
+    const hasFutureDate = a.dateStart && new Date(a.dateStart + 'T00:00') >= today;
+    return `
     <div class="timeline-item" style="cursor:pointer;" onclick="navigateToActivity('${a.id}')" title="Open overview for this activity">
       <div class="timeline-dot"></div>
       <div class="timeline-date">${a.quarter}${a.theme ? ' · ' + a.theme : ''}</div>
       <div class="timeline-content">${a.name}</div>
-      ${a.date?`<div class="timeline-sub">📅 ${new Date(a.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric'})}</div>`:''}
-    </div>`).join('')}
-  </div>`;
+      ${a.dateStart
+        ? `<div class="timeline-sub">📅 ${fmtShort(a.dateStart)}${a.days > 1 ? ` <span class="tag tag-purple" style="font-size:10px;padding:1px 6px;">${a.days}d</span>` : ''}${hasFutureDate ? ' &nbsp;' + daysUntil(a.dateStart) : ''}</div>`
+        : (a.date ? `<div class="timeline-sub">📅 ${fmtShort(a.date)}</div>` : '')}
+    </div>`;
+  }).join('')}</div>`;
+
+  // -- Budget summary card (render into dash-budget-visible if element exists)
+  const budgetEl = document.getElementById('dash-budget-visible');
+  if (budgetEl) {
+    const allExpenses = (state.activities||[]).flatMap(a => a.expenses||[]);
+    const allGrocCost = (state.activities||[]).flatMap(a => (a.grocery||[]).filter(g=>g.cost&&g.cost.trim()));
+    const manualTotal = allExpenses.reduce((s,e) => s + (parseFloat(e.amount)||0), 0);
+    const grocTotal   = allGrocCost.reduce((s,g) => {
+      const c = parseFloat((g.cost||'').replace(/[^0-9.]/g,''));
+      return s + (isNaN(c) ? 0 : c);
+    }, 0);
+    const grand = manualTotal + grocTotal;
+    const expCount = allExpenses.length + allGrocCost.length;
+
+    if (!expCount) {
+      budgetEl.innerHTML = `<div style="padding:12px 0;font-size:13px;color:var(--muted);text-align:center;">No expenses logged yet.</div>`;
+    } else {
+      const catTotals = {};
+      allExpenses.forEach(e => {
+        const c = e.category||'Other';
+        catTotals[c] = (catTotals[c]||0) + (parseFloat(e.amount)||0);
+      });
+      if (allGrocCost.length) {
+        allGrocCost.forEach(g => {
+          const c = parseFloat((g.cost||'').replace(/[^0-9.]/g,''));
+          catTotals['Grocery'] = (catTotals['Grocery']||0) + (isNaN(c)?0:c);
+        });
+      }
+      const catIcons = {Staycation:'🏨',Food:'🍽️',Gas:'⛽',Grocery:'🛒',Other:'📌'};
+      const barsHtml = Object.entries(catTotals)
+        .sort((a,b) => b[1]-a[1])
+        .map(([cat, amt]) => {
+          const pct = grand > 0 ? Math.round((amt/grand)*100) : 0;
+          return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;">
+            <div style="width:90px;font-size:11px;color:var(--muted);flex-shrink:0;">${catIcons[cat]||'📌'} ${cat}</div>
+            <div style="flex:1;background:var(--surface3);border-radius:4px;height:6px;overflow:hidden;">
+              <div style="width:${pct}%;height:100%;background:var(--accent2);border-radius:4px;"></div>
+            </div>
+            <div style="width:60px;text-align:right;font-size:11px;color:var(--white);font-weight:600;">₱${fmt(amt)}</div>
+          </div>`;
+        }).join('');
+      budgetEl.innerHTML = `
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:22px;font-weight:800;color:var(--white);">₱${fmt(grand)}</div>
+          <div style="font-size:11px;color:var(--muted);">${expCount} entr${expCount!==1?'ies':'y'} across all activities</div>
+        </div>
+        ${barsHtml}`;
+    }
+  }
 }
 
 // ACTIVITIES
@@ -3924,7 +4217,10 @@ function renderLocations() {
         <span style="font-size:11px;color:var(--muted);">
           ${state.activities.filter(a=>a.locationId===l.id).length} activities
         </span>
-        <button class="btn btn-danger btn-sm" onclick="deleteLocation('${l.id}')">🗑️ Remove</button>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-ghost btn-sm" onclick="openEditLocation('${l.id}')">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteLocation('${l.id}')">🗑️</button>
+        </div>
       </div>
     </div>`).join('');
 }
@@ -5304,6 +5600,38 @@ function renderExpenses(containerId) {
     </tr>`;
 
   const entryCount = rowNum;
+
+  // Per-category summary chips
+  const catMeta2 = {
+    Staycation: { icon:'🏨' },
+    Food:       { icon:'🍽️' },
+    Gas:        { icon:'⛽' },
+    Grocery:    { icon:'🛒' },
+    Other:      { icon:'📌' },
+  };
+  const catSummary = {};
+  manual.forEach(e => {
+    const c = e.category||'Other';
+    catSummary[c] = (catSummary[c]||0) + (parseFloat(e.amount)||0);
+  });
+  if (grocWithCost.length) {
+    grocWithCost.forEach(g => {
+      const c = parseFloat((g.cost||'').replace(/[^0-9.]/g,''));
+      catSummary['Grocery'] = (catSummary['Grocery']||0) + (isNaN(c)?0:c);
+    });
+  }
+  const catChipsHtml = Object.entries(catSummary)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([cat, amt]) => {
+      const pct = grandTotal > 0 ? Math.round((amt/grandTotal)*100) : 0;
+      const ico = (catMeta2[cat]||catMeta2.Other).icon;
+      return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;min-width:120px;flex:1;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">${ico} ${cat}</div>
+        <div style="font-size:15px;font-weight:700;color:var(--white);">₱${fmt(amt)}</div>
+        <div style="font-size:10px;color:var(--muted2);margin-top:2px;">${pct}% of total</div>
+      </div>`;
+    }).join('');
+
   el.innerHTML = `
     <div class="exp-ledger">
       <div class="exp-ledger-header">
@@ -5319,6 +5647,7 @@ function renderExpenses(containerId) {
           </div>
         </div>
       </div>
+      ${catChipsHtml ? `<div style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 18px 2px;">${catChipsHtml}</div>` : ''}
       <div class="exp-ledger-wrap">
         <table class="exp-table">
           <thead>
@@ -5540,138 +5869,126 @@ renderDashboard();
 initFirebase();
 </script>
 
-<!-- ══════════════════ SURVEY PANEL ══════════════════ -->
-<div class="survey-overlay" id="survey-overlay" onclick="closeSurvey()"></div>
-<div class="survey-panel" id="survey-panel">
-  <div class="survey-panel-header">
-    <div>
-      <div class="survey-panel-title">📋 Engagement Planning Survey</div>
-      <div class="survey-panel-sub">Share your feedback — takes less than 2 minutes</div>
-    </div>
-    <button class="survey-close" onclick="closeSurvey()" title="Close">✕</button>
-  </div>
-
-  <!-- Form state -->
-  <div class="survey-body" id="survey-body">
-
-    <!-- Q1 — Overall rating -->
-    <div class="sq-block">
-      <div class="sq-label"><span class="sq-label-num">1</span> How would you rate this planning tool overall?</div>
-      <div class="sq-stars" id="sq-stars-1">
-        <span class="sq-star" data-val="1" onclick="setStar(1,1)">⭐</span>
-        <span class="sq-star" data-val="2" onclick="setStar(1,2)">⭐</span>
-        <span class="sq-star" data-val="3" onclick="setStar(1,3)">⭐</span>
-        <span class="sq-star" data-val="4" onclick="setStar(1,4)">⭐</span>
-        <span class="sq-star" data-val="5" onclick="setStar(1,5)">⭐</span>
-        <span class="sq-star-val" id="sq-star-val-1"></span>
-      </div>
-    </div>
-
-    <div class="sq-divider"></div>
-
-    <!-- Q2 — Most useful feature -->
-    <div class="sq-block">
-      <div class="sq-label"><span class="sq-label-num">2</span> Which feature do you use the most?</div>
-      <div class="sq-sub">Pick one</div>
-      <div class="sq-chips" id="sq-chips-2">
-        <span class="sq-chip" onclick="setChip(2,this)">🗺️ Full Overview</span>
-        <span class="sq-chip" onclick="setChip(2,this)">📋 Activities</span>
-        <span class="sq-chip" onclick="setChip(2,this)">🚗 Car Seat Plan</span>
-        <span class="sq-chip" onclick="setChip(2,this)">🛏️ Bed Plan</span>
-        <span class="sq-chip" onclick="setChip(2,this)">🍽️ Meal Plan</span>
-        <span class="sq-chip" onclick="setChip(2,this)">🛒 Grocery List</span>
-        <span class="sq-chip" onclick="setChip(2,this)">💸 Expenses</span>
-        <span class="sq-chip" onclick="setChip(2,this)">🎮 Games</span>
-      </div>
-    </div>
-
-    <div class="sq-divider"></div>
-
-    <!-- Q3 — Missing features (multi-select) -->
-    <div class="sq-block">
-      <div class="sq-label"><span class="sq-label-num">3</span> What would you like to see added?</div>
-      <div class="sq-sub">Select all that apply</div>
-      <div class="sq-chips" id="sq-chips-3">
-        <span class="sq-chip multi" onclick="toggleChip(this)">📸 Photo Gallery</span>
-        <span class="sq-chip multi" onclick="toggleChip(this)">📣 RSVP Tracking</span>
-        <span class="sq-chip multi" onclick="toggleChip(this)">💬 Team Chat</span>
-        <span class="sq-chip multi" onclick="toggleChip(this)">📊 Budget Chart</span>
-        <span class="sq-chip multi" onclick="toggleChip(this)">🗓️ Calendar View</span>
-        <span class="sq-chip multi" onclick="toggleChip(this)">📱 Mobile App</span>
-        <span class="sq-chip multi" onclick="toggleChip(this)">🔔 Reminders</span>
-        <span class="sq-chip multi" onclick="toggleChip(this)">📄 Export PDF</span>
-      </div>
-    </div>
-
-    <div class="sq-divider"></div>
-
-    <!-- Q4 — Ease of use -->
-    <div class="sq-block">
-      <div class="sq-label"><span class="sq-label-num">4</span> How easy is it to use this planner?</div>
-      <div class="sq-chips" id="sq-chips-4">
-        <span class="sq-chip" onclick="setChip(4,this)">😩 Very Difficult</span>
-        <span class="sq-chip" onclick="setChip(4,this)">😕 Difficult</span>
-        <span class="sq-chip" onclick="setChip(4,this)">😐 Neutral</span>
-        <span class="sq-chip" onclick="setChip(4,this)">🙂 Easy</span>
-        <span class="sq-chip" onclick="setChip(4,this)">😄 Very Easy</span>
-      </div>
-    </div>
-
-    <div class="sq-divider"></div>
-
-    <!-- Q5 — Recommend -->
-    <div class="sq-block">
-      <div class="sq-label"><span class="sq-label-num">5</span> Would you recommend this tool to teammates?</div>
-      <div class="sq-chips" id="sq-chips-5">
-        <span class="sq-chip" onclick="setChip(5,this)">👍 Definitely</span>
-        <span class="sq-chip" onclick="setChip(5,this)">🤔 Maybe</span>
-        <span class="sq-chip" onclick="setChip(5,this)">👎 Probably Not</span>
-      </div>
-    </div>
-
-    <div class="sq-divider"></div>
-
-    <!-- Q6 — Open comment -->
-    <div class="sq-block">
-      <div class="sq-label"><span class="sq-label-num">6</span> Any other comments or suggestions?</div>
-      <textarea class="sq-textarea" id="sq-comment" placeholder="Tell us what you think — bugs, ideas, praises…"></textarea>
-    </div>
-
-  </div><!-- /survey-body -->
-
-  <div class="survey-footer">
-    <span class="survey-footer-note">Responses are saved to Firestore and visible to the organizer.</span>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-ghost btn-sm" onclick="resetSurvey()">Reset</button>
-      <button class="btn btn-primary btn-sm" onclick="submitSurvey()">Submit ✓</button>
-    </div>
-  </div>
-</div>
-
 <script>
 // ──────────────────────────────────────────────
 // SURVEY
 // ──────────────────────────────────────────────
 const SURVEY_STATE_KEY = 'engage_survey_v1';
 
-let _surveyStarRatings = { 1: 0 }; // qId → value
-let _surveySingleChips = {};       // qId → text
-let _surveyMultiChips  = {};       // qId → Set of texts
+let _surveyStarRatings = { 1: 0 };
+let _surveySingleChips = {};
+let _surveyMultiChips  = {};
 
 const STAR_LABELS = ['','😕 Poor','😐 Fair','🙂 Good','😊 Great','🤩 Excellent'];
 
-function openSurvey() {
-  document.getElementById('survey-overlay').classList.add('open');
-  document.getElementById('survey-panel').classList.add('open');
-  // Hide NEW badge once seen
+// Returns the HTML string for the full survey form
+function surveyFormHTML(submitFn, resetFn) {
+  return `
+    <div class="card" style="margin-bottom:20px;">
+      <!-- Q1 -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">1</span> How would you rate this planning tool overall?</div>
+        <div class="sq-stars" id="sq-stars-1">
+          <span class="sq-star" data-val="1" onclick="setStar(1,1)">⭐</span>
+          <span class="sq-star" data-val="2" onclick="setStar(1,2)">⭐</span>
+          <span class="sq-star" data-val="3" onclick="setStar(1,3)">⭐</span>
+          <span class="sq-star" data-val="4" onclick="setStar(1,4)">⭐</span>
+          <span class="sq-star" data-val="5" onclick="setStar(1,5)">⭐</span>
+          <span class="sq-star-val" id="sq-star-val-1"></span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+      <!-- Q2 -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">2</span> Which feature do you use the most?</div>
+        <div class="sq-sub">Pick one</div>
+        <div class="sq-chips" id="sq-chips-2" style="padding-left:28px;margin-top:8px;">
+          <span class="sq-chip" onclick="setChip(2,this)">🗺️ Full Overview</span>
+          <span class="sq-chip" onclick="setChip(2,this)">📋 Activities</span>
+          <span class="sq-chip" onclick="setChip(2,this)">🚗 Car Seat Plan</span>
+          <span class="sq-chip" onclick="setChip(2,this)">🛏️ Bed Plan</span>
+          <span class="sq-chip" onclick="setChip(2,this)">🍽️ Meal Plan</span>
+          <span class="sq-chip" onclick="setChip(2,this)">🛒 Grocery List</span>
+          <span class="sq-chip" onclick="setChip(2,this)">💸 Expenses</span>
+          <span class="sq-chip" onclick="setChip(2,this)">🎮 Games</span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+      <!-- Q3 -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">3</span> What would you like to see added?</div>
+        <div class="sq-sub">Select all that apply</div>
+        <div class="sq-chips" id="sq-chips-3" style="padding-left:28px;margin-top:8px;">
+          <span class="sq-chip multi" onclick="toggleChip(this)">📸 Photo Gallery</span>
+          <span class="sq-chip multi" onclick="toggleChip(this)">📣 RSVP Tracking</span>
+          <span class="sq-chip multi" onclick="toggleChip(this)">💬 Team Chat</span>
+          <span class="sq-chip multi" onclick="toggleChip(this)">📊 Budget Chart</span>
+          <span class="sq-chip multi" onclick="toggleChip(this)">🗓️ Calendar View</span>
+          <span class="sq-chip multi" onclick="toggleChip(this)">📱 Mobile App</span>
+          <span class="sq-chip multi" onclick="toggleChip(this)">🔔 Reminders</span>
+          <span class="sq-chip multi" onclick="toggleChip(this)">📄 Export PDF</span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+      <!-- Q4 -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">4</span> How easy is it to use this planner?</div>
+        <div class="sq-chips" id="sq-chips-4" style="padding-left:28px;margin-top:8px;">
+          <span class="sq-chip" onclick="setChip(4,this)">😩 Very Difficult</span>
+          <span class="sq-chip" onclick="setChip(4,this)">😕 Difficult</span>
+          <span class="sq-chip" onclick="setChip(4,this)">😐 Neutral</span>
+          <span class="sq-chip" onclick="setChip(4,this)">🙂 Easy</span>
+          <span class="sq-chip" onclick="setChip(4,this)">😄 Very Easy</span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+      <!-- Q5 -->
+      <div class="sq-block" style="margin-bottom:20px;">
+        <div class="sq-label"><span class="sq-label-num">5</span> Would you recommend this tool to teammates?</div>
+        <div class="sq-chips" id="sq-chips-5" style="padding-left:28px;margin-top:8px;">
+          <span class="sq-chip" onclick="setChip(5,this)">👍 Definitely</span>
+          <span class="sq-chip" onclick="setChip(5,this)">🤔 Maybe</span>
+          <span class="sq-chip" onclick="setChip(5,this)">👎 Probably Not</span>
+        </div>
+      </div>
+      <div class="sq-divider" style="margin-bottom:20px;"></div>
+      <!-- Q6 -->
+      <div class="sq-block" style="margin-bottom:24px;">
+        <div class="sq-label"><span class="sq-label-num">6</span> Any other comments or suggestions?</div>
+        <textarea class="sq-textarea" id="sq-comment" placeholder="Tell us what you think — bugs, ideas, praises…" style="margin-top:8px;"></textarea>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <span style="font-size:11px;color:var(--muted2);">Responses are saved to Firestore.</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="${resetFn}">Reset</button>
+          <button class="btn btn-primary" onclick="${submitFn}">Submit Survey ✓</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// Render into the full page
+function renderSurveyPage() {
+  const el = document.getElementById('survey-page-body');
+  if (!el) return;
+  // Hide NEW badge
   const badge = document.getElementById('survey-nav-badge');
   if (badge) badge.classList.remove('show');
   localStorage.setItem('survey_seen', '1');
+  // Reset state on fresh render
+  _surveyStarRatings = { 1: 0 };
+  _surveySingleChips = {};
+  _surveyMultiChips  = {};
+  el.innerHTML = surveyFormHTML('submitSurvey()', 'resetSurveyPage()');
 }
 
-function closeSurvey() {
-  document.getElementById('survey-overlay').classList.remove('open');
-  document.getElementById('survey-panel').classList.remove('open');
+function resetSurveyPage() {
+  _surveyStarRatings = { 1: 0 };
+  _surveySingleChips = {};
+  _surveyMultiChips  = {};
+  renderSurveyPage();
 }
 
 // Star rating
@@ -5686,7 +6003,7 @@ function setStar(qId, val) {
   if (lbl) lbl.textContent = STAR_LABELS[val] || '';
 }
 
-// Single-select chip (radio behaviour within a group)
+// Single-select chip
 function setChip(qId, el) {
   const container = document.getElementById(`sq-chips-${qId}`);
   if (!container) return;
@@ -5695,94 +6012,56 @@ function setChip(qId, el) {
   _surveySingleChips[qId] = el.textContent.trim();
 }
 
-// Multi-select chip (toggle)
+// Multi-select chip
 function toggleChip(el) {
   el.classList.toggle('active');
   const container = el.closest('.sq-chips');
   if (!container) return;
-  const qId = container.id; // e.g. 'sq-chips-3'
+  const qId = container.id;
   if (!_surveyMultiChips[qId]) _surveyMultiChips[qId] = new Set();
   const val = el.textContent.trim();
-  if (el.classList.contains('active')) {
-    _surveyMultiChips[qId].add(val);
-  } else {
-    _surveyMultiChips[qId].delete(val);
-  }
-}
-
-function resetSurvey() {
-  _surveyStarRatings = { 1: 0 };
-  _surveySingleChips = {};
-  _surveyMultiChips  = {};
-  // Reset DOM
-  document.querySelectorAll('.sq-star').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.sq-star-val').forEach(s => s.textContent = '');
-  document.querySelectorAll('.sq-chip').forEach(c => c.classList.remove('active'));
-  const ta = document.getElementById('sq-comment');
-  if (ta) ta.value = '';
-  // Restore form body if was in submitted state
-  const body = document.getElementById('survey-body');
-  if (body && body.querySelector('.survey-submitted')) {
-    renderSurveyForm();
-  }
-}
-
-function renderSurveyForm() {
-  // Re-render the survey body to initial state — simply reload the panel HTML in-place
-  // For simplicity we just reload the page section via innerHTML restore
-  // (The survey HTML is static so we reload the panel content)
-  location.reload(); // lightest way to fully reset; alternatively re-render manually
+  if (el.classList.contains('active')) _surveyMultiChips[qId].add(val);
+  else _surveyMultiChips[qId].delete(val);
 }
 
 function submitSurvey() {
-  const rating  = _surveyStarRatings[1] || 0;
-  const feature = _surveySingleChips[2] || '';
-  const easeRaw = _surveySingleChips[4] || '';
+  const rating    = _surveyStarRatings[1] || 0;
+  const feature   = _surveySingleChips[2] || '';
+  const easeRaw   = _surveySingleChips[4] || '';
   const recommend = _surveySingleChips[5] || '';
   const additions = _surveyMultiChips['sq-chips-3']
     ? [..._surveyMultiChips['sq-chips-3']].join(', ') : '';
-  const comment = (document.getElementById('sq-comment')?.value || '').trim();
+  const comment   = (document.getElementById('sq-comment')?.value || '').trim();
 
   if (!rating) { showToast('Please give a star rating first.','⚠️'); return; }
 
   const response = {
-    id: uid(),
-    submittedAt: new Date().toISOString(),
-    rating,
-    feature,
-    additions,
-    ease: easeRaw,
-    recommend,
-    comment,
+    id: uid(), submittedAt: new Date().toISOString(),
+    rating, feature, additions, ease: easeRaw, recommend, comment,
   };
 
-  // Save locally
   try {
     const saved = JSON.parse(localStorage.getItem(SURVEY_STATE_KEY) || '[]');
     saved.push(response);
     localStorage.setItem(SURVEY_STATE_KEY, JSON.stringify(saved));
   } catch(e) {}
 
-  // Save to Firestore if connected
   if (_fbDb) {
     _fbDb.collection('survey_responses').add(response)
       .catch(e => console.warn('Survey Firestore write error:', e));
   }
 
-  // Show thank-you state
-  const body = document.getElementById('survey-body');
-  if (body) {
-    body.innerHTML = `
+  // Thank-you view
+  const thankYou = `
+    <div class="card">
       <div class="survey-submitted">
         <div class="survey-submitted-icon">🎉</div>
         <div class="survey-submitted-title">Thank you!</div>
         <div class="survey-submitted-sub">
           Your response has been recorded.<br>
-          ${rating >= 4
-            ? 'We\'re glad you\'re enjoying the planner! 🙌'
-            : 'We appreciate your honest feedback — we\'ll keep improving!'}
+          ${rating >= 4 ? 'We\'re glad you\'re enjoying the planner! 🙌' : 'We appreciate your honest feedback — we\'ll keep improving!'}
         </div>
-        <div style="margin-top:16px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--muted);text-align:left;width:100%;">
+        <div style="margin-top:16px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--muted);text-align:left;width:100%;max-width:420px;">
           <div style="font-weight:700;color:var(--white);margin-bottom:8px;">Your response summary</div>
           <div>⭐ Rating: ${STAR_LABELS[rating]}</div>
           ${feature   ? `<div>🔧 Top feature: ${feature}</div>` : ''}
@@ -5791,9 +6070,12 @@ function submitSurvey() {
           ${additions ? `<div>💡 Wishlist: ${additions}</div>` : ''}
           ${comment   ? `<div>💬 Comment: "${comment}"</div>` : ''}
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="closeSurvey()" style="margin-top:8px;">Close ✕</button>
-      </div>`;
-  }
+        <button class="btn btn-ghost btn-sm" onclick="resetSurveyPage()" style="margin-top:12px;">↩ Submit another response</button>
+      </div>
+    </div>`;
+
+  const pageBody = document.getElementById('survey-page-body');
+  if (pageBody) pageBody.innerHTML = thankYou;
 
   showToast('Survey submitted — thank you! 🎉', '📋');
 }
