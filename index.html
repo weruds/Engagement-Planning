@@ -2264,7 +2264,10 @@
           <div class="section-title">Bed Plan</div>
           <div class="section-subtitle">Assign guests to rooms and beds</div>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modal-bed')">＋ Add Room</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="openAddOccupantModal()">🛏️ Add Occupants</button>
+          <button class="btn btn-primary" onclick="openModal('modal-bed')">＋ Add Room</button>
+        </div>
       </div>
       <div class="card-grid" id="bedplan-list"></div>
     </div>
@@ -3049,47 +3052,18 @@
       <button class="modal-close" onclick="closeModal('modal-bed')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Room Name *</label>
-          <input class="form-input" id="bed-room" placeholder="e.g. Master Suite" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Room Type</label>
-          <select class="form-select" id="bed-room-type">
-            <option value="Master">🛏️ Master Room</option>
-            <option value="Single">🛏 Single Room</option>
-            <option value="Twin">🛏🛏 Twin Room</option>
-            <option value="Suite">🌟 Suite</option>
-            <option value="Common">🏠 Common Area</option>
-            <option value="Other">📦 Other</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group" style="grid-column:1">
-          <label class="form-label">Bed Count</label>
-          <select class="form-select" id="bed-count">
-            <option value="1">1 bed</option>
-            <option value="2">2 beds</option>
-            <option value="3">3 beds</option>
-            <option value="4">4 beds</option>
-          </select>
-        </div>
+      <div class="form-group">
+        <label class="form-label">Room Name *</label>
+        <input class="form-input" id="bed-room" placeholder="e.g. Master Suite" />
       </div>
       <div class="form-group">
-        <label class="form-label">Occupants (comma-separated per bed)</label>
-        <textarea class="form-textarea" id="bed-occupants" placeholder="Bed 1: Alice & Bob&#10;Bed 2: Carol & Dave" style="min-height:60px;"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Location / Venue</label>
-        <select class="form-select" id="bed-location">
-          <option value="">— None —</option>
+        <label class="form-label">Bed Count</label>
+        <select class="form-select" id="bed-count">
+          <option value="1">1 bed</option>
+          <option value="2">2 beds</option>
+          <option value="3">3 beds</option>
+          <option value="4">4 beds</option>
         </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Notes</label>
-        <input class="form-input" id="bed-notes" placeholder="Floor, amenities, etc." />
       </div>
     </div>
     <div class="modal-footer">
@@ -3237,6 +3211,42 @@
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modal-assign-bed')">Cancel</button>
       <button class="btn btn-primary" onclick="confirmAssignBed()">Assign</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Occupants Modal -->
+<div class="modal-overlay" id="modal-add-occupant">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Occupants</div>
+      <button class="modal-close" onclick="closeModal('modal-add-occupant')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Room</label>
+        <select class="form-select" id="occ-room" onchange="onOccRoomChange()">
+          <option value="">— Select a room —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Select Bed</label>
+        <select class="form-select" id="occ-bed">
+          <option value="">— Select a bed —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Occupant</label>
+        <select class="form-select" id="occ-person">
+          <option value="">— Select an attendee —</option>
+        </select>
+      </div>
+      <!-- Available Beds display -->
+      <div id="occ-available-beds" style="margin-top:12px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--muted);min-height:48px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-occupant')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAddOccupant()">Assign</button>
     </div>
   </div>
 </div>
@@ -3586,7 +3596,6 @@ function openModal(id) {
   document.getElementById(id).classList.add('open');
   // populate location dropdowns
   if (id === 'modal-activity') { populateLocationSelect('act-location'); selectTheme(document.getElementById('act-theme').value || 'Party'); }
-  if (id === 'modal-bed') populateLocationSelect('bed-location');
   if (id === 'modal-game') populateGameOwnerSelect();
   if (id === 'modal-mealslot') populateMealSlotAssignee();
   // pre-fill set-date modal with existing values
@@ -4079,15 +4088,11 @@ function saveBed() {
   const room = document.getElementById('bed-room').value.trim();
   if (!room) { showToast('Room name is required.','⚠️'); return; }
   const count = parseInt(document.getElementById('bed-count').value);
-  const occupants = document.getElementById('bed-occupants').value.trim();
   const entry = {
     id: uid(),
     room,
-    roomType: document.getElementById('bed-room-type').value,
     bedCount: count,
-    occupants,
-    locationId: document.getElementById('bed-location').value,
-    notes: document.getElementById('bed-notes').value.trim(),
+    occupants: '',
   };
   actData().beds.push(entry);
   saveState();
@@ -4105,6 +4110,91 @@ function deleteBed(id) {
   showToast(`"${b.room}" removed.`,'🗑️');
   renderPage(currentPage);
   updateCounts();
+}
+
+// ──────────────────────────────────────────────
+// ADD OCCUPANTS MODAL
+// ──────────────────────────────────────────────
+function openAddOccupantModal() {
+  if (!currentActivityId) { showToast('Select an activity first.', '⚠️'); return; }
+  const beds = actData().beds;
+  if (!beds.length) { showToast('Add a room first.', '⚠️'); return; }
+
+  // Populate room dropdown
+  const roomSel = document.getElementById('occ-room');
+  roomSel.innerHTML = '<option value="">— Select a room —</option>' +
+    beds.map(b => `<option value="${b.id}">${b.room}</option>`).join('');
+
+  // Populate occupant dropdown from attendees
+  const personSel = document.getElementById('occ-person');
+  const names = _attendeeNames();
+  personSel.innerHTML = '<option value="">— Select an attendee —</option>' +
+    names.map(n => `<option value="${n}">${n}</option>`).join('');
+
+  // Clear bed select and available beds display
+  document.getElementById('occ-bed').innerHTML = '<option value="">— Select a room first —</option>';
+  document.getElementById('occ-available-beds').innerHTML = '';
+
+  openModal('modal-add-occupant');
+}
+
+function onOccRoomChange() {
+  const bedId = document.getElementById('occ-room').value;
+  const bedSel = document.getElementById('occ-bed');
+  const avail  = document.getElementById('occ-available-beds');
+
+  if (!bedId) {
+    bedSel.innerHTML = '<option value="">— Select a room first —</option>';
+    avail.innerHTML = '';
+    return;
+  }
+
+  const b = actData().beds.find(x => x.id === bedId);
+  if (!b) return;
+
+  const lines = b.occupants ? b.occupants.split('\n') : [];
+
+  // Build bed dropdown — show which are free/taken
+  bedSel.innerHTML = '<option value="">— Select a bed —</option>' +
+    Array.from({ length: b.bedCount }, (_, i) => {
+      const raw = lines[i] || '';
+      const occ = raw.replace(/^bed\s*\d+:\s*/i, '').trim();
+      return `<option value="${i}">${occ ? `Bed ${i + 1} — ${occ} (occupied)` : `Bed ${i + 1} — Available`}</option>`;
+    }).join('');
+
+  // Available Beds display panel
+  const availBeds = Array.from({ length: b.bedCount }, (_, i) => {
+    const raw = lines[i] || '';
+    const occ = raw.replace(/^bed\s*\d+:\s*/i, '').trim();
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);">
+      <span>🛏️ Bed ${i + 1}</span>
+      <span style="font-weight:600;color:${occ ? 'var(--muted)' : 'var(--success)'};">${occ || '✅ Available'}</span>
+    </div>`;
+  }).join('');
+  avail.innerHTML = `<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted2);margin-bottom:6px;">Available Beds — ${b.room}</div>${availBeds}`;
+}
+
+function confirmAddOccupant() {
+  const bedId   = document.getElementById('occ-room').value;
+  const bedIdx  = document.getElementById('occ-bed').value;
+  const person  = document.getElementById('occ-person').value.trim();
+
+  if (!bedId)  { showToast('Please select a room.', '⚠️'); return; }
+  if (bedIdx === '') { showToast('Please select a bed.', '⚠️'); return; }
+  if (!person) { showToast('Please select an occupant.', '⚠️'); return; }
+
+  const b = actData().beds.find(x => x.id === bedId);
+  if (!b) return;
+  const idx = parseInt(bedIdx);
+  const lines = b.occupants ? b.occupants.split('\n') : [];
+  while (lines.length <= idx) lines.push('');
+  lines[idx] = `Bed ${idx + 1}: ${person}`;
+  b.occupants = lines.join('\n').replace(/\n+$/, '');
+
+  saveState();
+  closeModal('modal-add-occupant');
+  showToast(`Bed ${idx + 1} in "${b.room}" assigned to ${person} 🛏️`);
+  renderPage(currentPage);
 }
 
 // ──────────────────────────────────────────────
