@@ -5226,7 +5226,10 @@ function renderCountdownHero(containerId) {
   const selAct = currentActivityId ? (state.activities||[]).find(a => a.id === currentActivityId) : null;
   const actDate = selAct ? (selAct.dateStart || selAct.date || null) : (state.engagement ? state.engagement.date : null);
   if (!actDate && !state.engagement) {
-    el.innerHTML = '';
+    el.innerHTML = `
+      <div class="countdown-hero" style="text-align:center;padding:32px 20px;">
+        <div style="font-size:15px;color:var(--muted);font-weight:600;">Select an activity to view its overview</div>
+      </div>`;
     return;
   }
   const name = selAct ? selAct.name : (state.engagement ? state.engagement.name || 'Our Engagement' : 'Our Engagement');
@@ -5371,6 +5374,23 @@ function renderOverview() {
   const activities = state.activities || [];
   if (selEl) {
     if (activities.length) {
+      // Auto-select nearest upcoming activity if none is currently selected
+      if (!currentActivityId) {
+        const today = new Date(); today.setHours(0,0,0,0);
+        const upcoming = activities
+          .filter(a => a.dateStart || a.date)
+          .sort((a, b) => {
+            const da = new Date((a.dateStart || a.date) + 'T00:00');
+            const db = new Date((b.dateStart || b.date) + 'T00:00');
+            // prefer future dates; among past dates pick most recent
+            const futA = da >= today, futB = db >= today;
+            if (futA && !futB) return -1;
+            if (!futA && futB) return 1;
+            return futA ? da - db : db - da;
+          });
+        if (upcoming.length) currentActivityId = upcoming[0].id;
+        else currentActivityId = activities[0].id; // fallback: first activity
+      }
       const selAct = currentActivityId ? activities.find(a => a.id === currentActivityId) : null;
       if (titleEl) titleEl.textContent = selAct ? selAct.name : 'Full Plan Overview';
       if (subEl) subEl.textContent = selAct
