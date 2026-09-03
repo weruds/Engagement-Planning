@@ -4575,7 +4575,6 @@ function renderBeds() {
         <div class="bed-icon">🛏️</div>
         <div class="bed-num">Bed ${i+1}</div>
         <div class="bed-person">${occ || 'Unassigned'}</div>
-        ${occ ? `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();clearBedOccupant('${b.id}',${i})" title="Clear occupant">✕ Clear</button>` : ''}
       </div>`;
     }).join('');
 
@@ -4583,7 +4582,7 @@ function renderBeds() {
     <div class="card">
       <div class="card-header">
         <span class="card-title">🏠 ${b.room}</span>
-        <button class="btn btn-danger btn-sm" onclick="deleteBed('${b.id}')">🗑️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteBed('${b.id}')">🗑️ Delete Room</button>
       </div>
       ${loc?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">${loc}</div>`:''}
       ${b.notes?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">📝 ${b.notes}</div>`:''}
