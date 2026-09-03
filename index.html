@@ -4116,6 +4116,16 @@ function deleteBed(id) {
   updateCounts();
 }
 
+function deleteBedFromOverview(id) {
+  const b = actData().beds.find(x => x.id === id);
+  if (!b) return;
+  actData().beds = actData().beds.filter(x => x.id !== id);
+  saveState();
+  showToast(`"${b.room}" removed.`, '🗑️');
+  renderOverview();
+  updateCounts();
+}
+
 function clearBedOccupant(bedId, bedIdx) {
   const b = actData().beds.find(x => x.id === bedId);
   if (!b) return;
@@ -5596,12 +5606,15 @@ function renderOverview() {
       }).join('');
       return `
         <div class="room-overview-card">
-          <div class="room-overview-header">
-            <div style="font-size:24px;">🏠</div>
-            <div>
-              <div style="font-size:14px;font-weight:700;color:var(--white);">${b.room}</div>
-              <div style="font-size:12px;color:var(--muted);">${b.bedCount} bed${b.bedCount>1?'s':''}${loc?' · '+loc:''}${b.notes?' · '+b.notes:''}</div>
+          <div class="room-overview-header" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="font-size:24px;">🏠</div>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--white);">${b.room}</div>
+                <div style="font-size:12px;color:var(--muted);">${b.bedCount} bed${b.bedCount>1?'s':''}${loc?' · '+loc:''}${b.notes?' · '+b.notes:''}</div>
+              </div>
             </div>
+            <button class="btn btn-danger btn-sm" onclick="deleteBedFromOverview('${b.id}')">🗑️ Delete Room</button>
           </div>
           <div class="bed-visual-grid">${bedsHtml}</div>
         </div>`;
