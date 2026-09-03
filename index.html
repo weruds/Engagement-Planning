@@ -3486,7 +3486,8 @@ function navigate(page) {
       if (parent && parent.classList.contains('nav-parent')) parent.classList.add('open');
     }
   }
-  document.getElementById('topbar-title').textContent = PAGE_TITLES[page] || page;
+  const _titleEl = document.getElementById('topbar-title');
+  if (_titleEl) _titleEl.textContent = PAGE_TITLES[page] || page;
   currentPage = page;
   const addEntry = ADD_LABELS[page];
   const topbarBtn = document.getElementById('topbar-add-btn');
