@@ -2210,7 +2210,6 @@
           <div class="section-title">Activities</div>
           <div class="section-subtitle">All engagement activities across all quarters</div>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modal-activity')">＋ New Activity</button>
       </div>
       <div id="activities-list" style="display:flex;flex-direction:column;gap:10px;"></div>
     </div>
@@ -2223,7 +2222,6 @@
           <div class="section-title">By Quarter</div>
           <div class="section-subtitle">Plan and view activities per quarter of the year</div>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modal-activity')">＋ New Activity</button>
       </div>
       <div class="quarter-tabs" id="quarter-tabs">
         <div class="q-tab active" data-q="Q1" onclick="selectQuarter('Q1')">Q1 — Jan–Mar</div>
@@ -2242,7 +2240,6 @@
           <div class="section-title">Locations</div>
           <div class="section-subtitle">Manage all event venues and spots</div>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modal-location')">＋ Add Location</button>
       </div>
       <div class="card-grid" id="locations-list"></div>
     </div>
@@ -3486,9 +3483,9 @@ const PAGE_TITLES = {
 
 const ADD_LABELS = {
   dashboard:        null,
-  activities:       ['New Activity',    'modal-activity'],
-  quarters:         ['New Activity',    'modal-activity'],
-  locations:        ['Add Location',    'modal-location'],
+  activities:       null,
+  quarters:         null,
+  locations:        null,
   carseats:         ['Add Car',         'modal-carseat'],
   bedplan:          ['Add Room',        'modal-bed'],
   games:            ['Add Game',        'modal-game'],
@@ -3497,7 +3494,7 @@ const ADD_LABELS = {
   mealplan:         null,
   expenses:         ['Add Expense',     'modal-expense'],
   overview:         null,
-  people:           ['Add Person',      'modal-person'],
+  people:           null,
   'survey-results': null,
   survey:           null,
   'initial-survey': null,
@@ -4648,8 +4645,7 @@ function renderPeople() {
   const depts = ['All', 'SEET - Dev', 'SEET - QE', 'SEET - OneInfra', 'Other'];
   if (actionsRow) {
     actionsRow.innerHTML = `
-      <button class="btn btn-ghost" onclick="importPeopleFromSurvey()" title="Import unique names from survey responses">📋 Import from Survey</button>
-      <button class="btn btn-primary" onclick="openModal('modal-person')">＋ Add Person</button>`;
+      <button class="btn btn-ghost" onclick="importPeopleFromSurvey()" title="Import unique names from survey responses">📋 Import from Survey</button>`;
   }
   if (filterRow) {
     filterRow.innerHTML = depts.map(d => `
