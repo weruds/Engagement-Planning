@@ -4939,11 +4939,18 @@ function deptIcon(dept) {
 let _peopleFilterDept = 'All';
 
 function renderPeople() {
-  // ── Self-healing dedup: remove people with duplicate names (keep first occurrence) ──
+  // ── Self-healing: remove duplicates by name and remove "No" respondents (dept=Other, no role/contact) ──
   if (state.people) {
     const seen = new Set();
     const before = state.people.length;
     state.people = state.people.filter(p => {
+      // Remove stub entries imported from non-attending survey responses:
+      // they have dept='Other', no role, no contact, no email set by the user
+      const isNoAttendStub = (p.dept || '').trim() === 'Other'
+        && !(p.role || '').trim()
+        && !(p.contact || '').trim();
+      if (isNoAttendStub) return false;
+      // Remove duplicate names (keep first occurrence)
       const k = p.name.trim().toLowerCase();
       if (seen.has(k)) return false;
       seen.add(k);
@@ -5037,10 +5044,13 @@ function importPeopleFromSurvey() {
     const seen = new Set();
     let added = 0;
     responses.forEach(r => {
+      // Only import people who confirmed attendance
+      if ((r.attend || '').trim().toLowerCase() !== 'yes') return;
       const name = resolveNameFromEmail(r.name, r.email);
       if (!name) return;
-      // Map survey serviceLine / dept fields to People dept
-      const dept = r.service || r.serviceLine || r.service_line || r.dept || r.department || 'Other';
+      // Map survey serviceLine / dept fields to People dept; skip if none found
+      const rawDept = r.service || r.serviceLine || r.service_line || r.dept || r.department || '';
+      const dept = rawDept.trim() || 'Other';
       const key = name.trim().toLowerCase();
       if (existingKeys.has(key) || seen.has(key)) return;
       seen.add(key);
