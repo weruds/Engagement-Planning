@@ -528,12 +528,16 @@
     cursor: pointer;
     transition: all 0.18s;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .bed-card:hover { border-color: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
   .bed-card.assigned { border-color: var(--success); background: rgba(5,150,105,0.06); }
   .bed-icon { font-size: 28px; margin-bottom: 8px; }
   .bed-num { font-size: 12px; font-weight: 700; color: var(--white); }
   .bed-person { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .bed-card .btn-danger { margin-top: 8px; font-size: 10px; padding: 2px 10px; }
 
   /* ─── QUARTER TABS ─── */
   .quarter-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -4571,7 +4575,7 @@ function renderBeds() {
         <div class="bed-icon">🛏️</div>
         <div class="bed-num">Bed ${i+1}</div>
         <div class="bed-person">${occ || 'Unassigned'}</div>
-        ${occ ? `<button class="btn btn-danger btn-sm btn-icon" style="margin-top:6px;font-size:10px;padding:2px 6px;" onclick="clearBedOccupant('${b.id}',${i})" title="Clear occupant">✕</button>` : ''}
+        ${occ ? `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();clearBedOccupant('${b.id}',${i})" title="Clear occupant">✕ Clear</button>` : ''}
       </div>`;
     }).join('');
 
