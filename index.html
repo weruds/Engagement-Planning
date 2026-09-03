@@ -1777,6 +1777,148 @@
   .fb-dot.connected   { background: var(--success); box-shadow: 0 0 6px rgba(5,150,105,0.5); }
   .fb-dot.syncing     { background: var(--warning); }
   .fb-dot.error       { background: var(--danger); }
+
+  /* ─── SURVEY SIDEBAR ─── */
+  .survey-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,50,0.35);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: none;
+  }
+  .survey-overlay.open { display: block; }
+
+  .survey-panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 400px; max-width: 100vw;
+    background: var(--surface);
+    border-left: 1px solid var(--border2);
+    z-index: 201;
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: -4px 0 32px rgba(37,99,235,0.10);
+  }
+  .survey-panel.open { transform: translateX(0); }
+
+  .survey-panel-header {
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    background: linear-gradient(135deg, var(--surface), var(--surface2));
+  }
+  .survey-panel-title { font-size: 16px; font-weight: 700; color: var(--white); }
+  .survey-panel-sub   { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .survey-close {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--surface3); border: 1px solid var(--border);
+    color: var(--muted); font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .survey-close:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+  .survey-body {
+    flex: 1; overflow-y: auto;
+    padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+
+  /* Question block */
+  .sq-block { display: flex; flex-direction: column; gap: 8px; }
+  .sq-label {
+    font-size: 13px; font-weight: 600; color: var(--white);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sq-label-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .sq-sub { font-size: 11px; color: var(--muted2); margin-top: -4px; padding-left: 28px; }
+
+  /* Star rating */
+  .sq-stars { display: flex; gap: 6px; padding-left: 28px; }
+  .sq-star {
+    font-size: 24px; cursor: pointer; transition: transform 0.1s;
+    filter: grayscale(1) opacity(0.35);
+    user-select: none;
+  }
+  .sq-star:hover, .sq-star.active { filter: none; transform: scale(1.15); }
+  .sq-star-val { font-size: 11px; color: var(--muted); margin-left: 6px; align-self: center; font-weight: 600; }
+
+  /* Choice chips */
+  .sq-chips { display: flex; flex-wrap: wrap; gap: 7px; padding-left: 28px; }
+  .sq-chip {
+    padding: 5px 13px; border-radius: 20px; border: 1.5px solid var(--border2);
+    background: var(--surface2); font-size: 12px; font-weight: 600; color: var(--muted);
+    cursor: pointer; transition: all 0.15s; user-select: none;
+  }
+  .sq-chip:hover  { border-color: var(--accent2); color: var(--accent); }
+  .sq-chip.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+  .sq-chip.multi.active { background: rgba(124,58,237,0.10); border-color: var(--purple); color: var(--purple); }
+
+  /* Text/textarea */
+  .sq-textarea {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--white); font-family: var(--font);
+    font-size: 13px; padding: 9px 12px; outline: none; resize: vertical;
+    min-height: 72px; transition: border-color 0.15s, box-shadow 0.15s;
+    margin-left: 0;
+  }
+  .sq-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+  /* Divider inside survey */
+  .sq-divider { height: 1px; background: var(--border); }
+
+  /* Submitted state */
+  .survey-submitted {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 28px; gap: 12px;
+  }
+  .survey-submitted-icon { font-size: 56px; }
+  .survey-submitted-title { font-size: 18px; font-weight: 700; color: var(--white); }
+  .survey-submitted-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .survey-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; align-items: center; justify-content: space-between;
+    background: var(--surface2);
+  }
+  .survey-footer-note { font-size: 10px; color: var(--muted2); }
+
+  /* Nav trigger button */
+  .survey-nav-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer; width: 100%;
+    font-family: var(--font); font-size: 13px; font-weight: 600;
+    background: linear-gradient(90deg, rgba(37,99,235,0.08), rgba(124,58,237,0.08));
+    border: 1.5px solid rgba(37,99,235,0.20);
+    color: var(--accent);
+    transition: all 0.18s;
+    margin: 0 12px; margin-bottom: 6px;
+    width: calc(100% - 24px);
+  }
+  .survey-nav-btn:hover { background: var(--accent-glow); border-color: rgba(37,99,235,0.35); }
+  .survey-nav-btn-icon { font-size: 16px; }
+  .survey-nav-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: #fff; font-size: 9px; font-weight: 700;
+    padding: 1px 6px; border-radius: 10px;
+    letter-spacing: 0.3px;
+    display: none;
+  }
+  .survey-nav-badge.show { display: inline-block; }
+
+  @media (max-width: 768px) {
+    .survey-panel { width: 100vw; }
+  }
 </style>
 </head>
 <body>
@@ -1838,6 +1980,15 @@
       <span style="display:none;" id="nav-count-meals"></span>
       <span style="display:none;" id="nav-count-expenses"></span>
     </nav>
+
+    <!-- Survey Trigger -->
+    <div style="padding: 8px 0 2px;">
+      <button class="survey-nav-btn" onclick="openSurvey()">
+        <span class="survey-nav-btn-icon">📋</span>
+        <span>Quick Survey</span>
+        <span class="survey-nav-badge" id="survey-nav-badge">NEW</span>
+      </button>
+    </div>
 
     <!-- Sidebar Countdown -->
     <div class="sidebar-countdown" id="sidebar-countdown-area">
@@ -5387,6 +5538,271 @@ renderDashboard();
 
 // Then connect Firestore — onSnapshot will refresh the UI once live data arrives
 initFirebase();
+</script>
+
+<!-- ══════════════════ SURVEY PANEL ══════════════════ -->
+<div class="survey-overlay" id="survey-overlay" onclick="closeSurvey()"></div>
+<div class="survey-panel" id="survey-panel">
+  <div class="survey-panel-header">
+    <div>
+      <div class="survey-panel-title">📋 Engagement Planning Survey</div>
+      <div class="survey-panel-sub">Share your feedback — takes less than 2 minutes</div>
+    </div>
+    <button class="survey-close" onclick="closeSurvey()" title="Close">✕</button>
+  </div>
+
+  <!-- Form state -->
+  <div class="survey-body" id="survey-body">
+
+    <!-- Q1 — Overall rating -->
+    <div class="sq-block">
+      <div class="sq-label"><span class="sq-label-num">1</span> How would you rate this planning tool overall?</div>
+      <div class="sq-stars" id="sq-stars-1">
+        <span class="sq-star" data-val="1" onclick="setStar(1,1)">⭐</span>
+        <span class="sq-star" data-val="2" onclick="setStar(1,2)">⭐</span>
+        <span class="sq-star" data-val="3" onclick="setStar(1,3)">⭐</span>
+        <span class="sq-star" data-val="4" onclick="setStar(1,4)">⭐</span>
+        <span class="sq-star" data-val="5" onclick="setStar(1,5)">⭐</span>
+        <span class="sq-star-val" id="sq-star-val-1"></span>
+      </div>
+    </div>
+
+    <div class="sq-divider"></div>
+
+    <!-- Q2 — Most useful feature -->
+    <div class="sq-block">
+      <div class="sq-label"><span class="sq-label-num">2</span> Which feature do you use the most?</div>
+      <div class="sq-sub">Pick one</div>
+      <div class="sq-chips" id="sq-chips-2">
+        <span class="sq-chip" onclick="setChip(2,this)">🗺️ Full Overview</span>
+        <span class="sq-chip" onclick="setChip(2,this)">📋 Activities</span>
+        <span class="sq-chip" onclick="setChip(2,this)">🚗 Car Seat Plan</span>
+        <span class="sq-chip" onclick="setChip(2,this)">🛏️ Bed Plan</span>
+        <span class="sq-chip" onclick="setChip(2,this)">🍽️ Meal Plan</span>
+        <span class="sq-chip" onclick="setChip(2,this)">🛒 Grocery List</span>
+        <span class="sq-chip" onclick="setChip(2,this)">💸 Expenses</span>
+        <span class="sq-chip" onclick="setChip(2,this)">🎮 Games</span>
+      </div>
+    </div>
+
+    <div class="sq-divider"></div>
+
+    <!-- Q3 — Missing features (multi-select) -->
+    <div class="sq-block">
+      <div class="sq-label"><span class="sq-label-num">3</span> What would you like to see added?</div>
+      <div class="sq-sub">Select all that apply</div>
+      <div class="sq-chips" id="sq-chips-3">
+        <span class="sq-chip multi" onclick="toggleChip(this)">📸 Photo Gallery</span>
+        <span class="sq-chip multi" onclick="toggleChip(this)">📣 RSVP Tracking</span>
+        <span class="sq-chip multi" onclick="toggleChip(this)">💬 Team Chat</span>
+        <span class="sq-chip multi" onclick="toggleChip(this)">📊 Budget Chart</span>
+        <span class="sq-chip multi" onclick="toggleChip(this)">🗓️ Calendar View</span>
+        <span class="sq-chip multi" onclick="toggleChip(this)">📱 Mobile App</span>
+        <span class="sq-chip multi" onclick="toggleChip(this)">🔔 Reminders</span>
+        <span class="sq-chip multi" onclick="toggleChip(this)">📄 Export PDF</span>
+      </div>
+    </div>
+
+    <div class="sq-divider"></div>
+
+    <!-- Q4 — Ease of use -->
+    <div class="sq-block">
+      <div class="sq-label"><span class="sq-label-num">4</span> How easy is it to use this planner?</div>
+      <div class="sq-chips" id="sq-chips-4">
+        <span class="sq-chip" onclick="setChip(4,this)">😩 Very Difficult</span>
+        <span class="sq-chip" onclick="setChip(4,this)">😕 Difficult</span>
+        <span class="sq-chip" onclick="setChip(4,this)">😐 Neutral</span>
+        <span class="sq-chip" onclick="setChip(4,this)">🙂 Easy</span>
+        <span class="sq-chip" onclick="setChip(4,this)">😄 Very Easy</span>
+      </div>
+    </div>
+
+    <div class="sq-divider"></div>
+
+    <!-- Q5 — Recommend -->
+    <div class="sq-block">
+      <div class="sq-label"><span class="sq-label-num">5</span> Would you recommend this tool to teammates?</div>
+      <div class="sq-chips" id="sq-chips-5">
+        <span class="sq-chip" onclick="setChip(5,this)">👍 Definitely</span>
+        <span class="sq-chip" onclick="setChip(5,this)">🤔 Maybe</span>
+        <span class="sq-chip" onclick="setChip(5,this)">👎 Probably Not</span>
+      </div>
+    </div>
+
+    <div class="sq-divider"></div>
+
+    <!-- Q6 — Open comment -->
+    <div class="sq-block">
+      <div class="sq-label"><span class="sq-label-num">6</span> Any other comments or suggestions?</div>
+      <textarea class="sq-textarea" id="sq-comment" placeholder="Tell us what you think — bugs, ideas, praises…"></textarea>
+    </div>
+
+  </div><!-- /survey-body -->
+
+  <div class="survey-footer">
+    <span class="survey-footer-note">Responses are saved to Firestore and visible to the organizer.</span>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost btn-sm" onclick="resetSurvey()">Reset</button>
+      <button class="btn btn-primary btn-sm" onclick="submitSurvey()">Submit ✓</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// SURVEY
+// ──────────────────────────────────────────────
+const SURVEY_STATE_KEY = 'engage_survey_v1';
+
+let _surveyStarRatings = { 1: 0 }; // qId → value
+let _surveySingleChips = {};       // qId → text
+let _surveyMultiChips  = {};       // qId → Set of texts
+
+const STAR_LABELS = ['','😕 Poor','😐 Fair','🙂 Good','😊 Great','🤩 Excellent'];
+
+function openSurvey() {
+  document.getElementById('survey-overlay').classList.add('open');
+  document.getElementById('survey-panel').classList.add('open');
+  // Hide NEW badge once seen
+  const badge = document.getElementById('survey-nav-badge');
+  if (badge) badge.classList.remove('show');
+  localStorage.setItem('survey_seen', '1');
+}
+
+function closeSurvey() {
+  document.getElementById('survey-overlay').classList.remove('open');
+  document.getElementById('survey-panel').classList.remove('open');
+}
+
+// Star rating
+function setStar(qId, val) {
+  _surveyStarRatings[qId] = val;
+  const container = document.getElementById(`sq-stars-${qId}`);
+  if (!container) return;
+  container.querySelectorAll('.sq-star').forEach(s => {
+    s.classList.toggle('active', parseInt(s.dataset.val) <= val);
+  });
+  const lbl = document.getElementById(`sq-star-val-${qId}`);
+  if (lbl) lbl.textContent = STAR_LABELS[val] || '';
+}
+
+// Single-select chip (radio behaviour within a group)
+function setChip(qId, el) {
+  const container = document.getElementById(`sq-chips-${qId}`);
+  if (!container) return;
+  container.querySelectorAll('.sq-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  _surveySingleChips[qId] = el.textContent.trim();
+}
+
+// Multi-select chip (toggle)
+function toggleChip(el) {
+  el.classList.toggle('active');
+  const container = el.closest('.sq-chips');
+  if (!container) return;
+  const qId = container.id; // e.g. 'sq-chips-3'
+  if (!_surveyMultiChips[qId]) _surveyMultiChips[qId] = new Set();
+  const val = el.textContent.trim();
+  if (el.classList.contains('active')) {
+    _surveyMultiChips[qId].add(val);
+  } else {
+    _surveyMultiChips[qId].delete(val);
+  }
+}
+
+function resetSurvey() {
+  _surveyStarRatings = { 1: 0 };
+  _surveySingleChips = {};
+  _surveyMultiChips  = {};
+  // Reset DOM
+  document.querySelectorAll('.sq-star').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sq-star-val').forEach(s => s.textContent = '');
+  document.querySelectorAll('.sq-chip').forEach(c => c.classList.remove('active'));
+  const ta = document.getElementById('sq-comment');
+  if (ta) ta.value = '';
+  // Restore form body if was in submitted state
+  const body = document.getElementById('survey-body');
+  if (body && body.querySelector('.survey-submitted')) {
+    renderSurveyForm();
+  }
+}
+
+function renderSurveyForm() {
+  // Re-render the survey body to initial state — simply reload the panel HTML in-place
+  // For simplicity we just reload the page section via innerHTML restore
+  // (The survey HTML is static so we reload the panel content)
+  location.reload(); // lightest way to fully reset; alternatively re-render manually
+}
+
+function submitSurvey() {
+  const rating  = _surveyStarRatings[1] || 0;
+  const feature = _surveySingleChips[2] || '';
+  const easeRaw = _surveySingleChips[4] || '';
+  const recommend = _surveySingleChips[5] || '';
+  const additions = _surveyMultiChips['sq-chips-3']
+    ? [..._surveyMultiChips['sq-chips-3']].join(', ') : '';
+  const comment = (document.getElementById('sq-comment')?.value || '').trim();
+
+  if (!rating) { showToast('Please give a star rating first.','⚠️'); return; }
+
+  const response = {
+    id: uid(),
+    submittedAt: new Date().toISOString(),
+    rating,
+    feature,
+    additions,
+    ease: easeRaw,
+    recommend,
+    comment,
+  };
+
+  // Save locally
+  try {
+    const saved = JSON.parse(localStorage.getItem(SURVEY_STATE_KEY) || '[]');
+    saved.push(response);
+    localStorage.setItem(SURVEY_STATE_KEY, JSON.stringify(saved));
+  } catch(e) {}
+
+  // Save to Firestore if connected
+  if (_fbDb) {
+    _fbDb.collection('survey_responses').add(response)
+      .catch(e => console.warn('Survey Firestore write error:', e));
+  }
+
+  // Show thank-you state
+  const body = document.getElementById('survey-body');
+  if (body) {
+    body.innerHTML = `
+      <div class="survey-submitted">
+        <div class="survey-submitted-icon">🎉</div>
+        <div class="survey-submitted-title">Thank you!</div>
+        <div class="survey-submitted-sub">
+          Your response has been recorded.<br>
+          ${rating >= 4
+            ? 'We\'re glad you\'re enjoying the planner! 🙌'
+            : 'We appreciate your honest feedback — we\'ll keep improving!'}
+        </div>
+        <div style="margin-top:16px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--muted);text-align:left;width:100%;">
+          <div style="font-weight:700;color:var(--white);margin-bottom:8px;">Your response summary</div>
+          <div>⭐ Rating: ${STAR_LABELS[rating]}</div>
+          ${feature   ? `<div>🔧 Top feature: ${feature}</div>` : ''}
+          ${easeRaw   ? `<div>🖱️ Ease of use: ${easeRaw}</div>` : ''}
+          ${recommend ? `<div>📣 Recommend: ${recommend}</div>` : ''}
+          ${additions ? `<div>💡 Wishlist: ${additions}</div>` : ''}
+          ${comment   ? `<div>💬 Comment: "${comment}"</div>` : ''}
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="closeSurvey()" style="margin-top:8px;">Close ✕</button>
+      </div>`;
+  }
+
+  showToast('Survey submitted — thank you! 🎉', '📋');
+}
+
+// Show NEW badge if survey has never been seen
+if (!localStorage.getItem('survey_seen')) {
+  const badge = document.getElementById('survey-nav-badge');
+  if (badge) badge.classList.add('show');
+}
 </script>
 
 </body>
