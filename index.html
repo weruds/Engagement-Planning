@@ -5223,14 +5223,14 @@ function renderSurveyResultsPage() {
 // MONDAY.COM SYNC
 // ──────────────────────────────────────────────
 const MONDAY_API_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjcwMDEwOTc5MywiYWFpIjoxMSwidWlkIjo2Njc0NjIyOSwiaWFkIjoiMjAyNi0wOS0wM1QxNDo1NTo0NS44NTBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MTM1MzY5ODEsInJnbiI6InVzZTEifQ.LcEDVhxnSTbcSumOwsgnDL84_Nmy7IQ535gBCpCBDuM';
-const MONDAY_BOARD_ID  = '18429492550';
+const MONDAY_BOARD_ID  = '18429558495'; // ODC SEET Yearend Party
 
-// Column ID → field mapping for SEET Year End 2026 Survey board
+// Column ID → field mapping for ODC SEET Yearend Party board
 const MONDAY_COL_MAP = {
-  emailf9193p88:       'email',    // Email
-  single_selectn5d4kfd:'attend',   // attend Yes/No (request_type)
-  dateq831r7y8:        'date',     // Preferred date
-  single_selectf1d91wl:'service',  // Service line
+  emailulmvrvwk:        'email',   // Email
+  single_select3vv68hv: 'attend',  // Will you attend? (Yes/No)
+  single_select7zfnxfz: 'service', // Service Line
+  single_selectihumw27: 'date',    // Preferred date
 };
 
 function syncFromMonday() {
@@ -5243,7 +5243,7 @@ function syncFromMonday() {
         items {
           id
           name
-          column_values(ids: ["emailf9193p88","single_selectn5d4kfd","dateq831r7y8","single_selectf1d91wl"]) {
+          column_values(ids: ["emailulmvrvwk","single_select3vv68hv","single_select7zfnxfz","single_selectihumw27"]) {
             id
             text
           }
