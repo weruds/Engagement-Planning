@@ -2023,7 +2023,7 @@
       </div>
 
       <!-- CSV Import -->
-      <div class="ov-panel" id="panel-import">
+      <div class="ov-panel open" id="panel-import">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-import')">
           <div class="ov-panel-icon">📥</div>
           <div class="ov-panel-title">Import from CSV</div>
@@ -3381,12 +3381,12 @@ Catering,15000,Food,2026-11-15,Full payment
 `;
 
 function downloadCsvTemplate() {
-  const blob = new Blob([CSV_TEMPLATE], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
+  // Use data: URI so it works on file:// protocol (no blob URL restrictions)
+  const encoded = 'data:text/csv;charset=utf-8,' + encodeURIComponent(CSV_TEMPLATE);
   const a = document.createElement('a');
-  a.href = url; a.download = 'engagement_planner_template.csv';
+  a.href = encoded; a.download = 'engagement_planner_template.csv';
   document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
+  document.body.removeChild(a);
 }
 
 // ── CSV parser (handles quoted fields) ───────
