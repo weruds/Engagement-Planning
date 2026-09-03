@@ -1013,6 +1013,28 @@
   .sidebar-cd-lbl { font-size: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
   .sidebar-cd-none { font-size: 11px; color: var(--muted2); }
 
+  /* ─── SIDEBAR SURVEY RESULTS ─── */
+  .sidebar-survey-results {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .sidebar-srv-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 5px 0; border-bottom: 1px solid var(--border);
+  }
+  .sidebar-srv-row:last-child { border-bottom: none; }
+  .sidebar-srv-label { font-size: 11px; color: var(--muted); }
+  .sidebar-srv-val {
+    font-size: 13px; font-weight: 800; color: var(--white);
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 1px 8px; min-width: 28px; text-align: center;
+  }
+  .sidebar-srv-val.yes  { color: var(--success); border-color: rgba(34,197,94,0.25); background: rgba(34,197,94,0.08); }
+  .sidebar-srv-val.no   { color: #f87171;        border-color: rgba(248,113,113,0.25); background: rgba(248,113,113,0.08); }
+  .sidebar-srv-val.maybe{ color: #fbbf24;        border-color: rgba(251,191,36,0.25); background: rgba(251,191,36,0.08); }
+  .sidebar-srv-bar-wrap { margin-top: 8px; background: var(--surface2); border-radius: 4px; height: 5px; overflow: hidden; }
+  .sidebar-srv-bar      { height: 100%; background: linear-gradient(90deg, var(--success), var(--accent)); border-radius: 4px; transition: width 0.4s; }
+
   /* ─── ACTIVITY SELECTOR ─── */
   .act-selector {
     display: flex; gap: 8px; flex-wrap: wrap;
@@ -2074,6 +2096,14 @@
         <div class="sidebar-cd-none">No date set</div>
       </div>
       <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;font-size:11px;" onclick="openModal('modal-setdate')">Set Engagement Date</button>
+    </div>
+
+    <!-- Survey Results -->
+    <div class="sidebar-survey-results" id="sidebar-survey-results">
+      <div class="sidebar-cd-label">📋 Survey Results</div>
+      <div id="sidebar-survey-content">
+        <div class="sidebar-cd-none">Loading…</div>
+      </div>
     </div>
 
     <!-- Firebase Status -->
@@ -3260,6 +3290,7 @@ function initFirebase() {
       updateCounts();
       renderPage(currentPage);
       if (state.engagement && !_countdownInterval) startCountdown();
+      loadSidebarSurveyResults();
     }, err => {
       setFbStatus('error', 'Sync error');
       console.error('Firestore listener error:', err);
@@ -4563,6 +4594,7 @@ function importPeopleFromSurvey() {
     renderPeople();
     updateCounts();
     showToast(`${added} person${added !== 1 ? 's' : ''} imported from survey! 👤`);
+    loadSidebarSurveyResults();
   }).catch(err => {
     console.error('Survey import error:', err);
     showToast('Failed to read survey data.', '❌');
@@ -4720,6 +4752,72 @@ function renderSidebarCountdown() {
       <div class="sidebar-cd-unit"><div class="sidebar-cd-num">${pad(parts.mins)}</div><div class="sidebar-cd-lbl">m</div></div>
       <div class="sidebar-cd-unit"><div class="sidebar-cd-num">${pad(parts.secs)}</div><div class="sidebar-cd-lbl">s</div></div>
     </div>`;
+}
+
+// ──────────────────────────────────────────────
+// SIDEBAR SURVEY RESULTS
+// ──────────────────────────────────────────────
+let _surveyResultsCache = null; // { yes, no, maybe, total, byService }
+
+function loadSidebarSurveyResults() {
+  if (!_fbDb) return;
+  _fbDb.collection('survey').doc('engagement_survey').get().then(snap => {
+    if (!snap.exists) { _surveyResultsCache = null; renderSidebarSurveyResults(); return; }
+    const responses = snap.data().responses || [];
+    let yes = 0, no = 0, maybe = 0;
+    const byService = {};
+    responses.forEach(r => {
+      const attend = (r.attend || '').trim().toLowerCase();
+      if (attend === 'yes')       yes++;
+      else if (attend === 'no')   no++;
+      else if (attend)            maybe++;
+      // tally by service line
+      const svc = r.service || r.serviceLine || r.dept || 'Other';
+      if (!byService[svc]) byService[svc] = { yes: 0, no: 0, maybe: 0 };
+      if (attend === 'yes')     byService[svc].yes++;
+      else if (attend === 'no') byService[svc].no++;
+      else if (attend)          byService[svc].maybe++;
+    });
+    _surveyResultsCache = { yes, no, maybe, total: responses.length, byService };
+    renderSidebarSurveyResults();
+  }).catch(err => console.warn('Survey results load error:', err));
+}
+
+function renderSidebarSurveyResults() {
+  const el = document.getElementById('sidebar-survey-content');
+  if (!el) return;
+  if (!_surveyResultsCache) {
+    el.innerHTML = `<div class="sidebar-cd-none">No responses yet</div>`;
+    return;
+  }
+  const { yes, no, maybe, total, byService } = _surveyResultsCache;
+  const yesPct = total > 0 ? Math.round((yes / total) * 100) : 0;
+  // service breakdown rows (only services that have responses)
+  const svcRows = Object.entries(byService).map(([svc, c]) => `
+    <div class="sidebar-srv-row">
+      <span class="sidebar-srv-label">${svc}</span>
+      <span class="sidebar-srv-val yes">${c.yes}</span>
+    </div>`).join('');
+  el.innerHTML = `
+    <div class="sidebar-srv-row">
+      <span class="sidebar-srv-label">✅ Attending</span>
+      <span class="sidebar-srv-val yes">${yes}</span>
+    </div>
+    <div class="sidebar-srv-row">
+      <span class="sidebar-srv-label">❌ Not attending</span>
+      <span class="sidebar-srv-val no">${no}</span>
+    </div>
+    ${maybe > 0 ? `<div class="sidebar-srv-row">
+      <span class="sidebar-srv-label">🤔 Maybe</span>
+      <span class="sidebar-srv-val maybe">${maybe}</span>
+    </div>` : ''}
+    <div class="sidebar-srv-row">
+      <span class="sidebar-srv-label">📩 Total responses</span>
+      <span class="sidebar-srv-val">${total}</span>
+    </div>
+    <div class="sidebar-srv-bar-wrap"><div class="sidebar-srv-bar" style="width:${yesPct}%"></div></div>
+    <div style="font-size:10px;color:var(--muted);text-align:right;margin-top:3px;">${yesPct}% attending</div>
+    ${svcRows ? `<div style="margin-top:8px;font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;">By Service Line</div>${svcRows}` : ''}`;
 }
 
 function renderCountdownHero(containerId) {
