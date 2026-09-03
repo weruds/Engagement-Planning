@@ -2015,8 +2015,7 @@
       <div class="logo-mark">
         <div class="logo-icon">💍</div>
         <div>
-          <div class="logo-text">Engagement</div>
-          <div class="logo-sub">Planner · SEET</div>
+          <div class="logo-text">Planner · SEET</div>
         </div>
       </div>
     </div>
@@ -2055,21 +2054,9 @@
           <span class="nav-icon">👤</span> People
           <span class="nav-count" id="nav-count-people">0</span>
         </div>
-        <!-- Survey parent + sub-links -->
-        <div class="nav-parent open" id="nav-parent-survey" onclick="toggleNavParent('survey')">
-          <span class="nav-icon">📝</span> Survey
-          <span class="nav-chevron">▼</span>
-        </div>
-        <div class="nav-sub-list open" id="nav-sub-list-survey">
-          <div class="nav-sub-item" data-page="survey" onclick="navigate('survey')">
-            Feedback Survey
-            <span class="nav-sub-badge" id="survey-nav-badge">NEW</span>
-          </div>
-          <div class="nav-sub-item" data-page="initial-survey" onclick="navigate('initial-survey')">
-            Initial Survey
-            <span class="nav-sub-badge" id="initial-survey-nav-badge">NEW</span>
-          </div>
-        </div>
+        <!-- Survey nav items hidden -->
+        <span style="display:none;" id="survey-nav-badge"></span>
+        <span style="display:none;" id="initial-survey-nav-badge"></span>
       </div>
       <!-- hidden count targets still needed by updateCounts() -->
       <span style="display:none;" id="nav-count-carseats"></span>
@@ -3370,7 +3357,10 @@ function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   // Write to Firestore — onSnapshot will propagate to all connected clients
   if (_fbDocRef) {
-    _fbDocRef.set(state).catch(e => console.warn('Firestore write error:', e));
+    // Strip _fallback (runtime-only) and undefined values before writing to Firestore
+    const { _fallback, ...persistable } = state;
+    const clean = JSON.parse(JSON.stringify(persistable));
+    _fbDocRef.set(clean).catch(e => console.warn('Firestore write error:', e));
   }
 }
 
