@@ -565,6 +565,69 @@
     font-size: 36px;
     background: linear-gradient(135deg, var(--surface2), var(--surface3));
   }
+  .location-banner.has-image {
+    height: 140px;
+    padding: 0;
+    background: none;
+  }
+  .location-banner.has-image img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .loc-img-preview { margin-top: 8px; position: relative; }
+  .loc-img-preview img { width: 100%; max-height: 140px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); display: block; }
+  .loc-img-remove {
+    position: absolute; top: 6px; right: 6px;
+    background: rgba(0,0,0,0.55); color: #fff;
+    border: none; border-radius: 6px;
+    width: 24px; height: 24px; font-size: 13px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .loc-img-remove:hover { background: rgba(220,38,38,0.80); }
+  .loc-upload-zone {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px;
+    border: 2px dashed var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 20px 14px;
+    cursor: pointer;
+    background: var(--surface2);
+    transition: border-color 0.15s, background 0.15s;
+    text-align: center;
+  }
+  .loc-upload-zone:hover { border-color: var(--accent); background: var(--accent-glow2); }
+  .loc-upload-zone input[type=file] { display: none; }
+  .loc-upload-icon { font-size: 28px; opacity: 0.6; }
+  .loc-upload-text { font-size: 12px; color: var(--muted); }
+  .loc-upload-hint { font-size: 10px; color: var(--muted2); }
+
+  /* ─── LOCATION OVERVIEW PREVIEW ─── */
+  .loc-ov-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .loc-ov-hero {
+    width: 100%; height: 180px;
+    object-fit: cover; display: block;
+  }
+  .loc-ov-hero-placeholder {
+    width: 100%; height: 120px;
+    background: linear-gradient(135deg, var(--surface2), var(--surface3));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+  }
+  .loc-ov-body { padding: 16px 18px; }
+  .loc-ov-name { font-size: 16px; font-weight: 700; color: var(--white); }
+  .loc-ov-addr { font-size: 12px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 5px; }
+  .loc-ov-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .loc-ov-notes { font-size: 12px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); line-height: 1.5; }
+  .loc-ov-none {
+    padding: 28px; text-align: center;
+    font-size: 13px; color: var(--muted);
+  }
+
   .location-body { padding: 14px; }
   .location-name { font-size: 14px; font-weight: 600; color: var(--white); }
   .location-addr { font-size: 12px; color: var(--muted); margin-top: 3px; }
@@ -1673,6 +1736,15 @@
 <div class="app">
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">💍</div>
+        <div>
+          <div class="logo-text">Engagement</div>
+          <div class="logo-sub">Planner · SEET</div>
+        </div>
+      </div>
+    </div>
     <div class="sidebar-date">
       <div class="date-chip">
         <div class="date-main" id="sidebar-date-text"></div>
@@ -1709,13 +1781,40 @@
           <span class="nav-count" id="nav-count-people">0</span>
         </div>
       </div>
-      <!-- hidden counts still needed by updateCounts() -->
-      <span style="display:none;" id="nav-count-carseats"></span>
-      <span style="display:none;" id="nav-count-beds"></span>
-      <span style="display:none;" id="nav-count-games"></span>
-      <span style="display:none;" id="nav-count-committee"></span>
-      <span style="display:none;" id="nav-count-grocery"></span>
-      <span style="display:none;" id="nav-count-meals"></span>
+      <div class="nav-section">
+        <div class="nav-label">Activity Details</div>
+        <div class="nav-item" data-page="carseats">
+          <span class="nav-icon">🚗</span> Car Seat Plan
+          <span class="nav-count" id="nav-count-carseats">0</span>
+        </div>
+        <div class="nav-item" data-page="bedplan">
+          <span class="nav-icon">🛏️</span> Bed Plan
+          <span class="nav-count" id="nav-count-beds">0</span>
+        </div>
+        <div class="nav-item" data-page="games">
+          <span class="nav-icon">🎮</span> Games
+          <span class="nav-count" id="nav-count-games">0</span>
+        </div>
+        <div class="nav-item" data-page="committee">
+          <span class="nav-icon">👥</span> Committee
+          <span class="nav-count" id="nav-count-committee">0</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Logistics</div>
+        <div class="nav-item" data-page="grocery">
+          <span class="nav-icon">🛒</span> Grocery List
+          <span class="nav-count" id="nav-count-grocery">0</span>
+        </div>
+        <div class="nav-item" data-page="mealplan">
+          <span class="nav-icon">🍽️</span> Meal Plan
+          <span class="nav-count" id="nav-count-meals">0</span>
+        </div>
+        <div class="nav-item" data-page="expenses">
+          <span class="nav-icon">💸</span> Expenses
+          <span class="nav-count" id="nav-count-expenses">0</span>
+        </div>
+      </div>
     </nav>
 
     <!-- Sidebar Countdown -->
@@ -1917,6 +2016,20 @@
         <span id="pcount-activities"></span>
       </div>
 
+      <!-- Location Preview -->
+      <div class="ov-panel open" id="panel-location">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-location')">
+          <div class="ov-panel-icon">📍</div>
+          <div class="ov-panel-title">Venue / Location</div>
+          <span class="ov-panel-count" id="pcount-location">—</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();navigate('locations')">Manage →</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div id="overview-location"></div>
+        </div>
+      </div>
+
       <!-- Committee -->
       <div class="ov-panel open" id="panel-committee">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-committee')">
@@ -2088,6 +2201,19 @@
         <button class="btn btn-primary" onclick="openModal('modal-mealday')">＋ Add Day</button>
       </div>
       <div id="mealplan-list"></div>
+    </div>
+
+    <!-- ══════════════════ EXPENSES ══════════════════ -->
+    <div class="page" id="page-expenses">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Expenses</div>
+          <div class="section-subtitle">Track all costs — staycation, food, gas, grocery and more</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-expense')">＋ Add Expense</button>
+      </div>
+      <div id="expenses-page-list"></div>
     </div>
 
   </div><!-- /main -->
@@ -2429,7 +2555,10 @@
       </div>
       <div class="form-group">
         <label class="form-label">Address</label>
-        <input class="form-input" id="loc-address" placeholder="123 Wedding Lane, City" />
+        <input class="form-input" id="loc-address" placeholder="e.g. 123 Rizal St., Brgy. San Antonio, Makati City, Metro Manila" />
+        <div style="font-size:10px;color:var(--muted2);margin-top:4px;">
+          Format: <span style="color:var(--muted);">House/Unit No. + Street, Barangay, City/Municipality, Province / Region</span>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -2453,6 +2582,19 @@
       <div class="form-group">
         <label class="form-label">Notes</label>
         <textarea class="form-textarea" id="loc-notes" placeholder="Parking, contact info, etc."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Photo</label>
+        <label class="loc-upload-zone" id="loc-upload-zone" for="loc-image-input">
+          <input type="file" id="loc-image-input" accept="image/*" onchange="previewLocImage(this)" />
+          <div class="loc-upload-icon">🖼️</div>
+          <div class="loc-upload-text">Click to upload a venue photo</div>
+          <div class="loc-upload-hint">JPG, PNG, WEBP — shown on the location card and overview</div>
+        </label>
+        <div class="loc-img-preview" id="loc-img-preview" style="display:none;">
+          <img id="loc-img-preview-img" src="" alt="preview" />
+          <button type="button" class="loc-img-remove" onclick="clearLocImage()" title="Remove photo">✕</button>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -2918,23 +3060,35 @@ function initDate() {
 // NAVIGATION
 // ──────────────────────────────────────────────
 const PAGE_TITLES = {
-  dashboard: 'Dashboard',
+  dashboard:  'Dashboard',
   activities: 'Activities',
-  quarters: 'By Quarter',
-  locations: 'Locations',
-  carseats: 'Car Seat Plan',
-  bedplan: 'Bed Plan',
-  games: 'Engagement Games',
+  quarters:   'By Quarter',
+  locations:  'Locations',
+  carseats:   'Car Seat Plan',
+  bedplan:    'Bed Plan',
+  games:      'Engagement Games',
+  committee:  'Organizing Committee',
+  grocery:    'Grocery List',
+  mealplan:   'Meal Plan',
+  expenses:   'Expenses',
+  overview:   'Full Plan Overview',
+  people:     'People',
 };
 
 const ADD_LABELS = {
-  dashboard: ['New Activity', 'modal-activity'],
-  activities: ['New Activity', 'modal-activity'],
-  quarters: ['New Activity', 'modal-activity'],
-  locations: ['Add Location', 'modal-location'],
-  carseats: ['Add Car', 'modal-carseat'],
-  bedplan: ['Add Room', 'modal-bed'],
-  games: ['Add Game', 'modal-game'],
+  dashboard:  ['New Activity',    'modal-activity'],
+  activities: ['New Activity',    'modal-activity'],
+  quarters:   ['New Activity',    'modal-activity'],
+  locations:  ['Add Location',    'modal-location'],
+  carseats:   ['Add Car',         'modal-carseat'],
+  bedplan:    ['Add Room',        'modal-bed'],
+  games:      ['Add Game',        'modal-game'],
+  committee:  ['New Committee',   'modal-committee'],
+  grocery:    ['Add Item',        'modal-grocery'],
+  mealplan:   ['Add Day',         'modal-mealday'],
+  expenses:   ['Add Expense',     'modal-expense'],
+  overview:   ['Set Date',        'modal-setdate'],
+  people:     ['Add Person',      'modal-person'],
 };
 
 let currentPage = 'dashboard';
@@ -2950,11 +3104,18 @@ function navigate(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+  const navEl = document.querySelector(`[data-page="${page}"]`);
+  if (navEl) navEl.classList.add('active');
   document.getElementById('topbar-title').textContent = PAGE_TITLES[page] || page;
   currentPage = page;
-  const [label] = ADD_LABELS[page] || ['New', null];
-  document.getElementById('topbar-add-btn').textContent = `＋ ${label}`;
+  const addEntry = ADD_LABELS[page];
+  const topbarBtn = document.getElementById('topbar-add-btn');
+  if (addEntry) {
+    topbarBtn.style.display = '';
+    topbarBtn.innerHTML = `<span>＋</span> ${addEntry[0]}`;
+  } else {
+    topbarBtn.style.display = 'none';
+  }
   renderPage(page);
   closeSidebar(); // auto-close on mobile after navigation
 }
@@ -3018,6 +3179,7 @@ function clearModalFields(id) {
   document.querySelectorAll(`#${id} input, #${id} textarea`).forEach(el => { el.value = ''; });
   document.querySelectorAll(`#${id} select`).forEach(el => { el.selectedIndex = 0; });
   if (id === 'modal-activity') selectTheme('Party');
+  if (id === 'modal-location') clearLocImage();
 }
 
 function selectTheme(theme) {
@@ -3169,21 +3331,62 @@ function deleteActivity(id) {
 function saveLocation() {
   const name = document.getElementById('loc-name').value.trim();
   if (!name) { showToast('Venue name is required.','⚠️'); return; }
-  const entry = {
-    id: uid(),
-    name,
-    icon: document.getElementById('loc-icon').value || '📍',
-    address: document.getElementById('loc-address').value.trim(),
-    type: document.getElementById('loc-type').value,
-    capacity: document.getElementById('loc-capacity').value,
-    notes: document.getElementById('loc-notes').value.trim(),
+  const fileInput = document.getElementById('loc-image-input');
+  const file = fileInput && fileInput.files[0];
+  function finish(imageData) {
+    const entry = {
+      id: uid(),
+      name,
+      icon: document.getElementById('loc-icon').value || '📍',
+      address: document.getElementById('loc-address').value.trim(),
+      type: document.getElementById('loc-type').value,
+      capacity: document.getElementById('loc-capacity').value,
+      notes: document.getElementById('loc-notes').value.trim(),
+      image: imageData || null,
+    };
+    state.locations.push(entry);
+    saveState();
+    closeModal('modal-location');
+    showToast(`Location "${name}" added!`);
+    renderPage(currentPage);
+    updateCounts();
+  }
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => finish(e.target.result);
+    reader.readAsDataURL(file);
+  } else {
+    finish(null);
+  }
+}
+
+function previewLocImage(input) {
+  const zone    = document.getElementById('loc-upload-zone');
+  const preview = document.getElementById('loc-img-preview');
+  const img     = document.getElementById('loc-img-preview-img');
+  if (!input.files || !input.files[0]) {
+    preview.style.display = 'none';
+    if (zone) zone.style.display = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    if (img) img.src = e.target.result;
+    preview.style.display = 'block';
+    if (zone) zone.style.display = 'none'; // hide upload zone once image is chosen
   };
-  state.locations.push(entry);
-  saveState();
-  closeModal('modal-location');
-  showToast(`Location "${name}" added!`);
-  renderPage(currentPage);
-  updateCounts();
+  reader.readAsDataURL(input.files[0]);
+}
+
+function clearLocImage() {
+  const input   = document.getElementById('loc-image-input');
+  const zone    = document.getElementById('loc-upload-zone');
+  const preview = document.getElementById('loc-img-preview');
+  const img     = document.getElementById('loc-img-preview-img');
+  if (input)   input.value = '';
+  if (img)     img.src = '';
+  if (preview) preview.style.display = 'none';
+  if (zone)    zone.style.display = '';
 }
 
 function deleteLocation(id) {
@@ -3440,18 +3643,19 @@ function renderActivityItem(a) {
 // RENDER PAGES
 // ──────────────────────────────────────────────
 function renderPage(page) {
-  if (page === 'dashboard') renderDashboard();
+  if      (page === 'dashboard')  renderDashboard();
   else if (page === 'activities') renderActivities();
-  else if (page === 'quarters') renderQuarters();
-  else if (page === 'locations') renderLocations();
-  else if (page === 'carseats') renderCars();
-  else if (page === 'bedplan') renderBeds();
-  else if (page === 'games') renderGames();
-  else if (page === 'overview') renderOverview();
-  else if (page === 'committee') renderCommittee();
-  else if (page === 'grocery') renderGrocery();
-  else if (page === 'mealplan') renderMealPlan();
-  else if (page === 'people') renderPeople();
+  else if (page === 'quarters')   renderQuarters();
+  else if (page === 'locations')  renderLocations();
+  else if (page === 'carseats')   renderCars();
+  else if (page === 'bedplan')    renderBeds();
+  else if (page === 'games')      renderGames();
+  else if (page === 'overview')   renderOverview();
+  else if (page === 'committee')  renderCommittee();
+  else if (page === 'grocery')    renderGrocery();
+  else if (page === 'mealplan')   renderMealPlan();
+  else if (page === 'people')     renderPeople();
+  else if (page === 'expenses')   renderExpensesPage();
 }
 
 // DASHBOARD
@@ -3523,7 +3727,7 @@ function renderLocations() {
   if (!state.locations.length) { el.innerHTML = emptyState('No locations yet','Add venues and event spots','📍'); return; }
   el.innerHTML = state.locations.map(l=>`
     <div class="location-card">
-      <div class="location-banner">${l.icon||'📍'}</div>
+      <div class="location-banner${l.image?' has-image':''}">${l.image?`<img src="${l.image}" alt="${l.name}" />`:(l.icon||'📍')}</div>
       <div class="location-body">
         <div class="location-name">${l.name}</div>
         <div class="location-addr">${l.address||'No address'}</div>
@@ -3799,21 +4003,8 @@ function updateCounts() {
   document.getElementById('nav-count-committee').textContent = sumAcross('committees');
   document.getElementById('nav-count-grocery').textContent = sumAcross('grocery');
   document.getElementById('nav-count-meals').textContent = sumAcross('meals');
+  document.getElementById('nav-count-expenses').textContent = sumAcross('expenses');
 }
-
-// ──────────────────────────────────────────────
-// PAGE TITLES / ADD LABELS  (extended)
-// ──────────────────────────────────────────────
-PAGE_TITLES['overview'] = 'Full Plan Overview';
-ADD_LABELS['overview'] = ['Set Date', 'modal-setdate'];
-PAGE_TITLES['committee'] = 'Organizing Committee';
-ADD_LABELS['committee'] = ['New Committee', 'modal-committee'];
-PAGE_TITLES['grocery'] = 'Grocery List';
-ADD_LABELS['grocery'] = ['Add Item', 'modal-grocery'];
-PAGE_TITLES['mealplan'] = 'Meal Plan';
-ADD_LABELS['mealplan'] = ['Add Day', 'modal-mealday'];
-PAGE_TITLES['people'] = 'People';
-ADD_LABELS['people'] = ['Add Person', 'modal-person'];
 
 // ──────────────────────────────────────────────
 // COUNTDOWN
@@ -4100,6 +4291,43 @@ function renderOverview() {
   setPCount('pcount-games', actData().games.length);
   setPCount('pcount-committee', (actData().committees||[]).length);
   setPCount('pcount-expenses', expCount);
+
+  // 1c — location preview
+  const locOvEl    = document.getElementById('overview-location');
+  const locPcntEl  = document.getElementById('pcount-location');
+  const locAct     = currentActivityId ? (state.activities||[]).find(a => a.id === currentActivityId) : null;
+  const linkedLoc  = locAct && locAct.locationId ? state.locations.find(l => l.id === locAct.locationId) : null;
+  if (locOvEl) {
+    if (!linkedLoc) {
+      if (locPcntEl) locPcntEl.textContent = '—';
+      locOvEl.innerHTML = `
+        <div class="loc-ov-none">
+          <div style="font-size:32px;opacity:0.4;margin-bottom:8px;">📍</div>
+          <div style="font-weight:600;color:var(--muted);margin-bottom:4px;">No venue linked</div>
+          <div style="font-size:12px;">Edit this activity and pick a location, or
+            <span style="color:var(--accent);cursor:pointer;" onclick="navigate('locations')">add a location first →</span>
+          </div>
+        </div>`;
+    } else {
+      if (locPcntEl) locPcntEl.textContent = linkedLoc.name;
+      const typeIcon = { Indoor:'🏛️', Outdoor:'🌿', Beach:'🏖️', Garden:'🌸', Restaurant:'🍽️', Hotel:'🏨', Church:'⛪', Other:'📍' };
+      locOvEl.innerHTML = `
+        <div class="loc-ov-card">
+          ${linkedLoc.image
+            ? `<img class="loc-ov-hero" src="${linkedLoc.image}" alt="${linkedLoc.name}" />`
+            : `<div class="loc-ov-hero-placeholder">${linkedLoc.icon || typeIcon[linkedLoc.type] || '📍'}</div>`}
+          <div class="loc-ov-body">
+            <div class="loc-ov-name">${linkedLoc.icon ? linkedLoc.icon + ' ' : ''}${linkedLoc.name}</div>
+            ${linkedLoc.address ? `<div class="loc-ov-addr">📌 ${linkedLoc.address}</div>` : ''}
+            <div class="loc-ov-meta">
+              <span class="tag tag-blue">${typeIcon[linkedLoc.type] || '📍'} ${linkedLoc.type}</span>
+              ${linkedLoc.capacity ? `<span class="tag tag-purple">👥 ${linkedLoc.capacity} capacity</span>` : ''}
+            </div>
+            ${linkedLoc.notes ? `<div class="loc-ov-notes">📝 ${linkedLoc.notes}</div>` : ''}
+          </div>
+        </div>`;
+    }
+  }
 
   // 2 — activities (sorted by date, then by quarter)
   const actEl = document.getElementById('overview-activities');
@@ -4721,6 +4949,8 @@ function saveExpense() {
   closeModal('modal-expense');
   showToast(`Expense "${label}" added!`);
   if (currentPage === 'overview') renderOverview();
+  else if (currentPage === 'expenses') renderExpensesPage();
+  updateCounts();
 }
 
 function deleteExpense(id) {
@@ -4730,6 +4960,8 @@ function deleteExpense(id) {
   saveState();
   showToast(`"${e.label}" removed.`,'🗑️');
   if (currentPage === 'overview') renderOverview();
+  else if (currentPage === 'expenses') renderExpensesPage();
+  updateCounts();
 }
 
 // Format number as Philippine Peso
@@ -4852,6 +5084,16 @@ function renderExpenses(containerId) {
     </div>`;
 }
 
+
+function renderExpensesPage() {
+  const el = document.getElementById('expenses-page-list');
+  if (!el) return;
+  el.innerHTML = actContextBanner();
+  const tmp = document.createElement('div');
+  tmp.id = '_exp_tmp_' + Date.now();
+  el.appendChild(tmp);
+  renderExpenses(tmp.id);
+}
 
 // ──────────────────────────────────────────────
 // VISUALIZERS — BED & CAR
