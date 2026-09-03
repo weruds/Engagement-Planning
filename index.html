@@ -486,7 +486,69 @@
   .game-emoji { font-size: 32px; margin-bottom: 10px; }
   .game-name { font-size: 14px; font-weight: 600; color: var(--white); }
   .game-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
-  .game-meta { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .game-meta { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .game-owner { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .game-owner strong { color: var(--white); }
+
+  /* ─── PEOPLE ─── */
+  .people-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px;
+    display: flex; align-items: center; gap: 14px;
+    transition: all 0.18s;
+  }
+  .people-card:hover { border-color: var(--border2); box-shadow: var(--shadow); transform: translateY(-1px); }
+  .people-avatar {
+    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+  }
+  .people-info { flex: 1; min-width: 0; }
+  .people-name { font-size: 14px; font-weight: 700; color: var(--white); }
+  .people-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .people-dept {
+    display: inline-flex; align-items: center;
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px;
+    margin-top: 4px;
+  }
+  .dept-dev      { background: rgba(37,99,235,0.12); color: #1d4ed8; }
+  .dept-qe       { background: rgba(124,58,237,0.12); color: #6d28d9; }
+  .dept-oneinfra { background: rgba(5,150,105,0.12);  color: #047857; }
+  .dept-other    { background: rgba(107,114,128,0.12); color: #4b5563; }
+
+  /* ─── ATTENDEES ─── */
+  .attendee-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .attendee-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 6px 12px 6px 6px;
+    font-size: 12px; font-weight: 600; color: var(--white);
+    transition: border-color 0.15s;
+  }
+  .attendee-chip:hover { border-color: var(--border2); }
+  .attendee-chip-avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    flex-shrink: 0;
+  }
+  .attendee-chip-remove {
+    margin-left: 4px; cursor: pointer; color: var(--muted2);
+    font-size: 13px; line-height: 1;
+  }
+  .attendee-chip-remove:hover { color: var(--danger); }
+  .attendee-select-list { display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; }
+  .attendee-select-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); cursor: pointer; transition: all 0.15s;
+    background: var(--surface2);
+  }
+  .attendee-select-row:hover { border-color: var(--accent); background: var(--accent-glow2); }
+  .attendee-select-row.selected { border-color: var(--accent); background: var(--accent-glow); }
+  .attendee-select-row input[type=checkbox] { accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; }
 
   /* ─── LOCATION CARD ─── */
   .location-card {
@@ -1642,6 +1704,10 @@
           <span class="nav-icon">📍</span> Locations
           <span class="nav-count" id="nav-count-locations">0</span>
         </div>
+        <div class="nav-item" data-page="people">
+          <span class="nav-icon">👤</span> People
+          <span class="nav-count" id="nav-count-people">0</span>
+        </div>
       </div>
       <!-- hidden counts still needed by updateCounts() -->
       <span style="display:none;" id="nav-count-carseats"></span>
@@ -1940,6 +2006,20 @@
         </div>
       </div>
 
+      <!-- Attendees -->
+      <div class="ov-panel open" id="panel-attendees">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-attendees')">
+          <div class="ov-panel-icon">🙋</div>
+          <div class="ov-panel-title">Attendees</div>
+          <span class="ov-panel-count" id="pcount-attendees">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openAttendeeModal()">＋ Add</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div id="overview-attendees"></div>
+        </div>
+      </div>
+
       <!-- Expenses -->
       <div class="ov-panel" id="panel-expenses">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-expenses')">
@@ -1954,6 +2034,20 @@
         </div>
       </div>
 
+    </div>
+
+    <!-- ══════════════════ PEOPLE ══════════════════ -->
+    <div class="page" id="page-people">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">People</div>
+          <div class="section-subtitle">Employee list across SEET departments</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-person')">＋ Add Person</button>
+      </div>
+      <div class="people-filter-row" id="people-filter-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;" id="people-list"></div>
     </div>
 
     <!-- ══════════════════ COMMITTEE ══════════════════ -->
@@ -2514,6 +2608,12 @@
         </div>
       </div>
       <div class="form-group">
+        <label class="form-label">Owner / Facilitator</label>
+        <select class="form-select" id="game-owner">
+          <option value="">— None —</option>
+        </select>
+      </div>
+      <div class="form-group">
         <label class="form-label">Description</label>
         <textarea class="form-textarea" id="game-desc" placeholder="Describe how the game is played..."></textarea>
       </div>
@@ -2537,6 +2637,70 @@
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modal-game')">Cancel</button>
       <button class="btn btn-primary" onclick="saveGame()">Save Game</button>
+    </div>
+  </div>
+</div>
+
+<!-- Person Modal -->
+<div class="modal-overlay" id="modal-person">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-person-title">Add Person</div>
+      <button class="modal-close" onclick="closeModal('modal-person')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-input" id="person-name" placeholder="e.g. Juan dela Cruz" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Department *</label>
+          <select class="form-select" id="person-dept">
+            <option value="SEET - Dev">💻 SEET - Dev</option>
+            <option value="SEET - QE">🧪 SEET - QE</option>
+            <option value="SEET - OneInfra">☁️ SEET - OneInfra</option>
+            <option value="Other">📌 Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Role / Position</label>
+          <input class="form-input" id="person-role" placeholder="e.g. Software Engineer" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contact</label>
+          <input class="form-input" id="person-contact" placeholder="e.g. 09171234567" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="person-email" type="email" placeholder="e.g. juan@company.com" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-person')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePerson()">Save Person</button>
+    </div>
+  </div>
+</div>
+
+<!-- Attendee Select Modal -->
+<div class="modal-overlay" id="modal-attendees">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Attendees</div>
+      <button class="modal-close" onclick="closeModal('modal-attendees')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Select people from the People list to add as attendees for this activity.</div>
+      <input class="form-input" id="attendee-search" placeholder="Search by name or department…" oninput="filterAttendeeList()" style="margin-bottom:10px;" />
+      <div class="attendee-select-list" id="attendee-select-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-attendees')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAddAttendees()">＋ Add Selected</button>
     </div>
   </div>
 </div>
@@ -2626,6 +2790,7 @@ function initFirebase() {
         state = migrateState(data);
         state.activities  = state.activities  || [];
         state.locations   = state.locations   || [];
+        state.people      = state.people      || [];
         // Strip legacy category field
         state.activities.forEach(a => { delete a.category; });
       } else {
@@ -2697,12 +2862,13 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const s = migrateState(JSON.parse(raw));
+      s.people = s.people || [];
       // Always strip legacy category field from all activities
       (s.activities||[]).forEach(a => { delete a.category; });
       return s;
     }
   } catch(e) {}
-  return { activities: [], locations: [], _migrated: true };
+  return { activities: [], locations: [], people: [], _migrated: true };
 }
 
 // Returns the sub-data object for the currently selected activity.
@@ -2863,6 +3029,7 @@ function openModal(id) {
   // populate location dropdowns
   if (id === 'modal-activity') { populateLocationSelect('act-location'); selectTheme(document.getElementById('act-theme').value || 'Party'); }
   if (id === 'modal-bed') populateLocationSelect('bed-location');
+  if (id === 'modal-game') populateGameOwnerSelect();
   // pre-fill set-date modal with existing values
   if (id === 'modal-setdate' && state.engagement) {
     document.getElementById('setdate-name').value = state.engagement.name || '';
@@ -3210,6 +3377,15 @@ function deleteBed(id) {
 // ──────────────────────────────────────────────
 // SAVE — GAMES
 // ──────────────────────────────────────────────
+function populateGameOwnerSelect() {
+  const sel = document.getElementById('game-owner');
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— None —</option>' +
+    (state.people||[]).map(p=>`<option value="${p.id}">${p.name} (${p.dept})</option>`).join('');
+  if (cur) sel.value = cur;
+}
+
 function saveGame() {
   const name = document.getElementById('game-name').value.trim();
   if (!name) { showToast('Game name is required.','⚠️'); return; }
@@ -3219,6 +3395,7 @@ function saveGame() {
     icon: document.getElementById('game-icon').value || '🎮',
     category: document.getElementById('game-category').value,
     players: document.getElementById('game-players').value.trim(),
+    owner: document.getElementById('game-owner').value,
     desc: document.getElementById('game-desc').value.trim(),
     duration: document.getElementById('game-duration').value.trim(),
     quarter: document.getElementById('game-quarter').value,
@@ -3313,6 +3490,7 @@ function renderPage(page) {
   else if (page === 'committee') renderCommittee();
   else if (page === 'grocery') renderGrocery();
   else if (page === 'mealplan') renderMealPlan();
+  else if (page === 'people') renderPeople();
 }
 
 // DASHBOARD
@@ -3481,7 +3659,9 @@ function renderBeds() {
 function renderGames() {
   const el = document.getElementById('games-list');
   if (!actData().games.length) { el.innerHTML = actContextBanner() + emptyState('No games yet','Add fun games for the engagement party','🎮'); return; }
-  el.innerHTML = actContextBanner() + actData().games.map(g=>`
+  el.innerHTML = actContextBanner() + actData().games.map(g=>{
+    const ownerPerson = g.owner ? (state.people||[]).find(p=>p.id===g.owner) : null;
+    return `
     <div class="game-card">
       <div class="game-emoji">${g.icon||'🎮'}</div>
       <div class="game-name">${g.name}</div>
@@ -3492,10 +3672,160 @@ function renderGames() {
         ${g.duration?`<span class="tag tag-purple">⏱ ${g.duration}</span>`:''}
         ${g.quarter&&g.quarter!=='Any'?`<span class="tag tag-cyan">${g.quarter}</span>`:''}
       </div>
+      ${ownerPerson?`<div class="game-owner">🎯 Owner: <strong>${ownerPerson.name}</strong></div>`:''}
       <div style="margin-top:12px;text-align:right;">
         <button class="btn btn-danger btn-sm" onclick="deleteGame('${g.id}')">🗑️ Remove</button>
       </div>
+    </div>`;
+  }).join('');
+}
+
+// ──────────────────────────────────────────────
+// PEOPLE
+// ──────────────────────────────────────────────
+function deptClass(dept) {
+  if (dept === 'SEET - Dev') return 'dept-dev';
+  if (dept === 'SEET - QE') return 'dept-qe';
+  if (dept === 'SEET - OneInfra') return 'dept-oneinfra';
+  return 'dept-other';
+}
+
+function deptIcon(dept) {
+  if (dept === 'SEET - Dev') return '💻';
+  if (dept === 'SEET - QE') return '🧪';
+  if (dept === 'SEET - OneInfra') return '☁️';
+  return '📌';
+}
+
+let _peopleFilterDept = 'All';
+
+function renderPeople() {
+  const el = document.getElementById('people-list');
+  const filterRow = document.getElementById('people-filter-row');
+  const depts = ['All', 'SEET - Dev', 'SEET - QE', 'SEET - OneInfra', 'Other'];
+  if (filterRow) {
+    filterRow.innerHTML = depts.map(d => `
+      <button class="btn btn-sm ${_peopleFilterDept===d?'btn-primary':'btn-ghost'}" onclick="_peopleFilterDept='${d}';renderPeople();">${d==='All'?'👥 All':deptIcon(d)+' '+d}</button>
+    `).join('');
+  }
+  const people = (state.people||[]).filter(p => _peopleFilterDept==='All' || p.dept===_peopleFilterDept);
+  if (!people.length) { el.innerHTML = emptyState('No people yet','Add team members to your People list','👤'); return; }
+  const initials = name => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  el.innerHTML = people.map(p => `
+    <div class="people-card">
+      <div class="people-avatar">${initials(p.name)}</div>
+      <div class="people-info">
+        <div class="people-name">${p.name}</div>
+        <div class="people-role">${p.role||'—'}</div>
+        <span class="people-dept ${deptClass(p.dept)}">${deptIcon(p.dept)} ${p.dept}</span>
+        ${p.contact?`<div style="font-size:11px;color:var(--muted);margin-top:3px;">📞 ${p.contact}${p.email?' · ✉️ '+p.email:''}</div>`:''}
+      </div>
+      <button class="btn btn-danger btn-sm btn-icon" onclick="deletePerson('${p.id}')" title="Remove">🗑️</button>
     </div>`).join('');
+}
+
+function savePerson() {
+  const name = document.getElementById('person-name').value.trim();
+  if (!name) { showToast('Name is required.','⚠️'); return; }
+  if (!state.people) state.people = [];
+  state.people.push({
+    id: uid(), name,
+    dept:    document.getElementById('person-dept').value,
+    role:    document.getElementById('person-role').value.trim(),
+    contact: document.getElementById('person-contact').value.trim(),
+    email:   document.getElementById('person-email').value.trim(),
+    createdAt: new Date().toISOString(),
+  });
+  saveState();
+  closeModal('modal-person');
+  showToast(`${name} added!`,'👤');
+  renderPeople();
+  updateCounts();
+}
+
+function deletePerson(id) {
+  const p = (state.people||[]).find(x=>x.id===id);
+  if (!p) return;
+  state.people = state.people.filter(x=>x.id!==id);
+  saveState();
+  showToast(`${p.name} removed.`,'🗑️');
+  renderPeople();
+  updateCounts();
+}
+
+// ──────────────────────────────────────────────
+// ATTENDEES
+// ──────────────────────────────────────────────
+function openAttendeeModal() {
+  if (!currentActivityId) { showToast('Select an activity first.','⚠️'); return; }
+  renderAttendeeSelectList('');
+  document.getElementById('attendee-search').value = '';
+  openModal('modal-attendees');
+}
+
+function filterAttendeeList() {
+  renderAttendeeSelectList(document.getElementById('attendee-search').value);
+}
+
+function renderAttendeeSelectList(q) {
+  const list = document.getElementById('attendee-select-list');
+  const act = (state.activities||[]).find(a=>a.id===currentActivityId);
+  const existing = act ? (act.attendees||[]) : [];
+  const people = (state.people||[]).filter(p =>
+    !q || p.name.toLowerCase().includes(q.toLowerCase()) || p.dept.toLowerCase().includes(q.toLowerCase())
+  );
+  if (!people.length) { list.innerHTML = `<div style="font-size:13px;color:var(--muted);padding:12px;text-align:center;">No people found. Add people in the People section first.</div>`; return; }
+  const initials = name => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  list.innerHTML = people.map(p => {
+    const already = existing.includes(p.id);
+    return `<div class="attendee-select-row${already?' selected':''}" onclick="toggleAttendeeRow(this,'${p.id}')">
+      <input type="checkbox" ${already?'checked':''} onclick="event.stopPropagation();toggleAttendeeRow(this.parentElement,'${p.id}')" />
+      <div class="people-avatar" style="width:32px;height:32px;font-size:12px;">${initials(p.name)}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:var(--white);">${p.name}</div>
+        <div style="font-size:11px;color:var(--muted);">${deptIcon(p.dept)} ${p.dept}${p.role?' · '+p.role:''}</div>
+      </div>
+      ${already?`<span style="font-size:11px;color:var(--success);font-weight:600;">✓ Added</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+function toggleAttendeeRow(rowEl, personId) {
+  rowEl.classList.toggle('selected');
+  const cb = rowEl.querySelector('input[type=checkbox]');
+  if (cb) cb.checked = rowEl.classList.contains('selected');
+}
+
+function confirmAddAttendees() {
+  if (!currentActivityId) return;
+  const act = (state.activities||[]).find(a=>a.id===currentActivityId);
+  if (!act) return;
+  if (!act.attendees) act.attendees = [];
+  const selected = [...document.querySelectorAll('#attendee-select-list .attendee-select-row.selected')];
+  let added = 0;
+  selected.forEach(row => {
+    const onclick = row.getAttribute('onclick');
+    const m = onclick && onclick.match(/'([^']+)'\)$/);
+    if (m) {
+      const pid = m[1];
+      if (!act.attendees.includes(pid)) { act.attendees.push(pid); added++; }
+    }
+  });
+  saveState();
+  closeModal('modal-attendees');
+  showToast(`${added} attendee${added!==1?'s':''} added!`,'🙋');
+  renderOverview();
+  updateCounts();
+}
+
+function removeAttendee(personId) {
+  if (!currentActivityId) return;
+  const act = (state.activities||[]).find(a=>a.id===currentActivityId);
+  if (!act || !act.attendees) return;
+  act.attendees = act.attendees.filter(id=>id!==personId);
+  saveState();
+  renderOverview();
+  updateCounts();
 }
 
 // ──────────────────────────────────────────────
@@ -3504,6 +3834,7 @@ function renderGames() {
 function updateCounts() {
   document.getElementById('nav-count-activities').textContent = state.activities.length;
   document.getElementById('nav-count-locations').textContent = state.locations.length;
+  document.getElementById('nav-count-people').textContent = (state.people||[]).length;
   document.getElementById('nav-count-carseats').textContent = sumAcross('cars');
   document.getElementById('nav-count-beds').textContent = sumAcross('beds');
   document.getElementById('nav-count-games').textContent = sumAcross('games');
@@ -3523,6 +3854,8 @@ PAGE_TITLES['grocery'] = 'Grocery List';
 ADD_LABELS['grocery'] = ['Add Item', 'modal-grocery'];
 PAGE_TITLES['mealplan'] = 'Meal Plan';
 ADD_LABELS['mealplan'] = ['Add Day', 'modal-mealday'];
+PAGE_TITLES['people'] = 'People';
+ADD_LABELS['people'] = ['Add Person', 'modal-person'];
 
 // ──────────────────────────────────────────────
 // COUNTDOWN
@@ -4003,7 +4336,30 @@ function renderOverview() {
     }).join('');
   }
 
-  // 7 — grocery list
+  // 7 — attendees
+  const attendeesEl = document.getElementById('overview-attendees');
+  const attendeesPcountEl = document.getElementById('pcount-attendees');
+  const act = (state.activities||[]).find(a=>a.id===currentActivityId);
+  const attendeeIds = act ? (act.attendees||[]) : [];
+  const attendeePeople = attendeeIds.map(id=>(state.people||[]).find(p=>p.id===id)).filter(Boolean);
+  if (attendeesPcountEl) attendeesPcountEl.textContent = attendeePeople.length;
+  if (!attendeePeople.length) {
+    attendeesEl.innerHTML = emptyState('No attendees yet','Click "+ Add" to add people from the People list','🙋');
+  } else {
+    const initials = name => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    attendeesEl.innerHTML = `<div class="attendee-grid">${attendeePeople.map(p=>`
+      <div class="attendee-chip">
+        <div class="attendee-chip-avatar">${initials(p.name)}</div>
+        <div>
+          <div>${p.name}</div>
+          <div style="font-size:10px;color:var(--muted);font-weight:400;">${deptIcon(p.dept)} ${p.dept}</div>
+        </div>
+        <span class="attendee-chip-remove" onclick="removeAttendee('${p.id}')" title="Remove">✕</span>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  // 8 — grocery list
   const grocProgEl = document.getElementById('overview-grocery-progress');
   const grocEl = document.getElementById('overview-grocery');
   const grocery = actData().grocery || [];
