@@ -4539,7 +4539,7 @@ function importPeopleFromSurvey() {
       const name = (r.name || '').trim();
       if (!name) return;
       // Map survey serviceLine / dept fields to People dept
-      const dept = r.serviceLine || r.service_line || r.dept || r.department || 'Other';
+      const dept = r.service || r.serviceLine || r.service_line || r.dept || r.department || 'Other';
       const key = (name + '|' + dept).toLowerCase();
       if (existingKeys.has(key) || seen.has(key)) return;
       seen.add(key);
