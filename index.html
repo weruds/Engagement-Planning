@@ -2013,9 +2013,8 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <div class="logo-mark">
-        <div class="logo-icon">💍</div>
         <div>
-          <div class="logo-text">Planner · SEET</div>
+          <div class="logo-text">SEET Engagement Planner</div>
         </div>
       </div>
     </div>
@@ -2094,7 +2093,6 @@
       <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
-      <div class="topbar-title" id="topbar-title">Dashboard</div>
       <div class="topbar-actions">
         <button class="btn btn-primary" id="topbar-add-btn" onclick="handleTopbarAdd()">
           <span>＋</span> New Activity
@@ -3457,6 +3455,8 @@ let currentActivityId = null; // which activity the overview is scoped to
 function navigateToActivity(id) {
   currentActivityId = id;
   navigate('overview');
+  // start the ticker so the countdown hero updates live, even without a global engagement date
+  if (!_countdownInterval) startCountdown();
 }
 
 // Pages that are scoped per-activity — preserve currentActivityId when entering them
@@ -4668,7 +4668,10 @@ function renderSidebarCountdown() {
 function renderCountdownHero(containerId) {
   const el = document.getElementById(containerId);
   if (!el) return;
-  if (!state.engagement) {
+  // Use selected activity if one is active, else fall back to global engagement
+  const selAct = currentActivityId ? (state.activities||[]).find(a => a.id === currentActivityId) : null;
+  const actDate = selAct ? (selAct.dateStart || selAct.date || null) : (state.engagement ? state.engagement.date : null);
+  if (!actDate && !state.engagement) {
     el.innerHTML = `
       <div class="countdown-hero">
         <div class="countdown-label">Countdown</div>
@@ -4678,12 +4681,8 @@ function renderCountdownHero(containerId) {
       </div>`;
     return;
   }
-  const { date, time } = state.engagement;
-  // Use selected activity if one is active, else fall back to engagement name/date
-  const selAct = currentActivityId ? (state.activities||[]).find(a => a.id === currentActivityId) : null;
-  const name = selAct ? selAct.name : (state.engagement.name || 'Our Engagement');
-  const actDate = selAct ? (selAct.dateStart || selAct.date || date) : date;
-  const actTime = time || '00:00';
+  const name = selAct ? selAct.name : (state.engagement ? state.engagement.name || 'Our Engagement' : 'Our Engagement');
+  const actTime = (state.engagement ? state.engagement.time : null) || '00:00';
   const target = new Date(`${actDate}T00:00`);
   const dateStr = target.toLocaleDateString('default',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const parts = getCountdownParts(actDate, actTime);
@@ -4766,9 +4765,13 @@ function startCountdown() {
     // live-update overview hero if on that page
     if (currentPage === 'overview') {
       const heroEl = document.getElementById('overview-countdown-hero');
-      if (heroEl && state.engagement) {
-        // only re-render the numbers to avoid full DOM thrash
-        const parts = getCountdownParts();
+      if (heroEl) {
+        // resolve the active date: activity date takes priority over global engagement
+        const selAct = currentActivityId ? (state.activities||[]).find(a => a.id === currentActivityId) : null;
+        const activeDate = selAct ? (selAct.dateStart || selAct.date || null) : (state.engagement ? state.engagement.date : null);
+        if (!activeDate) return;
+        const activeTime = (state.engagement ? state.engagement.time : null) || '00:00';
+        const parts = getCountdownParts(activeDate, activeTime);
         if (!parts || parts.done) return;
         const nums = heroEl.querySelectorAll('.countdown-num');
         if (nums.length === 4) {
