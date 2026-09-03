@@ -2580,32 +2580,13 @@
       <button class="modal-close" onclick="closeModal('modal-game')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Game Name *</label>
-          <input class="form-input" id="game-name" placeholder="e.g. How Well Do You Know Them?" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Emoji</label>
-          <input class="form-input" id="game-icon" placeholder="🎯" maxlength="4" />
-        </div>
+      <div class="form-group">
+        <label class="form-label">Game Name *</label>
+        <input class="form-input" id="game-name" placeholder="e.g. How Well Do You Know Them?" />
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <select class="form-select" id="game-category">
-            <option value="Icebreaker">🧊 Icebreaker</option>
-            <option value="Trivia">🧠 Trivia</option>
-            <option value="Physical">🏃 Physical</option>
-            <option value="Creative">🎨 Creative</option>
-            <option value="Classic">🎲 Classic</option>
-            <option value="Couples">💑 Couples</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Players</label>
-          <input class="form-input" id="game-players" placeholder="e.g. 4–10 players" />
-        </div>
+      <div class="form-group">
+        <label class="form-label">Players</label>
+        <input class="form-input" id="game-players" placeholder="e.g. 4–10 players" />
       </div>
       <div class="form-group">
         <label class="form-label">Owner / Facilitator</label>
@@ -2616,22 +2597,6 @@
       <div class="form-group">
         <label class="form-label">Description</label>
         <textarea class="form-textarea" id="game-desc" placeholder="Describe how the game is played..."></textarea>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Duration</label>
-          <input class="form-input" id="game-duration" placeholder="e.g. 15 mins" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Quarter</label>
-          <select class="form-select" id="game-quarter">
-            <option value="Any">Any</option>
-            <option value="Q1">Q1</option>
-            <option value="Q2">Q2</option>
-            <option value="Q3">Q3</option>
-            <option value="Q4">Q4</option>
-          </select>
-        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -3392,13 +3357,9 @@ function saveGame() {
   const entry = {
     id: uid(),
     name,
-    icon: document.getElementById('game-icon').value || '🎮',
-    category: document.getElementById('game-category').value,
     players: document.getElementById('game-players').value.trim(),
     owner: document.getElementById('game-owner').value,
     desc: document.getElementById('game-desc').value.trim(),
-    duration: document.getElementById('game-duration').value.trim(),
-    quarter: document.getElementById('game-quarter').value,
   };
   actData().games.push(entry);
   saveState();
@@ -3667,10 +3628,7 @@ function renderGames() {
       <div class="game-name">${g.name}</div>
       <div class="game-desc">${g.desc||'No description provided.'}</div>
       <div class="game-meta">
-        <span class="tag ${tagColor(g.category)}">${g.category}</span>
         ${g.players?`<span class="tag tag-blue">👥 ${g.players}</span>`:''}
-        ${g.duration?`<span class="tag tag-purple">⏱ ${g.duration}</span>`:''}
-        ${g.quarter&&g.quarter!=='Any'?`<span class="tag tag-cyan">${g.quarter}</span>`:''}
       </div>
       ${ownerPerson?`<div class="game-owner">🎯 Owner: <strong>${ownerPerson.name}</strong></div>`:''}
       <div style="margin-top:12px;text-align:right;">
@@ -4282,13 +4240,11 @@ function renderOverview() {
   } else {
     gamesEl.innerHTML = actData().games.map(g => `
       <div class="game-ov-card">
-        <div class="game-ov-icon">${g.icon||'🎮'}</div>
+        <div class="game-ov-icon">🎮</div>
         <div>
           <div class="game-ov-name">${g.name}</div>
           <div class="game-ov-meta">
-            <span class="tag ${tagColor(g.category)}">${g.category}</span>
-            ${g.players?` · 👥 ${g.players}`:''}
-            ${g.duration?` · ⏱ ${g.duration}`:''}
+            ${g.players?`👥 ${g.players}`:''}
           </div>
         </div>
       </div>`).join('');
