@@ -2343,6 +2343,7 @@
           <div class="ov-panel-icon">🙋</div>
           <div class="ov-panel-title">Attendees</div>
           <span class="ov-panel-count" id="pcount-attendees">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();fetchAttendeesFromSurvey()" title="Import attending respondents from survey">📋 Fetch from Survey</button>
           <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openAttendeeModal()">＋ Add</button>
           <span class="ov-panel-chevron">▼</span>
         </div>
@@ -3205,8 +3206,10 @@
     </div>
     <div class="modal-body">
       <div class="form-group">
-        <label class="form-label">Passenger Name</label>
-        <input class="form-input" id="assign-seat-name" placeholder="Enter name" />
+        <label class="form-label">Passenger</label>
+        <select class="form-input" id="assign-seat-name">
+          <option value="">— Clear seat —</option>
+        </select>
       </div>
     </div>
     <div class="modal-footer">
@@ -3225,8 +3228,10 @@
     </div>
     <div class="modal-body">
       <div class="form-group">
-        <label class="form-label">Occupant(s)</label>
-        <input class="form-input" id="assign-bed-name" placeholder="e.g. Alice & Bob" />
+        <label class="form-label">Occupant</label>
+        <select class="form-input" id="assign-bed-name">
+          <option value="">— Clear bed —</option>
+        </select>
       </div>
     </div>
     <div class="modal-footer">
@@ -3979,6 +3984,27 @@ function deleteCar(id) {
 // ──────────────────────────────────────────────
 // ASSIGN SEAT
 // ──────────────────────────────────────────────
+function _attendeeNames() {
+  // Returns names of attendees for the current activity, falling back to all people
+  const act = currentActivityId ? (state.activities||[]).find(a=>a.id===currentActivityId) : null;
+  const ids = act ? (act.attendees||[]) : [];
+  const fromAttendees = ids.map(id=>(state.people||[]).find(p=>p.id===id)).filter(Boolean).map(p=>p.name);
+  // if no attendees yet, fall back to all people
+  return fromAttendees.length ? fromAttendees : (state.people||[]).map(p=>p.name);
+}
+
+function _populateNameSelect(selectId, currentValue) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const names = _attendeeNames();
+  sel.innerHTML = `<option value="">— Clear —</option>` +
+    names.map(n => `<option value="${n}"${n===currentValue?' selected':''}>${n}</option>`).join('');
+  // if current value exists but isn't in list, add it
+  if (currentValue && !names.includes(currentValue)) {
+    sel.innerHTML += `<option value="${currentValue}" selected>${currentValue}</option>`;
+  }
+}
+
 function openAssignSeat(carId, seatIdx) {
   _assignCtx = { carId, seatIdx };
   const car = actData().cars.find(x=>x.id===carId);
@@ -3987,7 +4013,8 @@ function openAssignSeat(carId, seatIdx) {
   document.getElementById('assign-seat-title').textContent = isDriver
     ? `Assign Driver — ${car.name}`
     : `Assign Seat ${seatIdx+1} — ${car.name}`;
-  document.getElementById('assign-seat-name').value = isDriver ? (car.driver||'') : (car.seats[seatIdx]||'');
+  const current = isDriver ? (car.driver||'') : (car.seats[seatIdx]||'');
+  _populateNameSelect('assign-seat-name', current);
   openModal('modal-assign-seat');
 }
 
@@ -4022,7 +4049,7 @@ function openAssignBed(bedId, bedIdx) {
   const raw = lines[bedIdx] || '';
   const current = raw.replace(/^bed\s*\d+:\s*/i, '').trim();
   document.getElementById('assign-bed-title').textContent = `Assign Bed ${bedIdx + 1} — ${b.room}`;
-  document.getElementById('assign-bed-name').value = current;
+  _populateNameSelect('assign-bed-name', current);
   openModal('modal-assign-bed');
 }
 
@@ -4670,6 +4697,71 @@ function confirmAddAttendees() {
   showToast(`${added} attendee${added!==1?'s':''} added!`,'🙋');
   renderOverview();
   updateCounts();
+}
+
+// Fetch attendees from survey — reads engagement_survey, auto-adds people + marks as attendees
+function fetchAttendeesFromSurvey() {
+  if (!currentActivityId) { showToast('Select an activity first.', '⚠️'); return; }
+  if (!_fbDb) { showToast('Not connected to Firestore.', '⚠️'); return; }
+  showToast('Fetching survey respondents…', '🔄');
+
+  _fbDb.collection('survey').doc('engagement_survey').get().then(snap => {
+    if (!snap.exists) { showToast('No survey data found.', '⚠️'); return; }
+    const responses = snap.data().responses || [];
+    const act = (state.activities||[]).find(a => a.id === currentActivityId);
+    if (!act) return;
+    if (!act.attendees) act.attendees = [];
+    if (!state.people) state.people = [];
+
+    // Build lookup: existing people by name (lowercase)
+    const existingByName = {};
+    state.people.forEach(p => { existingByName[p.name.trim().toLowerCase()] = p; });
+
+    let newPeople = 0, newAttendees = 0;
+
+    responses.forEach(r => {
+      const attend = (r.attend || '').trim().toLowerCase();
+      if (attend !== 'yes') return; // only import "Yes" respondents
+
+      const name = (r.name || '').trim();
+      if (!name) return;
+
+      const dept  = r.service || r.serviceLine || r.service_line || r.dept || r.department || 'Other';
+      const email = r.email || '';
+      const nameKey = name.toLowerCase();
+
+      // Add to People if not already there
+      let person = existingByName[nameKey];
+      if (!person) {
+        person = { id: uid(), name, dept, role: '', contact: '', email, createdAt: new Date().toISOString() };
+        state.people.push(person);
+        existingByName[nameKey] = person;
+        newPeople++;
+      }
+
+      // Add to activity attendees if not already there
+      if (!act.attendees.includes(person.id)) {
+        act.attendees.push(person.id);
+        newAttendees++;
+      }
+    });
+
+    if (newPeople === 0 && newAttendees === 0) {
+      showToast('All survey attendees are already added.', 'ℹ️');
+      return;
+    }
+    saveState();
+    renderOverview();
+    updateCounts();
+    const msg = [
+      newPeople    > 0 ? `${newPeople} new person${newPeople!==1?'s':''} added to People`    : '',
+      newAttendees > 0 ? `${newAttendees} attendee${newAttendees!==1?'s':''} added to activity` : '',
+    ].filter(Boolean).join(' · ');
+    showToast(msg + ' 🙋');
+  }).catch(err => {
+    console.error('Fetch attendees from survey error:', err);
+    showToast('Failed to fetch survey data.', '❌');
+  });
 }
 
 function removeAttendee(personId) {
