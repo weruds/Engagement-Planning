@@ -1917,83 +1917,8 @@
         <span id="pcount-activities"></span>
       </div>
 
-      <!-- Grocery List -->
-      <div class="ov-panel open" id="panel-grocery">
-        <div class="ov-panel-header" onclick="toggleOvPanel('panel-grocery')">
-          <div class="ov-panel-icon">🛒</div>
-          <div class="ov-panel-title">Grocery List</div>
-          <span class="ov-panel-count" id="pcount-grocery">0</span>
-          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-grocery')">＋ Add</button>
-          <span class="ov-panel-chevron">▼</span>
-        </div>
-        <div class="ov-panel-body">
-          <div id="overview-grocery-progress"></div>
-          <div id="overview-grocery"></div>
-        </div>
-      </div>
-
-      <!-- Meal Plan -->
-      <div class="ov-panel open" id="panel-meals">
-        <div class="ov-panel-header" onclick="toggleOvPanel('panel-meals')">
-          <div class="ov-panel-icon">🍽️</div>
-          <div class="ov-panel-title">Meal Plan</div>
-          <span class="ov-panel-count" id="pcount-meals">0</span>
-          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-mealday')">＋ Add Day</button>
-          <span class="ov-panel-chevron">▼</span>
-        </div>
-        <div class="ov-panel-body">
-          <div id="overview-meals"></div>
-        </div>
-      </div>
-
-      <!-- Car Seat Plans -->
-      <div class="ov-panel" id="panel-cars">
-        <div class="ov-panel-header" onclick="toggleOvPanel('panel-cars')">
-          <div class="ov-panel-icon">🚗</div>
-          <div class="ov-panel-title">Car Seat Plans</div>
-          <span class="ov-panel-count" id="pcount-cars">0</span>
-          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-carseat')">＋ Add Car</button>
-          <button class="btn btn-ghost btn-sm ov-panel-action" id="cars-vis-btn" onclick="event.stopPropagation();toggleCarVis()">👁 Visualize</button>
-          <span class="ov-panel-chevron">▼</span>
-        </div>
-        <div class="ov-panel-body">
-          <div id="overview-cars"></div>
-          <div id="overview-cars-vis" style="display:none;"></div>
-        </div>
-      </div>
-
-      <!-- Bed Plans -->
-      <div class="ov-panel" id="panel-beds">
-        <div class="ov-panel-header" onclick="toggleOvPanel('panel-beds')">
-          <div class="ov-panel-icon">🛏️</div>
-          <div class="ov-panel-title">Bed Plans</div>
-          <span class="ov-panel-count" id="pcount-beds">0</span>
-          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-bed')">＋ Add Room</button>
-          <button class="btn btn-ghost btn-sm ov-panel-action" id="beds-vis-btn" onclick="event.stopPropagation();toggleBedVis()">👁 Visualize</button>
-          <span class="ov-panel-chevron">▼</span>
-        </div>
-        <div class="ov-panel-body">
-          <div id="overview-beds"></div>
-          <div id="overview-beds-vis" style="display:none;"></div>
-        </div>
-      </div>
-
-      <!-- Games -->
-      <div class="ov-panel" id="panel-games">
-        <div class="ov-panel-header" onclick="toggleOvPanel('panel-games')">
-          <div class="ov-panel-icon">🎮</div>
-          <div class="ov-panel-title">Engagement Games</div>
-          <span class="ov-panel-count" id="pcount-games">0</span>
-          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-game')">＋ Add Game</button>
-          <span class="ov-panel-chevron">▼</span>
-        </div>
-        <div class="ov-panel-body">
-          <div class="games-overview-grid" id="overview-games"></div>
-        </div>
-      </div>
-
       <!-- Committee -->
-      <div class="ov-panel" id="panel-committee">
+      <div class="ov-panel open" id="panel-committee">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-committee')">
           <div class="ov-panel-icon">👥</div>
           <div class="ov-panel-title">Organizing Committee</div>
@@ -2017,6 +1942,81 @@
         </div>
         <div class="ov-panel-body">
           <div id="overview-attendees"></div>
+        </div>
+      </div>
+
+      <!-- Games -->
+      <div class="ov-panel" id="panel-games">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-games')">
+          <div class="ov-panel-icon">🎮</div>
+          <div class="ov-panel-title">Engagement Games</div>
+          <span class="ov-panel-count" id="pcount-games">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-game')">＋ Add Game</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div class="games-overview-grid" id="overview-games"></div>
+        </div>
+      </div>
+
+      <!-- Bed Plans -->
+      <div class="ov-panel" id="panel-beds">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-beds')">
+          <div class="ov-panel-icon">🛏️</div>
+          <div class="ov-panel-title">Bed Plans</div>
+          <span class="ov-panel-count" id="pcount-beds">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-bed')">＋ Add Room</button>
+          <button class="btn btn-ghost btn-sm ov-panel-action" id="beds-vis-btn" onclick="event.stopPropagation();toggleBedVis()">👁 Visualize</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div id="overview-beds"></div>
+          <div id="overview-beds-vis" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Car Seat Plans -->
+      <div class="ov-panel" id="panel-cars">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-cars')">
+          <div class="ov-panel-icon">🚗</div>
+          <div class="ov-panel-title">Car Seat Plans</div>
+          <span class="ov-panel-count" id="pcount-cars">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-carseat')">＋ Add Car</button>
+          <button class="btn btn-ghost btn-sm ov-panel-action" id="cars-vis-btn" onclick="event.stopPropagation();toggleCarVis()">👁 Visualize</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div id="overview-cars"></div>
+          <div id="overview-cars-vis" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Meal Plan -->
+      <div class="ov-panel open" id="panel-meals">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-meals')">
+          <div class="ov-panel-icon">🍽️</div>
+          <div class="ov-panel-title">Meal Plan</div>
+          <span class="ov-panel-count" id="pcount-meals">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-mealday')">＋ Add Day</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div id="overview-meals"></div>
+        </div>
+      </div>
+
+      <!-- Grocery List -->
+      <div class="ov-panel open" id="panel-grocery">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-grocery')">
+          <div class="ov-panel-icon">🛒</div>
+          <div class="ov-panel-title">Grocery List</div>
+          <span class="ov-panel-count" id="pcount-grocery">0</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();openModal('modal-grocery')">＋ Add</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div id="overview-grocery-progress"></div>
+          <div id="overview-grocery"></div>
         </div>
       </div>
 
