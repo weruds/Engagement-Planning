@@ -6332,7 +6332,7 @@ function syncFromMonday() {
         items {
           id
           name
-          column_values(ids: ["emailulmvrvwk","single_select3vv68hv","single_select7zfnxfz","single_selectihumw27","multi_selectf9953y2n","single_selectebtb3bn","single_selectwoqs24d"]) {
+          column_values {
             id
             text
           }
@@ -6360,6 +6360,14 @@ function syncFromMonday() {
     if (!items.length) {
       showToast('No survey responses found on Monday.com yet.', 'ℹ️');
       return;
+    }
+
+    // Log all column IDs from first item so we can identify new column IDs after type changes
+    if (items[0]) {
+      console.log('[Monday Sync] Column IDs from first item:');
+      items[0].column_values.forEach(cv => {
+        if (cv.text) console.log(`  ${cv.id}: "${cv.text}"`);
+      });
     }
 
     // Build responses array — resolve name from email if Monday returns placeholder
