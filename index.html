@@ -9,6 +9,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<!-- html2canvas — for schedule card download -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
@@ -2113,6 +2115,9 @@
   /* ── Admin lock ── */
   /* When body has .admin-locked, hide all admin-only buttons/controls */
   body.admin-locked .admin-only { display: none !important; }
+  /* Inverse: only visible when locked (user mode) */
+  .admin-locked-show { display: none; }
+  body.admin-locked .admin-locked-show { display: block !important; }
 
   .admin-lock-btn {
     display: inline-flex; align-items: center; gap: 6px;
@@ -2166,7 +2171,7 @@
   }
   .schedule-bg-card {
     width: 480px;
-    min-height: 680px;
+    height: 680px;
     background-image: url('WhatsApp Image 2026-09-04 at 7.08.21 PM.jpeg');
     background-size: cover;
     background-position: center;
@@ -2174,45 +2179,103 @@
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+    display: flex;
+    flex-direction: column;
+  }
+  /* ── Schedule card — all theming applied via inline CSS vars on .schedule-bg-card ── */
+  .schedule-bg-card {
+    --scard-overlay:    rgba(8,14,36,0.58);
+    --scard-accent:     #fbbf24;
+    --scard-title:      #fbbf24;
+    --scard-day:        rgba(255,255,255,0.70);
+    --scard-divider:    rgba(251,191,36,0.35);
+    --scard-row-border: rgba(255,255,255,0.07);
+    --scard-name:       #ffffff;
+    --scard-meta:       rgba(255,255,255,0.55);
+    --scard-empty:      rgba(255,255,255,0.45);
   }
   .schedule-bg-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(8,14,36,0.58);
+    background: var(--scard-overlay);
     z-index: 0;
+    transition: background .3s;
   }
+  /* ── Content always fills the card height ── */
   .schedule-content {
     position: relative;
     z-index: 1;
-    padding: 36px 32px 40px;
+    padding: 36px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    box-sizing: border-box;
   }
+  .schedule-events-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* classic default */
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+  }
+
+  /* ── Template: classic (default) — top-aligned list ── */
+  .schedule-bg-card.tpl-classic .schedule-events-list { justify-content: flex-start; }
+  .schedule-bg-card.tpl-classic .schedule-event-row   { padding: 10px 0; }
+
+  /* ── Template: spaced — events spread evenly across full height ── */
+  .schedule-bg-card.tpl-spaced .schedule-events-list  { justify-content: space-evenly; }
+  .schedule-bg-card.tpl-spaced .schedule-event-row    { padding: 4px 0; border-bottom: none; }
+  .schedule-bg-card.tpl-spaced .schedule-time-badge   { font-size: 13px; }
+  .schedule-bg-card.tpl-spaced .schedule-event-name   { font-size: 15px; }
+
+  /* ── Template: minimal — large time, stripped-down rows, max breathing room ── */
+  .schedule-bg-card.tpl-minimal .schedule-events-list  { justify-content: flex-start; gap: 0; overflow-y: auto; min-height: 0; }
+  .schedule-bg-card.tpl-minimal .schedule-event-row    { flex-direction: column; gap: 2px; padding: 10px 0; border-bottom: 1px solid var(--scard-row-border); align-items: flex-start; flex-shrink: 0; }
+  .schedule-bg-card.tpl-minimal .schedule-time-badge   { font-size: 22px; font-weight: 800; min-width: unset; letter-spacing: -0.5px; }
+  .schedule-bg-card.tpl-minimal .schedule-event-name   { font-size: 13px; font-weight: 600; opacity: 0.88; }
+  .schedule-bg-card.tpl-minimal .schedule-event-meta   { font-size: 10px; }
+
+  /* ── Template: centered — everything centred, magazine style ── */
+  .schedule-bg-card.tpl-centered .schedule-card-title  { margin-bottom: 12px; }
+  .schedule-bg-card.tpl-centered .schedule-events-list { justify-content: flex-start; align-items: center; gap: 0; overflow-y: auto; min-height: 0; }
+  .schedule-bg-card.tpl-centered .schedule-event-row   { flex-direction: column; align-items: center; text-align: center; gap: 2px; padding: 10px 0; border-bottom: none; flex-shrink: 0; width: 100%; }
+  .schedule-bg-card.tpl-centered .schedule-time-badge  { min-width: unset; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.75; padding-top: 0; }
+  .schedule-bg-card.tpl-centered .schedule-event-name  { font-size: 15px; font-weight: 700; }
+  .schedule-bg-card.tpl-centered .schedule-card-divider { display: none; }
+
   .schedule-card-title {
     text-align: center;
     margin-bottom: 6px;
+    flex-shrink: 0;
   }
   .schedule-card-title-main {
     font-size: 18px;
     font-weight: 800;
-    color: #fbbf24;
+    color: var(--scard-title);
     letter-spacing: .5px;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.18);
   }
   .schedule-card-title-day {
     font-size: 13px;
-    color: rgba(255,255,255,0.7);
+    color: var(--scard-day);
     margin-top: 3px;
     font-weight: 500;
   }
   .schedule-card-divider {
     border: none;
-    border-top: 1px solid rgba(251,191,36,0.35);
+    border-top: 1px solid var(--scard-divider);
     margin: 16px 0;
+    flex-shrink: 0;
   }
   .schedule-event-row {
     display: flex;
     gap: 12px;
     padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid var(--scard-row-border);
     align-items: flex-start;
   }
   .schedule-event-row:last-child { border-bottom: none; }
@@ -2220,18 +2283,18 @@
     min-width: 64px;
     font-size: 12px;
     font-weight: 700;
-    color: #fbbf24;
+    color: var(--scard-accent);
     flex-shrink: 0;
     padding-top: 2px;
   }
   .schedule-event-name {
     font-size: 14px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--scard-name);
   }
   .schedule-event-meta {
     font-size: 11px;
-    color: rgba(255,255,255,0.55);
+    color: var(--scard-meta);
     margin-top: 3px;
     line-height: 1.5;
   }
@@ -2241,6 +2304,38 @@
     gap: 4px;
     flex-shrink: 0;
   }
+  /* ── Overview Schedule day tiles ── */
+  .ov-sched-days {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .ov-sched-day-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border-radius: 12px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    min-width: 80px;
+    gap: 2px;
+  }
+  .ov-sched-day-tile:hover { border-color: var(--accent); background: var(--surface3); }
+  .ov-sched-day-tile .tile-day   { font-size: 13px; font-weight: 700; color: var(--white); }
+  .ov-sched-day-tile .tile-date  { font-size: 11px; color: var(--muted); }
+  .ov-sched-day-tile .tile-count { font-size: 10px; color: var(--accent2); margin-top: 3px; font-weight: 600; }
+  /* Day schedule modal */
+  .day-sched-modal-header {
+    font-size: 13px; font-weight: 700; color: var(--muted2);
+    text-transform: uppercase; letter-spacing: .7px;
+    margin-bottom: 12px;
+  }
+  .day-sched-list { display: flex; flex-direction: column; gap: 0; }
 </style>
 </head>
 <body class="admin-locked">
@@ -2292,9 +2387,6 @@
         </div>
         <div class="nav-item" data-page="survey-results">
           <span class="nav-icon">📊</span> Survey Results
-        </div>
-        <div class="nav-item" data-page="schedule">
-          <span class="nav-icon">🗓️</span> Schedule
         </div>
         <!-- Survey nav items hidden -->
         <span style="display:none;" id="survey-nav-badge"></span>
@@ -2651,6 +2743,21 @@
         </div>
       </div>
 
+      <!-- Schedule -->
+      <div class="ov-panel open" id="panel-schedule">
+        <div class="ov-panel-header" onclick="toggleOvPanel('panel-schedule')">
+          <div class="ov-panel-icon">🗓️</div>
+          <div class="ov-panel-title">Schedule of Activities</div>
+          <span class="ov-panel-count" id="pcount-schedule">—</span>
+          <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();openScheduleEventModal()">＋ Add Event</button>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();navigate('schedule')" title="View full schedule">📋 Full Schedule</button>
+          <span class="ov-panel-chevron">▼</span>
+        </div>
+        <div class="ov-panel-body">
+          <div id="overview-schedule"></div>
+        </div>
+      </div>
+
       <!-- Expenses -->
       <div class="ov-panel open" id="panel-expenses">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-expenses')">
@@ -2692,6 +2799,7 @@
         <div style="display:flex;gap:8px;">
           <button class="btn btn-ghost btn-sm" onclick="syncFromMonday()" title="Pull latest responses from Monday.com">📥 Sync from Monday</button>
           <button class="btn btn-ghost btn-sm" onclick="renderSurveyResultsPage()" title="Refresh charts">🔄 Refresh</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSurveyData()" title="Clear all synced responses and reset charts" style="color:#ef4444;">🗑️ Reset</button>
         </div>
       </div>
       <div id="survey-results-body">
@@ -2746,7 +2854,13 @@
           <div class="section-title">Schedule of Activities</div>
           <div class="section-subtitle">Day-by-day program for your engagement</div>
         </div>
-        <button class="btn btn-primary admin-only" onclick="openScheduleEventModal()">＋ Add Event</button>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="openSchedulePreview()" title="Display-only card view + download">👁 View Card</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="cycleScheduleTemplate()" id="sch-tpl-btn" title="Switch card layout template">🎨 Template: Classic</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="document.getElementById('sch-bg-input').click()" title="Change card background image — recommended 960×1440 px">🖼 Card Image</button>
+          <input type="file" id="sch-bg-input" accept="image/*" style="display:none;" onchange="saveScheduleCardImage(this)" />
+          <button class="btn btn-primary admin-only" onclick="openScheduleEventModal()">＋ Add Event</button>
+        </div>
       </div>
       <div id="schedule-list"></div>
     </div>
@@ -3522,6 +3636,26 @@
   </div>
 </div>
 
+<!-- Day Schedule View Modal — portrait card style -->
+<div class="modal-overlay" id="modal-day-schedule" onclick="if(event.target===this)closeModal('modal-day-schedule')">
+  <div id="modal-day-schedule-body"></div>
+</div>
+
+<!-- Schedule Card Preview Modal (display-only + download) -->
+<div class="modal-overlay" id="modal-sched-preview" onclick="if(event.target===this)closeModal('modal-sched-preview')" style="align-items:flex-start;overflow-y:auto;padding:32px 16px;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:520px;margin:0 auto;">
+    <!-- Day selector tabs inside preview -->
+    <div id="sched-preview-tabs" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%;"></div>
+    <!-- The card that gets captured -->
+    <div id="sched-preview-card-wrap"></div>
+    <!-- Action bar -->
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-sched-preview')" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2);">✕ Close</button>
+      <button class="btn btn-sm" id="sched-preview-dl-btn" style="background:#fbbf24;color:#1a1200;font-weight:700;border:none;gap:6px;" onclick="downloadScheduleCard()">⬇️ Download PNG</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ──────────────────────────────────────────────
 // FIREBASE (Firestore — hardcoded config)
@@ -3570,6 +3704,8 @@ function initFirebase() {
         state.people      = state.people      || [];
         // Strip legacy category field
         state.activities.forEach(a => { delete a.category; });
+        // Restore local-only image fields (too large for Firestore)
+        _restoreImages();
       } else {
         // Document doesn't exist yet — seed it with current local state
         _fbDocRef.set(state).catch(e => console.warn('Firestore seed error:', e));
@@ -3670,19 +3806,59 @@ function actData() {
   return state._fallback;
 }
 
+// ── Image localStorage helpers ────────────────────────────────────
+// Base64 images are too large for Firestore (1MB doc limit).
+// We store them keyed by activity id in localStorage and strip them
+// before every Firestore write, then restore them after every snapshot.
+
+const IMAGE_STORE_KEY = 'engage_images_v1';
+
+function _saveImages() {
+  const map = {};
+  (state.activities || []).forEach(a => {
+    if (a.scheduleCardImage)    map[a.id + '_scheduleCardImage']    = a.scheduleCardImage;
+    if (a.scheduleCardPalette)  map[a.id + '_scheduleCardPalette']  = a.scheduleCardPalette;
+    if (a.scheduleCardTemplate) map[a.id + '_scheduleCardTemplate'] = a.scheduleCardTemplate;
+  });
+  try { localStorage.setItem(IMAGE_STORE_KEY, JSON.stringify(map)); } catch(e) {}
+}
+
+function _restoreImages() {
+  let map = {};
+  try { map = JSON.parse(localStorage.getItem(IMAGE_STORE_KEY) || '{}'); } catch(e) {}
+  (state.activities || []).forEach(a => {
+    if (map[a.id + '_scheduleCardImage'])    a.scheduleCardImage    = map[a.id + '_scheduleCardImage'];
+    if (map[a.id + '_scheduleCardPalette'])  a.scheduleCardPalette  = map[a.id + '_scheduleCardPalette'];
+    if (map[a.id + '_scheduleCardTemplate']) a.scheduleCardTemplate = map[a.id + '_scheduleCardTemplate'];
+  });
+}
+
+function _stripImages(obj) {
+  const clone = JSON.parse(JSON.stringify(obj));
+  (clone.activities || []).forEach(a => {
+    delete a.scheduleCardImage;
+    delete a.scheduleCardPalette;
+    delete a.scheduleCardTheme;
+    delete a.scheduleCardTemplate;
+  });
+  return clone;
+}
+
 function saveState() {
-  // Always mirror to localStorage for offline resilience
+  // Persist images to localStorage (too large for Firestore)
+  _saveImages();
+  // Mirror full state (including images) to localStorage for offline resilience
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  // Write to Firestore — onSnapshot will propagate to all connected clients
+  // Write to Firestore — strip large image fields first
   if (_fbDocRef) {
-    // Strip _fallback (runtime-only) and undefined values before writing to Firestore
     const { _fallback, ...persistable } = state;
-    const clean = JSON.parse(JSON.stringify(persistable));
+    const clean = _stripImages(persistable);
     _fbDocRef.set(clean).catch(e => console.warn('Firestore write error:', e));
   }
 }
 
 let state = loadState();
+_restoreImages(); // re-attach local-only image fields after cold load
 
 // ──────────────────────────────────────────────
 // ADMIN LOCK / UNLOCK
@@ -6315,7 +6491,7 @@ const MONDAY_COL_MAP = {
   emailulmvrvwk:          'email',      // Email
   single_select3vv68hv:   'attend',     // Will you be able to attend?
   single_select7zfnxfz:   'service',    // Service Line
-  multi_selectbjtc19q:    'date',       // Which Date works best for you? (multi-select)
+  multi_selectebjtc19q:   'date',       // Which Date works best for you? (multi-select)
   single_selectihumw27:   'date',       // legacy single-select date (kept for old Firestore data)
   single_selectmmqs0o3:   'venue',      // Top venue choice
   multi_selectf9953y2n:   'venue',      // legacy multi-select venue (kept for old data)
@@ -6333,9 +6509,10 @@ function syncFromMonday() {
         items {
           id
           name
-          column_values(ids: ["emailulmvrvwk","single_select3vv68hv","single_select7zfnxfz","multi_selectbjtc19q","single_selectmmqs0o3","single_selectebtb3bn","single_selectwoqs24d"]) {
+          column_values(ids: ["emailulmvrvwk","single_select3vv68hv","single_select7zfnxfz","multi_selectebjtc19q","single_selectmmqs0o3","single_selectebtb3bn","single_selectwoqs24d"]) {
             id
             text
+            value
           }
         }
       }
@@ -6368,7 +6545,16 @@ function syncFromMonday() {
       const r = { id: item.id, name: item.name };
       item.column_values.forEach(cv => {
         const field = MONDAY_COL_MAP[cv.id];
-        if (field) r[field] = cv.text || '';
+        if (!field) return;
+        // Monday status columns sometimes return null for `text` but have the label in `value` as JSON
+        let val = cv.text || '';
+        if (!val && cv.value) {
+          try {
+            const parsed = JSON.parse(cv.value);
+            val = parsed.label?.text || parsed.text || parsed.name || '';
+          } catch (e) { /* ignore parse errors */ }
+        }
+        r[field] = val;
       });
       // If Monday sends "Incoming form answer" (or blank), derive name from email
       r.name = resolveNameFromEmail(r.name, r.email);
@@ -6393,6 +6579,60 @@ function syncFromMonday() {
     showToast('Could not reach Monday.com API.', '❌');
   });
 }
+
+function resetSurveyData() {
+  if (!confirm('Reset all survey data? This will clear every synced response from the charts. You can re-sync from Monday at any time.')) return;
+  if (!_fbDb) { showToast('Not connected to Firestore.', '⚠️'); return; }
+  _fbDb.collection('survey').doc('engagement_survey').delete()
+    .then(() => {
+      _srResponsesCache = null;
+      loadSidebarSurveyResults();
+      if (currentPage === 'survey-results') renderSurveyResultsPage();
+      showToast('Survey data cleared. Sync from Monday to reload.', '🗑️');
+    })
+    .catch(err => {
+      console.error('Reset error:', err);
+      showToast('Reset failed — Firestore error.', '❌');
+    });
+}
+
+
+
+// DEBUG: call debugMondayColumns() from the browser console to inspect
+// the real column IDs and first-row values returned by your Monday board.
+function debugMondayColumns() {
+  const query = `{
+    boards(ids: [${MONDAY_BOARD_ID}]) {
+      columns { id title type }
+      items_page(limit: 1) {
+        items {
+          id name
+          column_values { id text }
+        }
+      }
+    }
+  }`;
+  fetch('https://api.monday.com/v2', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': MONDAY_API_TOKEN },
+    body: JSON.stringify({ query }),
+  })
+  .then(r => r.json())
+  .then(json => {
+    const board = json.data?.boards?.[0];
+    if (!board) { console.error('No board data', json); return; }
+    console.group('Monday Board Columns');
+    board.columns.forEach(c => console.log(`id="${c.id}"  title="${c.title}"  type="${c.type}"`));
+    console.groupEnd();
+    console.group('First item column_values');
+    const item = board.items_page?.items?.[0];
+    if (item) item.column_values.forEach(cv => console.log(`id="${cv.id}"  text="${cv.text}"`));
+    console.groupEnd();
+  })
+  .catch(err => console.error('Debug fetch failed:', err));
+}
+
+
 
 function renderCountdownHero(containerId) {
   const el = document.getElementById(containerId);
@@ -6526,7 +6766,7 @@ function renderOverview() {
 
   // ensure all panels are open on every renderOverview call
   ['panel-location','panel-committee','panel-attendees','panel-games',
-   'panel-beds','panel-cars','panel-meals','panel-grocery','panel-expenses'
+   'panel-beds','panel-cars','panel-meals','panel-grocery','panel-schedule','panel-expenses'
   ].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.add('open');
@@ -6976,7 +7216,10 @@ function renderOverview() {
     }).join('');
   }
 
-  // 9 — expenses
+  // 9 — schedule day tiles
+  renderOverviewSchedule();
+
+  // 10 — expenses
   renderExpenses('overview-expenses');
 }
 
@@ -7375,17 +7618,17 @@ function renderSchedule() {
     .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
 
   let eventsHtml;
+  const _tpl = actData().scheduleCardTemplate || 'classic';
+  let eventsListHtml;
   if (!dayEvents.length) {
-    eventsHtml = emptyState('No events yet', 'Use "＋ Add Event" to add items to this day.', '🗓️');
+    eventsListHtml = `<div class="schedule-events-list" style="justify-content:center;align-items:center;">${emptyState('No events yet', 'Use "＋ Add Event" to add items to this day.', '🗓️')}</div>`;
   } else {
-    eventsHtml = dayEvents.map(ev => {
+    const rows = dayEvents.map(ev => {
       const metaParts = [];
       if (ev.emcee)   metaParts.push(`🎤 Emcee: ${ev.emcee}`);
       if (ev.speaker) metaParts.push(`🗣️ Speaker: ${ev.speaker}`);
       if (ev.notes)   metaParts.push(`📝 ${ev.notes}`);
-      const metaHtml = metaParts.length
-        ? `<div class="schedule-event-meta">${metaParts.join(' &nbsp;·&nbsp; ')}</div>`
-        : '';
+      const metaHtml = metaParts.length ? `<div class="schedule-event-meta">${metaParts.join(' · ')}</div>` : '';
       const timeLabel = ev.time
         ? new Date('1970-01-01T' + ev.time).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' })
         : '—';
@@ -7401,6 +7644,7 @@ function renderSchedule() {
         </div>
       </div>`;
     }).join('');
+    eventsListHtml = `<div class="schedule-events-list">${rows}</div>`;
   }
 
   const dayIdx = days.indexOf(_scheduleSelectedDay);
@@ -7408,10 +7652,14 @@ function renderSchedule() {
     ? new Date(_scheduleSelectedDay + 'T00:00').toLocaleDateString('default', { weekday:'long', month:'long', day:'numeric', year:'numeric' })
     : '';
 
+  const _schBg = actData().scheduleCardImage || null;
+  const _schBgStyle = _schBg ? ` style="background-image:url('${_schBg}')"` : '';
+  const _tplClass = `tpl-${_tpl}`;
+
   el.innerHTML = actSelectorHtml +
     `<div class="meal-day-tabs">${tabsHtml}</div>
     <div class="schedule-portrait-wrap">
-      <div class="schedule-bg-card">
+      <div class="schedule-bg-card ${_tplClass}"${_schBgStyle}>
         <div class="schedule-bg-overlay"></div>
         <div class="schedule-content">
           <div class="schedule-card-title">
@@ -7419,10 +7667,16 @@ function renderSchedule() {
             <div class="schedule-card-title-day">Day ${dayIdx + 1} &nbsp;·&nbsp; ${dayDateLabel}</div>
           </div>
           <hr class="schedule-card-divider">
-          ${eventsHtml}
+          ${eventsListHtml}
         </div>
       </div>
     </div>`;
+
+  // Apply palette + sync template button label
+  const _cardEl = el.querySelector('.schedule-bg-card');
+  if (_cardEl) _applyPaletteToCard(_cardEl, actData().scheduleCardPalette || null);
+  const _tplBtn = document.getElementById('sch-tpl-btn');
+  if (_tplBtn) _tplBtn.textContent = `🎨 Template: ${_tpl.charAt(0).toUpperCase()+_tpl.slice(1)}`;
 }
 
 function selectScheduleDay(dateStr) {
@@ -7495,6 +7749,7 @@ function saveScheduleEvent() {
   showToast(`Event "${name}" saved!`);
   _scheduleSelectedDay = entry.day;
   renderSchedule();
+  if (currentPage === 'overview') renderOverviewSchedule();
 }
 
 function deleteScheduleEvent(id) {
@@ -7504,6 +7759,367 @@ function deleteScheduleEvent(id) {
   saveState();
   showToast(`"${ev.name}" removed.`, '🗑️');
   renderSchedule();
+  if (currentPage === 'overview') renderOverviewSchedule();
+}
+
+// ── Dominant colour extraction ───────────────────────────────────
+// Samples the image at 80×80, clusters pixel colours into buckets,
+// picks the most-saturated dominant hue, then derives the full card
+// palette (accent, text, overlay) automatically.
+
+function _extractImagePalette(dataUrl, cb) {
+  const img = new Image();
+  img.onload = () => {
+    const SIZE = 80;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = SIZE;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, SIZE, SIZE);
+    const data = ctx.getImageData(0, 0, SIZE, SIZE).data;
+
+    // 1. Average luminance (to decide overlay darkness)
+    let totalLum = 0;
+    const px = data.length / 4;
+    // 2. Collect vibrant pixels (skip near-white and near-black)
+    const vibrant = [];
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i+1], b = data[i+2];
+      totalLum += 0.2126*r/255 + 0.7152*g/255 + 0.0722*b/255;
+      const max = Math.max(r,g,b), min = Math.min(r,g,b);
+      const sat = max === 0 ? 0 : (max - min) / max;
+      const bright = max / 255;
+      // Only keep pixels that are saturated enough and not too dark/light
+      if (sat > 0.25 && bright > 0.15 && bright < 0.95) vibrant.push([r,g,b]);
+    }
+    const avgLum = totalLum / px;
+
+    // 3. Find dominant hue by averaging vibrant pixel colours
+    let accent = [251, 191, 36]; // fallback amber
+    if (vibrant.length > 10) {
+      const sum = vibrant.reduce((a, c) => [a[0]+c[0], a[1]+c[1], a[2]+c[2]], [0,0,0]);
+      const avg = sum.map(v => Math.round(v / vibrant.length));
+      // Boost saturation: push away from grey toward the hue
+      const mx = Math.max(...avg), mn = Math.min(...avg);
+      if (mx - mn > 20) {
+        // Amplify: map [mn,mx] → [0,255]
+        accent = avg.map(v => Math.round(Math.min(255, Math.max(0, (v - mn) / (mx - mn) * 255))));
+        // Ensure it's bright enough to read on dark overlay
+        const accentLum = 0.2126*accent[0]/255 + 0.7152*accent[1]/255 + 0.0722*accent[2]/255;
+        if (accentLum < 0.35) {
+          // Too dark — lighten it by blending toward white
+          accent = accent.map(v => Math.round(v + (255 - v) * 0.45));
+        }
+      }
+    }
+
+    // 4. Overlay: dark image → dark overlay; light image → slightly darker overlay
+    const overlayAlpha = avgLum > 0.55 ? 0.65 : 0.52;
+    const overlayR = avgLum > 0.55 ? 10 : 5;
+    const overlayG = avgLum > 0.55 ? 10 : 8;
+    const overlayB = avgLum > 0.55 ? 25 : 18;
+
+    const [ar, ag, ab] = accent;
+    const palette = {
+      overlay:   `rgba(${overlayR},${overlayG},${overlayB},${overlayAlpha})`,
+      accent:    `rgb(${ar},${ag},${ab})`,
+      title:     `rgb(${ar},${ag},${ab})`,
+      day:       `rgba(255,255,255,0.72)`,
+      divider:   `rgba(${ar},${ag},${ab},0.4)`,
+      rowBorder: `rgba(255,255,255,0.08)`,
+      name:      `#ffffff`,
+      meta:      `rgba(255,255,255,0.58)`,
+      empty:     `rgba(255,255,255,0.4)`,
+    };
+
+    cb(palette);
+  };
+  img.src = dataUrl;
+}
+
+// Apply extracted palette as inline CSS vars directly on a card element
+function _applyPaletteToCard(cardEl, palette) {
+  if (!cardEl || !palette) return;
+  cardEl.style.setProperty('--scard-overlay',    palette.overlay);
+  cardEl.style.setProperty('--scard-accent',     palette.accent);
+  cardEl.style.setProperty('--scard-title',      palette.title);
+  cardEl.style.setProperty('--scard-day',        palette.day);
+  cardEl.style.setProperty('--scard-divider',    palette.divider);
+  cardEl.style.setProperty('--scard-row-border', palette.rowBorder);
+  cardEl.style.setProperty('--scard-name',       palette.name);
+  cardEl.style.setProperty('--scard-meta',       palette.meta);
+  cardEl.style.setProperty('--scard-empty',      palette.empty);
+}
+
+// Apply stored palette to all .schedule-bg-card elements currently in the DOM
+function _applyStoredPaletteToCards() {
+  const p = actData().scheduleCardPalette;
+  if (!p) return;
+  document.querySelectorAll('.schedule-bg-card').forEach(el => _applyPaletteToCard(el, p));
+}
+
+function saveScheduleCardImage(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    _extractImagePalette(dataUrl, palette => {
+      actData().scheduleCardImage   = dataUrl;
+      actData().scheduleCardPalette = palette;
+      // Keep theme field for legacy compat
+      actData().scheduleCardTheme   = 'dark';
+      saveState();
+      showToast('Card image updated — palette extracted 🎨', '✅');
+      renderSchedule();
+    });
+  };
+  reader.readAsDataURL(input.files[0]);
+  input.value = '';
+}
+
+
+const SCHEDULE_TEMPLATES = ['classic', 'spaced', 'minimal', 'centered'];
+
+function cycleScheduleTemplate() {
+  const cur = actData().scheduleCardTemplate || 'classic';
+  const idx = SCHEDULE_TEMPLATES.indexOf(cur);
+  const next = SCHEDULE_TEMPLATES[(idx + 1) % SCHEDULE_TEMPLATES.length];
+  actData().scheduleCardTemplate = next;
+  _saveImages(); // persist locally (template stored alongside image data)
+  renderSchedule();
+  showToast(`Template: ${next.charAt(0).toUpperCase() + next.slice(1)}`, '🎨');
+}
+
+
+// ── Schedule card preview + download ────────────────────────────
+let _schedPreviewDay = null;
+
+function _buildScheduleCardHtml(dateStr, dayIdx, actName, bgStyle, themeAttr, events, tpl) {
+  const _t = tpl || actData().scheduleCardTemplate || 'classic';
+  const dateLabel = new Date(dateStr + 'T00:00').toLocaleDateString('default', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+  });
+  let eventsListHtml;
+  if (!events.length) {
+    eventsListHtml = `<div class="schedule-events-list" style="justify-content:center;align-items:center;"><div style="color:rgba(255,255,255,0.5);font-size:13px;text-align:center;">No events yet.</div></div>`;
+  } else {
+    const rows = events.map(ev => {
+      const timeLabel = ev.time
+        ? new Date('1970-01-01T' + ev.time).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' })
+        : '—';
+      const metaParts = [];
+      if (ev.emcee)   metaParts.push(`🎤 Emcee: ${ev.emcee}`);
+      if (ev.speaker) metaParts.push(`🗣️ Speaker: ${ev.speaker}`);
+      if (ev.notes)   metaParts.push(`📝 ${ev.notes}`);
+      return `<div class="schedule-event-row">
+        <div class="schedule-time-badge">${timeLabel}</div>
+        <div style="flex:1;">
+          <div class="schedule-event-name">${ev.name}</div>
+          ${metaParts.length ? `<div class="schedule-event-meta">${metaParts.join(' · ')}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+    eventsListHtml = `<div class="schedule-events-list">${rows}</div>`;
+  }
+  return `<div class="schedule-bg-card tpl-${_t}"${bgStyle}>
+    <div class="schedule-bg-overlay"></div>
+    <div class="schedule-content">
+      <div class="schedule-card-title">
+        <div class="schedule-card-title-main">${actName}</div>
+        <div class="schedule-card-title-day">Day ${dayIdx + 1} &nbsp;·&nbsp; ${dateLabel}</div>
+      </div>
+      <hr class="schedule-card-divider">
+      ${eventsListHtml}
+    </div>
+  </div>`;
+}
+
+function _renderSchedulePreviewDay(dateStr) {
+  _schedPreviewDay = dateStr;
+  const act   = currentActivityId ? (state.activities || []).find(a => a.id === currentActivityId) : null;
+  const days  = activityDays(act);
+  const sched = actData().schedule || [];
+  const idx   = days.indexOf(dateStr);
+  const bg       = actData().scheduleCardImage || null;
+  const bgTheme  = actData().scheduleCardTheme || 'dark';
+  const bgStyle  = bg ? ` style="background-image:url('${bg}')"` : '';
+  const bgThemeAttr = bgTheme === 'light' ? ` data-card-theme="light"` : '';
+  const events  = sched.filter(e => e.day === dateStr).sort((a,b) => (a.time||'').localeCompare(b.time||''));
+
+  // Re-render tabs (highlight active)
+  const tabsEl = document.getElementById('sched-preview-tabs');
+  if (tabsEl) {
+    tabsEl.innerHTML = days.map((d, i) => {
+      const lbl = new Date(d + 'T00:00').toLocaleDateString('default', { month: 'short', day: 'numeric' });
+      const active = d === dateStr;
+      return `<button onclick="_renderSchedulePreviewDay('${d}')" style="padding:5px 14px;border-radius:20px;border:1.5px solid ${active?'#fbbf24':'rgba(255,255,255,0.18)'};background:${active?'#fbbf24':'transparent'};color:${active?'#1a1200':'rgba(255,255,255,0.7)'};font-size:12px;font-weight:${active?'700':'500'};cursor:pointer;">Day ${i+1}<br><span style="font-size:10px;opacity:.8;">${lbl}</span></button>`;
+    }).join('');
+  }
+
+  const wrap = document.getElementById('sched-preview-card-wrap');
+  if (wrap) {
+    wrap.innerHTML = `<div class="schedule-portrait-wrap" style="margin:0;">${_buildScheduleCardHtml(dateStr, idx, act ? act.name : 'Schedule', bgStyle, bgThemeAttr, events)}</div>`;
+    // Apply theme via DOM after innerHTML
+    const _previewCard = wrap.querySelector('.schedule-bg-card');
+    if (_previewCard) _applyPaletteToCard(_previewCard, actData().scheduleCardPalette || null);
+  }
+}
+
+function openSchedulePreview() {
+  const act  = currentActivityId ? (state.activities || []).find(a => a.id === currentActivityId) : null;
+  const days = activityDays(act);
+  if (!days.length) { showToast('Set a Start & End Date on the activity first.', '⚠️'); return; }
+  const day = (_scheduleSelectedDay && days.includes(_scheduleSelectedDay)) ? _scheduleSelectedDay : days[0];
+  _renderSchedulePreviewDay(day);
+  openModal('modal-sched-preview');
+}
+
+function downloadScheduleCard() {
+  const card = document.querySelector('#sched-preview-card-wrap .schedule-bg-card');
+  if (!card) return;
+  const act  = currentActivityId ? (state.activities || []).find(a => a.id === currentActivityId) : null;
+  const days = activityDays(act);
+  const idx  = _schedPreviewDay ? days.indexOf(_schedPreviewDay) : 0;
+  const btn  = document.getElementById('sched-preview-dl-btn');
+  if (btn) { btn.textContent = '⏳ Generating…'; btn.disabled = true; }
+
+  html2canvas(card, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: null,
+    logging: false,
+  }).then(canvas => {
+    const link = document.createElement('a');
+    const actName = (act ? act.name : 'Schedule').replace(/[^a-z0-9]/gi, '_');
+    link.download = `${actName}_Day${idx + 1}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    if (btn) { btn.textContent = '⬇️ Download PNG'; btn.disabled = false; }
+  }).catch(err => {
+    console.error('Download failed:', err);
+    showToast('Download failed. Try again.', '❌');
+    if (btn) { btn.textContent = '⬇️ Download PNG'; btn.disabled = false; }
+  });
+}
+
+// ── Overview Schedule panel ──────────────────────────────────────
+function renderOverviewSchedule() {
+  const el = document.getElementById('overview-schedule');
+  const countEl = document.getElementById('pcount-schedule');
+  if (!el) return;
+
+  const act = currentActivityId ? (state.activities || []).find(a => a.id === currentActivityId) : null;
+  const days = activityDays(act);
+
+  if (!days.length) {
+    el.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:12px 0;">Set a Start &amp; End Date on the activity to generate schedule days.</div>`;
+    if (countEl) countEl.textContent = '—';
+    return;
+  }
+
+  const schedule = (act && actData().schedule) ? actData().schedule : [];
+  const totalEvents = schedule.length;
+  if (countEl) countEl.textContent = totalEvents ? `${totalEvents} event${totalEvents !== 1 ? 's' : ''}` : '0 events';
+
+  const tilesHtml = days.map((d, i) => {
+    const dateLabel = new Date(d + 'T00:00').toLocaleDateString('default', { month: 'short', day: 'numeric' });
+    const count = schedule.filter(e => e.day === d).length;
+    return `<div class="ov-sched-day-tile" onclick="openDayScheduleModal('${d}', ${i + 1})">
+      <div class="tile-day">Day ${i + 1}</div>
+      <div class="tile-date">${dateLabel}</div>
+      <div class="tile-count">${count ? count + ' event' + (count !== 1 ? 's' : '') : 'No events'}</div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="ov-sched-days">${tilesHtml}</div>`;
+}
+
+function openDayScheduleModal(dateStr, dayNum) {
+  const act = currentActivityId ? (state.activities || []).find(a => a.id === currentActivityId) : null;
+  const schedule = (act && actData().schedule) ? actData().schedule : [];
+
+  const dayEvents = schedule
+    .filter(e => e.day === dateStr)
+    .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
+  const dateLabel = new Date(dateStr + 'T00:00').toLocaleDateString('default', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+  });
+
+  const _tpl2 = actData().scheduleCardTemplate || 'classic';
+  let eventsListHtml2;
+  if (!dayEvents.length) {
+    eventsListHtml2 = `<div class="schedule-events-list" style="justify-content:center;align-items:center;"><div style="color:rgba(255,255,255,0.5);font-size:13px;text-align:center;">No events yet.</div></div>`;
+  } else {
+    const rows2 = dayEvents.map(ev => {
+      const timeLabel = ev.time
+        ? new Date('1970-01-01T' + ev.time).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' })
+        : '—';
+      const metaParts = [];
+      if (ev.emcee)   metaParts.push(`🎤 ${ev.emcee}`);
+      if (ev.speaker) metaParts.push(`🗣️ ${ev.speaker}`);
+      if (ev.notes)   metaParts.push(`📝 ${ev.notes}`);
+      return `<div class="schedule-event-row">
+        <div class="schedule-time-badge">${timeLabel}</div>
+        <div style="flex:1;">
+          <div class="schedule-event-name">${ev.name}</div>
+          ${metaParts.length ? `<div class="schedule-event-meta">${metaParts.join(' · ')}</div>` : ''}
+        </div>
+        <div class="schedule-event-actions admin-only">
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="_scheduleSelectedDay='${dateStr}';closeModal('modal-day-schedule');openScheduleEventModal('${ev.id}')" title="Edit">✏️</button>
+          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteScheduleEventFromOverview('${ev.id}','${dateStr}',${dayNum})" title="Delete">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+    eventsListHtml2 = `<div class="schedule-events-list">${rows2}</div>`;
+  }
+
+  const adminActionsHtml = `<div class="admin-only" style="flex-shrink:0;margin-top:12px;display:flex;gap:8px;justify-content:center;">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-day-schedule')" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">✕ Close</button>
+    <button class="btn btn-sm" onclick="_scheduleSelectedDay='${dateStr}';closeModal('modal-day-schedule');openScheduleEventModal();" style="background:#fbbf24;color:#1a1200;font-weight:700;border:none;">＋ Add Event</button>
+  </div>`;
+
+  const userCloseHtml = `<div class="admin-locked-show" style="flex-shrink:0;margin-top:12px;text-align:center;">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-day-schedule')" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">✕ Close</button>
+  </div>`;
+
+  const _schBg2 = actData().scheduleCardImage || null;
+  const _schBgStyle2 = _schBg2 ? ` style="background-image:url('${_schBg2}')"` : '';
+
+  document.getElementById('modal-day-schedule-body').innerHTML =
+    `<div class="schedule-portrait-wrap" style="margin-top:0;">
+      <div class="schedule-bg-card tpl-${_tpl2}"${_schBgStyle2}>
+        <div class="schedule-bg-overlay"></div>
+        <div class="schedule-content">
+          <div class="schedule-card-title">
+            <div class="schedule-card-title-main">${act ? act.name : 'Schedule of Activities'}</div>
+            <div class="schedule-card-title-day">Day ${dayNum} &nbsp;·&nbsp; ${dateLabel}</div>
+          </div>
+          <hr class="schedule-card-divider">
+          ${eventsListHtml2}
+          ${adminActionsHtml}
+          ${userCloseHtml}
+        </div>
+      </div>
+    </div>`;
+
+  // Apply theme via DOM after innerHTML
+  const _modalCard = document.querySelector('#modal-day-schedule-body .schedule-bg-card');
+  if (_modalCard) _applyPaletteToCard(_modalCard, actData().scheduleCardPalette || null);
+
+  openModal('modal-day-schedule');
+}
+
+function deleteScheduleEventFromOverview(id, dateStr, dayNum) {
+  const ev = (actData().schedule || []).find(e => e.id === id);
+  if (!ev) return;
+  if (!confirm(`Remove "${ev.name}"?`)) return;
+  actData().schedule = actData().schedule.filter(e => e.id !== id);
+  saveState();
+  showToast(`"${ev.name}" removed.`, '🗑️');
+  // Refresh the modal content in place, then re-render overview panel
+  openDayScheduleModal(dateStr, dayNum);
+  renderOverviewSchedule();
 }
 
 function renderMealPlan() {
