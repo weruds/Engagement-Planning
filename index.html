@@ -36,11 +36,11 @@
     --purple:       #7c3aed;
     --cyan:         #0891b2;
     --font: 'Space Grotesk', 'Inter', sans-serif;
-    --radius: 14px;
-    --radius-sm: 8px;
-    --radius-lg: 20px;
-    --shadow: 0 2px 16px rgba(37,99,235,0.10);
-    --shadow-accent: 0 0 20px rgba(37,99,235,0.15);
+    --radius: 18px;
+    --radius-sm: 12px;
+    --radius-lg: 26px;
+    --shadow: 0 2px 20px rgba(37,99,235,0.11);
+    --shadow-accent: 0 0 24px rgba(37,99,235,0.17);
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -595,33 +595,49 @@
 
   /* ─── PEOPLE ─── */
   .people-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px 18px;
-    display: flex; align-items: center; gap: 14px;
-    transition: all 0.18s;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 60%, #f5f0ff 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    display: flex; align-items: center; gap: 16px;
+    transition: all 0.2s;
+    position: relative; overflow: hidden;
   }
-  .people-card:hover { border-color: var(--border2); box-shadow: var(--shadow); transform: translateY(-1px); }
+  .people-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: linear-gradient(180deg, var(--accent), var(--purple));
+    border-radius: 4px 0 0 4px;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .people-card:hover {
+    border-color: var(--border2);
+    box-shadow: 0 6px 28px rgba(37,99,235,0.12);
+    transform: translateY(-2px);
+  }
+  .people-card:hover::before { opacity: 1; }
   .people-avatar {
-    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 700; color: #fff;
+    font-size: 17px; font-weight: 700; color: #fff;
     background: linear-gradient(135deg, var(--accent), var(--purple));
+    box-shadow: 0 2px 10px rgba(37,99,235,0.25);
   }
   .people-info { flex: 1; min-width: 0; }
   .people-name { font-size: 14px; font-weight: 700; color: var(--white); }
   .people-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
   .people-dept {
     display: inline-flex; align-items: center;
-    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px;
-    margin-top: 4px;
+    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+    margin-top: 5px; border: 1px solid transparent;
   }
-  .dept-dev        { background: rgba(37,99,235,0.12);  color: #1d4ed8; }
-  .dept-qe         { background: rgba(124,58,237,0.12); color: #6d28d9; }
-  .dept-oneinfra   { background: rgba(5,150,105,0.12);  color: #047857; }
-  .dept-se         { background: rgba(8,145,178,0.12);  color: #0e7490; }
-  .dept-tooling    { background: rgba(245,158,11,0.12); color: #b45309; }
-  .dept-automation { background: rgba(239,68,68,0.12);  color: #b91c1c; }
-  .dept-other      { background: rgba(107,114,128,0.12); color: #4b5563; }
+  .dept-dev        { background: rgba(37,99,235,0.10);  color: #2563eb; border-color: rgba(37,99,235,0.20); }
+  .dept-qe         { background: rgba(124,58,237,0.10); color: #7c3aed; border-color: rgba(124,58,237,0.20); }
+  .dept-oneinfra   { background: rgba(5,150,105,0.10);  color: #059669; border-color: rgba(5,150,105,0.20); }
+  .dept-se         { background: rgba(8,145,178,0.10);  color: #0891b2; border-color: rgba(8,145,178,0.20); }
+  .dept-tooling    { background: rgba(245,158,11,0.10); color: #d97706; border-color: rgba(245,158,11,0.20); }
+  .dept-automation { background: rgba(239,68,68,0.10);  color: #dc2626; border-color: rgba(239,68,68,0.20); }
+  .dept-other      { background: rgba(107,114,128,0.10); color: #6b7280; border-color: rgba(107,114,128,0.20); }
 
   /* ─── ATTENDEES ─── */
   .attendee-grid { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -2825,7 +2841,7 @@
         <div id="people-header-actions" style="display:flex;gap:8px;"></div>
       </div>
       <div class="people-filter-row" id="people-filter-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"></div>
-      <div style="display:flex;flex-direction:column;gap:10px;" id="people-list"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;" id="people-list"></div>
     </div>
 
     <!-- ══════════════════ SURVEY RESULTS ══════════════════ -->
