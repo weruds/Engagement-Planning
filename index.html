@@ -2156,6 +2156,62 @@
     75%      { transform: translateX(6px); }
   }
   .admin-modal-actions { display: flex; gap: 10px; justify-content: center; }
+
+  /* ─── SCHEDULE ─── */
+  .schedule-bg-card {
+    width: 100%;
+    min-height: 500px;
+    background-image: url('WhatsApp Image 2026-09-04 at 7.08.21 PM.jpeg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .schedule-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10,18,40,0.62);
+    z-index: 0;
+  }
+  .schedule-content {
+    position: relative;
+    z-index: 1;
+    padding: 32px 36px;
+  }
+  .schedule-event-row {
+    display: flex;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    align-items: flex-start;
+  }
+  .schedule-event-row:last-child { border-bottom: none; }
+  .schedule-time-badge {
+    min-width: 70px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fbbf24;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .schedule-event-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  .schedule-event-meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+  .schedule-event-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body class="admin-locked">
@@ -2207,6 +2263,9 @@
         </div>
         <div class="nav-item" data-page="survey-results">
           <span class="nav-icon">📊</span> Survey Results
+        </div>
+        <div class="nav-item" data-page="schedule">
+          <span class="nav-icon">🗓️</span> Schedule
         </div>
         <!-- Survey nav items hidden -->
         <span style="display:none;" id="survey-nav-badge"></span>
@@ -2647,6 +2706,19 @@
         </div>
       </div>
       <div id="mealplan-list"></div>
+    </div>
+
+    <!-- ══════════════════ SCHEDULE ══════════════════ -->
+    <div class="page" id="page-schedule">
+      <div class="glow-line"></div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Schedule of Activities</div>
+          <div class="section-subtitle">Day-by-day program for your engagement</div>
+        </div>
+        <button class="btn btn-primary admin-only" onclick="openScheduleEventModal()">＋ Add Event</button>
+      </div>
+      <div id="schedule-list"></div>
     </div>
 
     <!-- ══════════════════ EXPENSES ══════════════════ -->
@@ -3434,6 +3506,50 @@
   </div>
 </div>
 
+<!-- Schedule Event Modal -->
+<div class="modal-overlay" id="modal-schedule-event">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-schedule-event-title">🗓️ Add Event</div>
+      <button class="modal-close" onclick="closeModal('modal-schedule-event')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Event Name *</label>
+        <input class="form-input" id="sch-name" placeholder="e.g. Opening Ceremony" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Day</label>
+          <select class="form-select" id="sch-day"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time</label>
+          <input class="form-input" id="sch-time" type="time" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Emcee</label>
+          <input class="form-input" id="sch-emcee" placeholder="Optional" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Speaker</label>
+          <input class="form-input" id="sch-speaker" placeholder="Optional" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-input" id="sch-notes" rows="3" placeholder="Any additional details…" style="resize:vertical;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-schedule-event')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveScheduleEvent()">Save Event</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ──────────────────────────────────────────────
 // FIREBASE (Firestore — hardcoded config)
@@ -3721,6 +3837,7 @@ const PAGE_TITLES = {
   committee:        'Organizing Committee',
   grocery:          'Grocery List',
   mealplan:         'Meal Plan',
+  schedule:         'Schedule',
   expenses:         'Expenses',
   overview:         'Full Plan Overview',
   people:           'People',
@@ -3740,6 +3857,7 @@ const ADD_LABELS = {
   committee:        ['New Committee',   'modal-committee'],
   grocery:          ['Add Item',        'modal-grocery'],
   mealplan:         null,
+  schedule:         null,
   expenses:         ['Add Expense',     'modal-expense'],
   overview:         null,
   people:           null,
@@ -3759,7 +3877,7 @@ function navigateToActivity(id) {
 }
 
 // Pages that are scoped per-activity — preserve currentActivityId when entering them
-const ACTIVITY_SCOPED_PAGES = new Set(['carseats','bedplan','games','committee','grocery','mealplan','expenses']);
+const ACTIVITY_SCOPED_PAGES = new Set(['carseats','bedplan','games','committee','grocery','mealplan','expenses','schedule']);
 
 function navigate(page) {
   const keepCtx = page === 'overview' || ACTIVITY_SCOPED_PAGES.has(page);
@@ -4805,6 +4923,7 @@ function renderPage(page) {
   else if (page === 'committee')  renderCommittee();
   else if (page === 'grocery')    renderGrocery();
   else if (page === 'mealplan')   renderMealPlan();
+  else if (page === 'schedule')   renderSchedule();
   else if (page === 'people')     renderPeople();
   else if (page === 'expenses')   renderExpensesPage();
   else if (page === 'survey-results')  renderSurveyResultsPage();
@@ -7219,6 +7338,163 @@ function renderMealSlotCards(dateStr) {
         </div>`;
     }).join('')}
   </div>`;
+}
+
+// ──────────────────────────────────────────────
+// SCHEDULE
+// ──────────────────────────────────────────────
+let _scheduleSelectedDay = null;
+
+function renderSchedule() {
+  const el = document.getElementById('schedule-list');
+  if (!el) return;
+
+  const act = currentActivityId ? (state.activities || []).find(a => a.id === currentActivityId) : null;
+  const days = activityDays(act);
+
+  if (!days.length) {
+    el.innerHTML = actContextBanner() + `
+      <div class="meal-no-duration">
+        <div style="font-size:32px;margin-bottom:10px;">📅</div>
+        <div><strong>No duration set for this activity</strong></div>
+        <div style="margin-top:6px;">Edit the activity and set a <strong>Start Date</strong> and <strong>End Date</strong> to generate schedule days.</div>
+      </div>`;
+    return;
+  }
+
+  if (!_scheduleSelectedDay || !days.includes(_scheduleSelectedDay)) _scheduleSelectedDay = days[0];
+
+  const tabsHtml = days.map((d, i) => {
+    const dateLabel = new Date(d + 'T00:00').toLocaleDateString('default', { month: 'short', day: 'numeric' });
+    return `<div class="meal-day-tab${d === _scheduleSelectedDay ? ' active' : ''}" onclick="selectScheduleDay('${d}')">
+      <div>Day ${i + 1}</div>
+      <div class="meal-day-tab-date">${dateLabel}</div>
+    </div>`;
+  }).join('');
+
+  const schedule = actData().schedule || [];
+  const dayEvents = schedule
+    .filter(e => e.day === _scheduleSelectedDay)
+    .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
+  let eventsHtml;
+  if (!dayEvents.length) {
+    eventsHtml = emptyState('No events yet', 'Use "＋ Add Event" to add items to this day.', '🗓️');
+  } else {
+    eventsHtml = dayEvents.map(ev => {
+      const metaParts = [];
+      if (ev.emcee)   metaParts.push(`🎤 Emcee: ${ev.emcee}`);
+      if (ev.speaker) metaParts.push(`🗣️ Speaker: ${ev.speaker}`);
+      if (ev.notes)   metaParts.push(`📝 ${ev.notes}`);
+      const metaHtml = metaParts.length
+        ? `<div class="schedule-event-meta">${metaParts.join(' &nbsp;·&nbsp; ')}</div>`
+        : '';
+      const timeLabel = ev.time
+        ? new Date('1970-01-01T' + ev.time).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' })
+        : '—';
+      return `<div class="schedule-event-row">
+        <div class="schedule-time-badge">${timeLabel}</div>
+        <div style="flex:1;">
+          <div class="schedule-event-name">${ev.name}</div>
+          ${metaHtml}
+        </div>
+        <div class="schedule-event-actions admin-only">
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="openScheduleEventModal('${ev.id}')" title="Edit">✏️</button>
+          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteScheduleEvent('${ev.id}')" title="Delete">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  el.innerHTML = actContextBanner() +
+    `<div class="meal-day-tabs">${tabsHtml}</div>
+    <div class="schedule-bg-card">
+      <div class="schedule-bg-overlay"></div>
+      <div class="schedule-content">
+        ${eventsHtml}
+      </div>
+    </div>`;
+}
+
+function selectScheduleDay(dateStr) {
+  _scheduleSelectedDay = dateStr;
+  renderSchedule();
+}
+
+function openScheduleEventModal(id) {
+  const act = currentActivityId ? (state.activities || []).find(a => a.id === currentActivityId) : null;
+  const days = activityDays(act);
+
+  // Populate day select
+  const dayEl = document.getElementById('sch-day');
+  dayEl.innerHTML = days.map((d, i) => {
+    const label = new Date(d + 'T00:00').toLocaleDateString('default', { month: 'short', day: 'numeric' });
+    return `<option value="${d}">Day ${i + 1} — ${label}</option>`;
+  }).join('');
+
+  if (id) {
+    const ev = (actData().schedule || []).find(e => e.id === id);
+    if (!ev) return;
+    document.getElementById('modal-schedule-event-title').textContent = '✏️ Edit Event';
+    document.getElementById('sch-name').value    = ev.name    || '';
+    document.getElementById('sch-time').value    = ev.time    || '';
+    document.getElementById('sch-emcee').value   = ev.emcee   || '';
+    document.getElementById('sch-speaker').value = ev.speaker || '';
+    document.getElementById('sch-notes').value   = ev.notes   || '';
+    dayEl.value = ev.day || (days[0] || '');
+    document.getElementById('modal-schedule-event').dataset.editId = id;
+  } else {
+    document.getElementById('modal-schedule-event-title').textContent = '🗓️ Add Event';
+    document.getElementById('sch-name').value    = '';
+    document.getElementById('sch-time').value    = '';
+    document.getElementById('sch-emcee').value   = '';
+    document.getElementById('sch-speaker').value = '';
+    document.getElementById('sch-notes').value   = '';
+    dayEl.value = _scheduleSelectedDay || (days[0] || '');
+    delete document.getElementById('modal-schedule-event').dataset.editId;
+  }
+
+  openModal('modal-schedule-event');
+}
+
+function saveScheduleEvent() {
+  const name = document.getElementById('sch-name').value.trim();
+  if (!name) { showToast('Event name is required.', '⚠️'); return; }
+
+  actData().schedule = actData().schedule || [];
+  const editId = document.getElementById('modal-schedule-event').dataset.editId;
+
+  const entry = {
+    id:      editId || uid(),
+    day:     document.getElementById('sch-day').value,
+    time:    document.getElementById('sch-time').value,
+    name,
+    emcee:   document.getElementById('sch-emcee').value.trim(),
+    speaker: document.getElementById('sch-speaker').value.trim(),
+    notes:   document.getElementById('sch-notes').value.trim(),
+  };
+
+  if (editId) {
+    const idx = actData().schedule.findIndex(e => e.id === editId);
+    if (idx !== -1) actData().schedule[idx] = entry;
+  } else {
+    actData().schedule.push(entry);
+  }
+
+  saveState();
+  closeModal('modal-schedule-event');
+  showToast(`Event "${name}" saved!`);
+  _scheduleSelectedDay = entry.day;
+  renderSchedule();
+}
+
+function deleteScheduleEvent(id) {
+  const ev = (actData().schedule || []).find(e => e.id === id);
+  if (!ev) return;
+  actData().schedule = actData().schedule.filter(e => e.id !== id);
+  saveState();
+  showToast(`"${ev.name}" removed.`, '🗑️');
+  renderSchedule();
 }
 
 function renderMealPlan() {
