@@ -5522,7 +5522,7 @@ function renderSidebarCountdown() {
 // ──────────────────────────────────────────────
 // SIDEBAR SURVEY RESULTS
 // ──────────────────────────────────────────────
-let _surveyResultsCache = null; // { yes, no, maybe, total, byService }
+let _surveyResultsCache = null; // { yes, no, total, byService }
 
 // ──────────────────────────────────────────────
 // SURVEY TILE EXPAND
@@ -5568,13 +5568,12 @@ function loadSidebarSurveyResults() {
   _fbDb.collection('survey').doc('engagement_survey').get().then(snap => {
     if (!snap.exists) { _surveyResultsCache = null; renderSidebarSurveyResults(); return; }
     const responses = snap.data().responses || [];
-    let yes = 0, no = 0, maybe = 0;
+    let yes = 0, no = 0;
     const byService = {};
     responses.forEach(r => {
       const attend = (r.attend || '').trim().toLowerCase();
-      if (attend === 'yes')       yes++;
-      else if (attend === 'no')   no++;
-      else if (attend)            maybe++;
+      if (attend === 'yes')     yes++;
+      else if (attend === 'no') no++;
       // tally by service line — prefer dept from state.people if name/email matches
       const rName  = (r.name  || '').trim().toLowerCase();
       const rEmail = (r.email || '').trim().toLowerCase();
@@ -5588,12 +5587,11 @@ function loadSidebarSurveyResults() {
         ? matched.dept
         : (r.service || r.serviceLine || r.dept || 'Other')
       ) || 'Other').trim();
-      if (!byService[svc]) byService[svc] = { yes: 0, no: 0, maybe: 0 };
+      if (!byService[svc]) byService[svc] = { yes: 0, no: 0 };
       if (attend === 'yes')     byService[svc].yes++;
       else if (attend === 'no') byService[svc].no++;
-      else if (attend)          byService[svc].maybe++;
     });
-    _surveyResultsCache = { yes, no, maybe, total: responses.length, byService };
+    _surveyResultsCache = { yes, no, total: responses.length, byService };
     renderSidebarSurveyResults();
     if (currentPage === 'survey-results') renderSurveyResultsPage();
   }).catch(err => console.warn('Survey results load error:', err));
@@ -5606,7 +5604,7 @@ function renderSidebarSurveyResults() {
     el.innerHTML = `<div class="sidebar-cd-none">No responses yet</div>`;
     return;
   }
-  const { yes, no, maybe, total, byService } = _surveyResultsCache;
+  const { yes, no, total, byService } = _surveyResultsCache;
   const yesPct = total > 0 ? Math.round((yes / total) * 100) : 0;
   // service breakdown rows (only services that have responses)
   const svcRows = Object.entries(byService).map(([svc, c]) => `
@@ -5623,10 +5621,6 @@ function renderSidebarSurveyResults() {
       <span class="sidebar-srv-label">❌ Not attending</span>
       <span class="sidebar-srv-val no">${no}</span>
     </div>
-    ${maybe > 0 ? `<div class="sidebar-srv-row">
-      <span class="sidebar-srv-label">🤔 Maybe</span>
-      <span class="sidebar-srv-val maybe">${maybe}</span>
-    </div>` : ''}
     <div class="sidebar-srv-row">
       <span class="sidebar-srv-label">📩 Total responses</span>
       <span class="sidebar-srv-val">${total}</span>
@@ -5645,16 +5639,14 @@ let _srSvcChart   = null;
 let _srVenueChart = null;
 let _srThemeChart   = null;
 let _srTourChart    = null;
-let _srAttendFilter = 'all';   // 'all' | 'yes' | 'no' | 'maybe'
+let _srAttendFilter = 'all';   // 'all' | 'yes'
 let _srResponsesCache = null;  // raw responses from Firestore
 
 function _applySrFilter(responses) {
   if (_srAttendFilter === 'all') return responses;
   return responses.filter(r => {
     const a = (r.attend || '').trim().toLowerCase();
-    if (_srAttendFilter === 'yes')   return a === 'yes';
-    if (_srAttendFilter === 'no')    return a === 'no';
-    if (_srAttendFilter === 'maybe') return a !== 'yes' && a !== 'no' && a !== '';
+    if (_srAttendFilter === 'yes') return a === 'yes';
     return true;
   });
 }
@@ -5693,12 +5685,11 @@ function _renderSurveyResultsFromCache() {
   const totalAll = allResponses.length;
 
     // ── Attend tallies ──
-    let yes = 0, no = 0, maybe = 0;
+    let yes = 0, no = 0;
     responses.forEach(r => {
       const a = (r.attend || '').trim().toLowerCase();
       if (a === 'yes') yes++;
       else if (a === 'no') no++;
-      else if (a) maybe++;
     });
 
     // ── Date tallies ──
@@ -5820,8 +5811,8 @@ function _renderSurveyResultsFromCache() {
     const THEME_COLORS = ['#e879f9','#fbbf24','#38bdf8','#4ade80','#fb7185','#818cf8','#fb923c','#34d399','#f472b6','#60a5fa'];
 
     // ── Build layout ──
-    const filterPills = ['all','yes','maybe'].map(v => {
-      const labels = { all: `All (${totalAll})`, yes: `✅ Yes (${allResponses.filter(r=>(r.attend||'').trim().toLowerCase()==='yes').length})`, maybe: `🤔 Maybe (${allResponses.filter(r=>{ const a=(r.attend||'').trim().toLowerCase(); return a&&a!=='yes'&&a!=='no'; }).length})` };
+    const filterPills = ['all','yes'].map(v => {
+      const labels = { all: `All (${totalAll})`, yes: `✅ Yes (${allResponses.filter(r=>(r.attend||'').trim().toLowerCase()==='yes').length})` };
       const active = _srAttendFilter === v;
       return `<button onclick="setSrAttendFilter('${v}')" style="padding:6px 16px;border-radius:20px;border:1.5px solid ${active?'var(--accent)':'rgba(255,255,255,0.12)'};background:${active?'var(--accent)':'transparent'};color:${active?'#fff':'var(--muted)'};font-size:12px;font-weight:${active?'700':'500'};cursor:pointer;transition:all .15s;">${labels[v]}</button>`;
     }).join('');
@@ -5858,9 +5849,8 @@ function _renderSurveyResultsFromCache() {
         <div id="sr-card-svc" class="card sr-card-expandable" onclick="openSrTile('sr-card-svc')" style="padding:28px 24px;">
           <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Attendees per Service Line</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${
-            _srAttendFilter === 'yes'   ? `${total} confirmed attendee${total!==1?'s':''}` :
-            _srAttendFilter === 'maybe' ? `${total} partially confirmed attendee${total!==1?'s':''}` :
-            `${yes} confirmed · ${maybe} partially confirmed`
+            _srAttendFilter === 'yes' ? `${total} confirmed attendee${total!==1?'s':''}` :
+            `${yes} confirmed attendee${yes!==1?'s':''}`
           } · ${svcLabels.length} service line${svcLabels.length!==1?'s':''}</div>
           <div style="position:relative;max-width:280px;margin:0 auto;">
             <canvas id="sr-svc-canvas" height="280"></canvas>
@@ -5969,7 +5959,6 @@ function _renderSurveyResultsFromCache() {
       const pieData = [yes, no];
       const pieLabels = ['Yes', 'No'];
       const pieColors = ['#4ade80', '#fb7185'];
-      if (maybe > 0) { pieData.push(maybe); pieLabels.push('Maybe'); pieColors.push('#fbbf24'); }
 
       _srPieChart = new Chart(pieCtx, {
         type: 'doughnut',
