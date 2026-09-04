@@ -5740,13 +5740,6 @@ function _renderSurveyResultsFromCache() {
       if ((r.tourType || '').toLowerCase().includes('with a plus-one')) plusOne++;
     });
 
-    // ── South Luzon petition tally ──
-    let southPetitions = 0;
-    responses.forEach(r => {
-      const raw = (r.venue || '').toLowerCase();
-      if (raw.includes('petition for south')) southPetitions++;
-    });
-
     // ── Not available for all dates tally ──
     let notAvailableAll = 0;
     responses.forEach(r => {
@@ -5919,15 +5912,8 @@ function _renderSurveyResultsFromCache() {
 
       </div>
 
-      <!-- Row 3: stat tiles 3-up -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:24px;">
-
-        <!-- South Luzon petition stat tile -->
-        <div id="sr-card-south" class="card sr-card-expandable" onclick="openSrTile('sr-card-south')" style="padding:36px 28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
-          <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">South Luzon Venue Petitions</div>
-          <div style="font-size:72px;font-weight:900;line-height:1;background:linear-gradient(135deg,#34d399,#059669);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${southPetitions}</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:12px;">respondent${southPetitions!==1?'s':''} petitioning for Laguna or Cavite</div>
-        </div>
+      <!-- Row 3: stat tiles 2-up centred -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:24px;max-width:680px;margin-left:auto;margin-right:auto;width:100%;">
 
         <!-- Plus-one stat tile -->
         <div id="sr-card-plusone" class="card sr-card-expandable" onclick="openSrTile('sr-card-plusone')" style="padding:36px 28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
