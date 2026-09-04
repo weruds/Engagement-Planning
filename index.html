@@ -1618,6 +1618,8 @@
     position: relative;
   }
   .meal-slot-card:hover { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow2); transform: translateY(-1px); }
+  .meal-slot-card.meal-slot-readonly { cursor: default !important; }
+  .meal-slot-card.meal-slot-readonly:hover { border-color: var(--border2); box-shadow: none; transform: none; }
   .meal-slot-card.has-menu { border-color: var(--accent2); background: var(--accent-glow2); }
   .meal-slot-card-header {
     display: flex; align-items: center; gap: 8px;
@@ -6890,14 +6892,14 @@ function renderOverview() {
         const slot     = dayData[s.key] || {};
         const assignee = slot.assigneeId ? (state.people||[]).find(p=>p.id===slot.assigneeId) : null;
         return `
-          <div class="meal-slot-card${slot.menu?' has-menu':''}" style="cursor:pointer;" onclick="navigateToActivity('${currentActivityId||''}');setTimeout(()=>{navigate('mealplan');selectMealDay('${d}');openMealSlot('${d}','${s.key}');},120);">
+          <div class="meal-slot-card${slot.menu?' has-menu':''}${_adminUnlocked?'':' meal-slot-readonly'}" ${_adminUnlocked ? `style="cursor:pointer;" onclick="navigateToActivity('${currentActivityId||''}');setTimeout(()=>{navigate('mealplan');selectMealDay('${d}');openMealSlot('${d}','${s.key}');},120);"` : ''}>
             <div class="meal-slot-card-header">
               <span class="meal-slot-emoji">${s.emoji}</span>
               <span class="meal-slot-name">${s.label}</span>
             </div>
             ${slot.menu
               ? `<div class="meal-slot-menu-text">${slot.menu.replace(/\n/g,'<br>')}</div>`
-              : `<div class="meal-slot-menu-empty">➕ Add menu</div>`}
+              : (_adminUnlocked ? `<div class="meal-slot-menu-empty">➕ Add menu</div>` : `<div class="meal-slot-menu-empty" style="color:var(--muted2);">No menu set</div>`)}
             ${assignee ? `<div class="meal-slot-assignee">👤 ${assignee.name}</div>` : ''}
           </div>`;
       }).join('');
@@ -7225,15 +7227,15 @@ function renderMealSlotCards(dateStr) {
       const hasMenu = !!slot.menu;
       const assignee = slot.assigneeId ? (state.people || []).find(p => p.id === slot.assigneeId) : null;
       return `
-        <div class="meal-slot-card${hasMenu ? ' has-menu' : ''}" onclick="openMealSlot('${dateStr}','${s.key}')">
-          <span class="meal-slot-edit-hint">✏️ Edit</span>
+        <div class="meal-slot-card${hasMenu ? ' has-menu' : ''}${_adminUnlocked ? '' : ' meal-slot-readonly'}" ${_adminUnlocked ? `onclick="openMealSlot('${dateStr}','${s.key}')"` : ''}>
+          ${_adminUnlocked ? `<span class="meal-slot-edit-hint">✏️ Edit</span>` : ''}
           <div class="meal-slot-card-header">
             <span class="meal-slot-emoji">${s.emoji}</span>
             <span class="meal-slot-name">${s.label}</span>
           </div>
           ${hasMenu
             ? `<div class="meal-slot-menu-text">${slot.menu.replace(/\n/g, '<br>')}</div>`
-            : `<div class="meal-slot-menu-empty">➕ Tap to add menu</div>`}
+            : (_adminUnlocked ? `<div class="meal-slot-menu-empty">➕ Tap to add menu</div>` : `<div class="meal-slot-menu-empty" style="color:var(--muted2);">No menu set</div>`)}
           <div class="meal-slot-assignee">
             ${assignee
               ? `👤 ${assignee.name}`
