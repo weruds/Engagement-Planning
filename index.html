@@ -2158,58 +2158,87 @@
   .admin-modal-actions { display: flex; gap: 10px; justify-content: center; }
 
   /* ─── SCHEDULE ─── */
+  /* ── Schedule portrait card ── */
+  .schedule-portrait-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+  }
   .schedule-bg-card {
-    width: 100%;
-    min-height: 500px;
+    width: 480px;
+    min-height: 680px;
     background-image: url('WhatsApp Image 2026-09-04 at 7.08.21 PM.jpeg');
     background-size: cover;
     background-position: center;
     position: relative;
-    border-radius: var(--radius);
+    border-radius: 16px;
     overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.45);
   }
   .schedule-bg-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(10,18,40,0.62);
+    background: rgba(8,14,36,0.58);
     z-index: 0;
   }
   .schedule-content {
     position: relative;
     z-index: 1;
-    padding: 32px 36px;
+    padding: 36px 32px 40px;
+  }
+  .schedule-card-title {
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .schedule-card-title-main {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fbbf24;
+    letter-spacing: .5px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .schedule-card-title-day {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 3px;
+    font-weight: 500;
+  }
+  .schedule-card-divider {
+    border: none;
+    border-top: 1px solid rgba(251,191,36,0.35);
+    margin: 16px 0;
   }
   .schedule-event-row {
     display: flex;
-    gap: 16px;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
     align-items: flex-start;
   }
   .schedule-event-row:last-child { border-bottom: none; }
   .schedule-time-badge {
-    min-width: 70px;
-    font-size: 13px;
+    min-width: 64px;
+    font-size: 12px;
     font-weight: 700;
     color: #fbbf24;
     flex-shrink: 0;
     padding-top: 2px;
   }
   .schedule-event-name {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     color: #ffffff;
   }
   .schedule-event-meta {
-    font-size: 12px;
-    color: var(--muted);
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
     margin-top: 3px;
     line-height: 1.5;
   }
   .schedule-event-actions {
     margin-left: auto;
     display: flex;
-    gap: 6px;
+    gap: 4px;
     flex-shrink: 0;
   }
 </style>
@@ -7432,12 +7461,24 @@ function renderSchedule() {
     }).join('');
   }
 
+  const dayIdx = days.indexOf(_scheduleSelectedDay);
+  const dayDateLabel = _scheduleSelectedDay
+    ? new Date(_scheduleSelectedDay + 'T00:00').toLocaleDateString('default', { weekday:'long', month:'long', day:'numeric', year:'numeric' })
+    : '';
+
   el.innerHTML = actSelectorHtml +
     `<div class="meal-day-tabs">${tabsHtml}</div>
-    <div class="schedule-bg-card">
-      <div class="schedule-bg-overlay"></div>
-      <div class="schedule-content">
-        ${eventsHtml}
+    <div class="schedule-portrait-wrap">
+      <div class="schedule-bg-card">
+        <div class="schedule-bg-overlay"></div>
+        <div class="schedule-content">
+          <div class="schedule-card-title">
+            <div class="schedule-card-title-main">${act ? act.name : 'Schedule of Activities'}</div>
+            <div class="schedule-card-title-day">Day ${dayIdx + 1} &nbsp;·&nbsp; ${dayDateLabel}</div>
+          </div>
+          <hr class="schedule-card-divider">
+          ${eventsHtml}
+        </div>
       </div>
     </div>`;
 }
