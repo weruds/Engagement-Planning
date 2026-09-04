@@ -5773,18 +5773,27 @@ function _renderSurveyResultsFromCache() {
     });
 
     // ── Date tallies ──
-    // "Available for all dates" counts as +1 for each of the three specific dates.
-    const DATE_OPTIONS = ['Nov 28-29 (Sat & Sun)', 'Dec 5-6 (Sat & Sun)', 'Dec 12 - 13 (Sat & Sun)'];
+    // Date is now multi-select — Monday returns comma-separated values e.g. "Dec 5-6 (Sat & Sun), Dec 12-13 (Sat & Sun)"
+    // Each selected option counts +1 for that date independently.
+    // "Not available on these dates" is excluded from the chart.
+    const DATE_OPTIONS = [
+      'Nov 21-22 (Sat & Sun)',
+      'Nov 28-29 (Sat & Sun)',
+      'Dec 5-6 (Sat & Sun)',
+      'Dec 12-13 (Sat & Sun)',
+    ];
     const dateCounts = {};
     responses.forEach(r => {
-      const d = (r.date || '').trim();
-      if (!d) return;
-      const isAllDates = /available for all/i.test(d);
-      if (isAllDates) {
-        DATE_OPTIONS.forEach(opt => { dateCounts[opt] = (dateCounts[opt] || 0) + 1; });
-      } else {
-        dateCounts[d] = (dateCounts[d] || 0) + 1;
-      }
+      const raw = (r.date || '').trim();
+      if (!raw) return;
+      // Split comma-separated multi-select values
+      raw.split(',').map(s => s.trim()).forEach(d => {
+        if (!d) return;
+        if (/not available/i.test(d)) return; // exclude "Not available on these dates"
+        // Normalise label variations (e.g. "Dec 12 - 13" vs "Dec 12-13")
+        const normalised = d.replace(/\s*-\s*/g, '-');
+        dateCounts[normalised] = (dateCounts[normalised] || 0) + 1;
+      });
     });
     const sortedDates = Object.keys(dateCounts).sort();
     const dateLabels = sortedDates;
@@ -5820,10 +5829,13 @@ function _renderSurveyResultsFromCache() {
       if ((r.tourType || '').toLowerCase().includes('with a plus-one')) plusOne++;
     });
 
-    // ── Not available for all dates tally ──
+    // ── Not available on these dates tally ──
     let notAvailableAll = 0;
     responses.forEach(r => {
-      if (/not available for all/i.test((r.date || '').trim())) notAvailableAll++;
+      const raw = (r.date || '').trim();
+      if (!raw) return;
+      // Count respondent if any of their selected values includes "not available"
+      if (raw.split(',').some(s => /not available/i.test(s.trim()))) notAvailableAll++;
     });
 
     // ── Day Tour vs Overnight tally ──
@@ -6303,7 +6315,8 @@ const MONDAY_COL_MAP = {
   emailulmvrvwk:          'email',      // Email
   single_select3vv68hv:   'attend',     // Will you be able to attend?
   single_select7zfnxfz:   'service',    // Service Line
-  single_selectihumw27:   'date',       // Preferred date
+  single_selectihumw27:   'date',       // Preferred date (legacy single-select — kept for old responses)
+  multi_selectihumw27:    'date',       // Preferred date (new multi-select — same column, type changed)
   multi_selectf9953y2n:   'venue',      // Top venue choice (multi-select, up to 2)
   single_selectebtb3bn:   'partyTheme', // Preferred Party Theme
   single_selectwoqs24d:   'tourType',   // Day Tour or Overnight (includes plus-one variants)
