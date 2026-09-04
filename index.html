@@ -6315,11 +6315,12 @@ const MONDAY_COL_MAP = {
   emailulmvrvwk:          'email',      // Email
   single_select3vv68hv:   'attend',     // Will you be able to attend?
   single_select7zfnxfz:   'service',    // Service Line
-  single_selectihumw27:   'date',       // Preferred date (legacy single-select — kept for old responses)
-  multi_selectihumw27:    'date',       // Preferred date (new multi-select — same column, type changed)
-  multi_selectf9953y2n:   'venue',      // Top venue choice (multi-select, up to 2)
+  multi_selectbjtc19q:    'date',       // Which Date works best for you? (multi-select)
+  single_selectihumw27:   'date',       // legacy single-select date (kept for old Firestore data)
+  single_selectmmqs0o3:   'venue',      // Top venue choice
+  multi_selectf9953y2n:   'venue',      // legacy multi-select venue (kept for old data)
   single_selectebtb3bn:   'partyTheme', // Preferred Party Theme
-  single_selectwoqs24d:   'tourType',   // Day Tour or Overnight (includes plus-one variants)
+  single_selectwoqs24d:   'tourType',   // Day Tour or Overnight
 };
 
 function syncFromMonday() {
@@ -6332,7 +6333,7 @@ function syncFromMonday() {
         items {
           id
           name
-          column_values {
+          column_values(ids: ["emailulmvrvwk","single_select3vv68hv","single_select7zfnxfz","multi_selectbjtc19q","single_selectmmqs0o3","single_selectebtb3bn","single_selectwoqs24d"]) {
             id
             text
           }
@@ -6360,22 +6361,6 @@ function syncFromMonday() {
     if (!items.length) {
       showToast('No survey responses found on Monday.com yet.', 'ℹ️');
       return;
-    }
-
-    // Log ALL column IDs (including empty) so we can identify type-changed columns
-    if (items[0]) {
-      console.log('[Monday Sync] ALL column IDs from first item (including empty):');
-      items[0].column_values.forEach(cv => {
-        console.log(`  ${cv.id}: "${cv.text}"`);
-      });
-      console.log('[Monday Sync] Mapped response for first item:', (() => {
-        const r = {};
-        items[0].column_values.forEach(cv => {
-          const field = MONDAY_COL_MAP[cv.id];
-          if (field) r[field] = cv.text || '';
-        });
-        return r;
-      })());
     }
 
     // Build responses array — resolve name from email if Monday returns placeholder
