@@ -7349,18 +7349,44 @@ function renderSchedule() {
   const el = document.getElementById('schedule-list');
   if (!el) return;
 
-  const act = currentActivityId ? (state.activities || []).find(a => a.id === currentActivityId) : null;
+  // ── No activity selected: show picker ──
+  if (!currentActivityId) {
+    const activities = (state.activities || []).filter(a => a.dateStart);
+    if (!activities.length) {
+      el.innerHTML = emptyState('No activities with dates yet', 'Create an activity with a Start Date first.', '🗓️');
+      return;
+    }
+    // Auto-select first activity with dates
+    currentActivityId = activities[0].id;
+  }
+
+  const act = (state.activities || []).find(a => a.id === currentActivityId);
   const days = activityDays(act);
 
   if (!days.length) {
     el.innerHTML = actContextBanner() + `
       <div class="meal-no-duration">
         <div style="font-size:32px;margin-bottom:10px;">📅</div>
-        <div><strong>No duration set for this activity</strong></div>
+        <div><strong>No duration set for "${act ? act.name : 'this activity'}"</strong></div>
         <div style="margin-top:6px;">Edit the activity and set a <strong>Start Date</strong> and <strong>End Date</strong> to generate schedule days.</div>
       </div>`;
     return;
   }
+
+  // ── Activity selector (if multiple activities have dates) ──
+  const allDatedActivities = (state.activities || []).filter(a => a.dateStart);
+  const actSelectorHtml = allDatedActivities.length > 1
+    ? `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+        <span style="font-size:12px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;">Activity:</span>
+        ${allDatedActivities.map(a => {
+          const isActive = a.id === currentActivityId;
+          const dateRange = a.dateEnd && a.dateEnd !== a.dateStart
+            ? `${new Date(a.dateStart+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric'})} – ${new Date(a.dateEnd+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric'})}`
+            : new Date(a.dateStart+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric'});
+          return `<button onclick="currentActivityId='${a.id}';renderSchedule();" style="padding:5px 14px;border-radius:20px;border:1.5px solid ${isActive?'var(--accent)':'rgba(255,255,255,0.12)'};background:${isActive?'var(--accent)':'transparent'};color:${isActive?'#fff':'var(--muted)'};font-size:12px;font-weight:${isActive?'700':'500'};cursor:pointer;">${a.name} <span style="opacity:.7;font-size:11px;">(${dateRange})</span></button>`;
+        }).join('')}
+      </div>`
+    : actContextBanner();
 
   if (!_scheduleSelectedDay || !days.includes(_scheduleSelectedDay)) _scheduleSelectedDay = days[0];
 
@@ -7406,7 +7432,7 @@ function renderSchedule() {
     }).join('');
   }
 
-  el.innerHTML = actContextBanner() +
+  el.innerHTML = actSelectorHtml +
     `<div class="meal-day-tabs">${tabsHtml}</div>
     <div class="schedule-bg-card">
       <div class="schedule-bg-overlay"></div>
