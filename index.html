@@ -5378,10 +5378,11 @@ function importPeopleFromSurvey() {
     const responses = snap.data().responses || [];
     if (!state.people) state.people = [];
 
-    // ── Remove any existing duplicates by name (keep first occurrence) ──
+    // ── Remove placeholder "Incoming form answer" entries + duplicates ──
     const seenNames = new Set();
     state.people = state.people.filter(p => {
       const k = p.name.trim().toLowerCase();
+      if (k === 'incoming form answer') return false; // purge unresolvable placeholder
       if (seenNames.has(k)) return false;
       seenNames.add(k);
       return true;
@@ -6356,7 +6357,7 @@ function resolveNameFromEmail(name, email) {
   if (!isPlaceholder) return name.trim();
   // Derive from email: take the local part before @, split on dot, capitalise each word
   const local = (email || '').split('@')[0].trim();
-  if (!local) return name.trim(); // can't resolve — keep original
+  if (!local) return null; // can't resolve — signal caller to skip this entry
   return local.split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 }
 
@@ -6427,7 +6428,7 @@ function syncFromMonday() {
       // If Monday sends "Incoming form answer" (or blank), derive name from email
       r.name = resolveNameFromEmail(r.name, r.email);
       return r;
-    });
+    }).filter(r => !!r.name); // drop entries that couldn't be resolved
 
     // Write to Firestore survey/engagement_survey
     _fbDb.collection('survey').doc('engagement_survey').set(
