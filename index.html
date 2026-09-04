@@ -3916,7 +3916,8 @@ function getLocationName(id) {
 }
 
 function emptyState(msg, sub='', icon='🗂️') {
-  return `<div class="empty-state"><div class="empty-icon">${icon}</div><div class="empty-title">${msg}</div><div class="empty-sub">${sub}</div></div>`;
+  const subHtml = (sub && _adminUnlocked) ? `<div class="empty-sub">${sub}</div>` : '';
+  return `<div class="empty-state"><div class="empty-icon">${icon}</div><div class="empty-title">${msg}</div>${subHtml}</div>`;
 }
 
 // ──────────────────────────────────────────────
@@ -6589,9 +6590,9 @@ function renderOverview() {
         <div class="loc-ov-none">
           <div style="font-size:32px;opacity:0.4;margin-bottom:8px;">📍</div>
           <div style="font-weight:600;color:var(--muted);margin-bottom:4px;">No venue linked</div>
-          <div style="font-size:12px;">Edit this activity and pick a location, or
+          ${_adminUnlocked ? `<div style="font-size:12px;">Edit this activity and pick a location, or
             <span style="color:var(--accent);cursor:pointer;" onclick="navigate('locations')">add a location first →</span>
-          </div>
+          </div>` : ''}
         </div>`;
     } else {
       if (locPcntEl) locPcntEl.textContent = linkedLoc.name;
