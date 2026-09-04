@@ -3102,15 +3102,9 @@
       <button class="modal-close" onclick="closeModal('modal-location')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Venue Name *</label>
-          <input class="form-input" id="loc-name" placeholder="e.g. Grand Ballroom" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Icon / Emoji</label>
-          <input class="form-input" id="loc-icon" placeholder="🏛️" maxlength="4" />
-        </div>
+      <div class="form-group">
+        <label class="form-label">Venue Name *</label>
+        <input class="form-input" id="loc-name" placeholder="e.g. Grand Ballroom" />
       </div>
       <div class="form-group">
         <label class="form-label">Address</label>
@@ -3118,29 +3112,6 @@
         <div style="font-size:10px;color:var(--muted2);margin-top:4px;">
           Format: <span style="color:var(--muted);">House/Unit No. + Street, Barangay, City/Municipality, Province / Region</span>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Type</label>
-          <select class="form-select" id="loc-type">
-            <option value="Indoor">🏛️ Indoor</option>
-            <option value="Outdoor">🌿 Outdoor</option>
-            <option value="Beach">🏖️ Beach</option>
-            <option value="Garden">🌸 Garden</option>
-            <option value="Restaurant">🍽️ Restaurant</option>
-            <option value="Hotel">🏨 Hotel</option>
-            <option value="Church">⛪ Church</option>
-            <option value="Other">📍 Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Capacity</label>
-          <input class="form-input" id="loc-capacity" type="number" placeholder="100" min="1" />
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Notes</label>
-        <textarea class="form-textarea" id="loc-notes" placeholder="Parking, contact info, etc."></textarea>
       </div>
       <div class="form-group">
         <label class="form-label">Photo</label>
@@ -3171,42 +3142,13 @@
       <button class="modal-close" onclick="closeModal('modal-edit-location')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Venue Name *</label>
-          <input class="form-input" id="eloc-name" placeholder="e.g. Grand Ballroom" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Icon / Emoji</label>
-          <input class="form-input" id="eloc-icon" placeholder="🏛️" maxlength="4" />
-        </div>
+      <div class="form-group">
+        <label class="form-label">Venue Name *</label>
+        <input class="form-input" id="eloc-name" placeholder="e.g. Grand Ballroom" />
       </div>
       <div class="form-group">
         <label class="form-label">Address</label>
         <input class="form-input" id="eloc-address" placeholder="e.g. 123 Rizal St., Brgy. San Antonio, Makati City, Metro Manila" />
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Type</label>
-          <select class="form-select" id="eloc-type">
-            <option value="Indoor">🏛️ Indoor</option>
-            <option value="Outdoor">🌿 Outdoor</option>
-            <option value="Beach">🏖️ Beach</option>
-            <option value="Garden">🌸 Garden</option>
-            <option value="Restaurant">🍽️ Restaurant</option>
-            <option value="Hotel">🏨 Hotel</option>
-            <option value="Church">⛪ Church</option>
-            <option value="Other">📍 Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Capacity</label>
-          <input class="form-input" id="eloc-capacity" type="number" placeholder="100" min="1" />
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Notes</label>
-        <textarea class="form-textarea" id="eloc-notes" placeholder="Parking, contact info, etc."></textarea>
       </div>
       <div class="form-group">
         <label class="form-label">Photo (leave blank to keep existing)</label>
@@ -4188,11 +4130,7 @@ function saveLocation() {
     const entry = {
       id: uid(),
       name,
-      icon: document.getElementById('loc-icon').value || '📍',
       address: document.getElementById('loc-address').value.trim(),
-      type: document.getElementById('loc-type').value,
-      capacity: document.getElementById('loc-capacity').value,
-      notes: document.getElementById('loc-notes').value.trim(),
       image: imageData || null,
     };
     state.locations.push(entry);
@@ -4256,12 +4194,8 @@ function openEditLocation(id) {
   const l = state.locations.find(x=>x.id===id);
   if (!l) return;
   _editLocId = id;
-  document.getElementById('eloc-name').value     = l.name;
-  document.getElementById('eloc-icon').value     = l.icon || '';
-  document.getElementById('eloc-address').value  = l.address || '';
-  document.getElementById('eloc-type').value     = l.type || 'Indoor';
-  document.getElementById('eloc-capacity').value = l.capacity || '';
-  document.getElementById('eloc-notes').value    = l.notes || '';
+  document.getElementById('eloc-name').value    = l.name;
+  document.getElementById('eloc-address').value = l.address || '';
   // show current photo preview if exists
   const preview = document.getElementById('eloc-img-preview');
   const previewImg = document.getElementById('eloc-img-preview-img');
@@ -4313,12 +4247,8 @@ function saveEditLocation() {
   const fileInput = document.getElementById('eloc-image-input');
   const file = fileInput && fileInput.files[0];
   function finish(imageData) {
-    l.name     = name;
-    l.icon     = document.getElementById('eloc-icon').value || '📍';
-    l.address  = document.getElementById('eloc-address').value.trim();
-    l.type     = document.getElementById('eloc-type').value;
-    l.capacity = document.getElementById('eloc-capacity').value;
-    l.notes    = document.getElementById('eloc-notes').value.trim();
+    l.name    = name;
+    l.address = document.getElementById('eloc-address').value.trim();
     if (imageData !== undefined) l.image = imageData; // only update if new file chosen; keep old otherwise
     saveState();
     closeModal('modal-edit-location');
