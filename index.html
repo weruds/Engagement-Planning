@@ -5369,26 +5369,34 @@ function renderQuarterList() {
 }
 
 // LOCATIONS
+// Cache for location images keyed by location id (avoids embedding base64 in onclick attrs)
+const _locImgsCache = {};
+
 function renderLocations() {
   const el = document.getElementById('locations-list');
   if (!state.locations.length) { el.innerHTML = emptyState('No locations yet','Add venues and event spots'); return; }
   el.innerHTML = state.locations.map(l => {
     // Support both new `images[]` and legacy `image`
     const imgs = (l.images && l.images.length) ? l.images : (l.image ? [l.image] : []);
+    _locImgsCache[l.id] = imgs; // stash for click handlers
     const heroImg = imgs[0] || null;
-    const extraThumbs = imgs.slice(1, 5); // show up to 4 extra thumbs in footer strip
+    const extraThumbs = imgs.slice(1, 5);
     const thumbStrip = extraThumbs.length ? `
       <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
-        ${extraThumbs.map((src,i) => `
-          <div style="width:52px;height:40px;border-radius:8px;overflow:hidden;border:1px solid var(--border);cursor:pointer;"
-               onclick="openLightbox(${JSON.stringify(imgs)},${i+1})">
+        ${extraThumbs.map((src, i) => `
+          <div class="loc-thumb-btn" data-loc-id="${l.id}" data-lb-idx="${i+1}"
+               style="width:52px;height:40px;border-radius:8px;overflow:hidden;border:1px solid var(--border);cursor:pointer;">
             <img src="${src}" alt="" style="width:100%;height:100%;object-fit:cover;" />
           </div>`).join('')}
-        ${imgs.length > 5 ? `<div style="width:52px;height:40px;border-radius:8px;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;" onclick="openLightbox(${JSON.stringify(imgs)},5)">+${imgs.length-5}</div>` : ''}
+        ${imgs.length > 5 ? `<div class="loc-thumb-btn" data-loc-id="${l.id}" data-lb-idx="5"
+            style="width:52px;height:40px;border-radius:8px;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;">+${imgs.length-5}</div>` : ''}
       </div>` : '';
     return `
     <div class="location-card">
-      <div class="location-banner${heroImg?' has-image':''}" style="${heroImg?'cursor:pointer;':''}" ${heroImg?`onclick="openLightbox(${JSON.stringify(imgs)},0)"`:''}>${heroImg?`<img src="${heroImg}" alt="${l.name}" />`:''}</div>
+      <div class="location-banner${heroImg?' has-image':''}"
+           ${heroImg ? `class="location-banner has-image loc-thumb-btn" data-loc-id="${l.id}" data-lb-idx="0" style="cursor:pointer;"` : 'class="location-banner"'}>
+        ${heroImg ? `<img src="${heroImg}" alt="${l.name}" />` : ''}
+      </div>
       <div class="location-body">
         <div class="location-name">${l.name}</div>
         <div class="location-addr">${l.address||'No address'}</div>
@@ -5407,6 +5415,13 @@ function renderLocations() {
       </div>
     </div>`;
   }).join('');
+  // Attach lightbox click listeners after render
+  el.querySelectorAll('.loc-thumb-btn[data-loc-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const imgs = _locImgsCache[btn.dataset.locId] || [];
+      openLightbox(imgs, parseInt(btn.dataset.lbIdx) || 0);
+    });
+  });
 }
 
 function actContextBanner() {
@@ -7096,17 +7111,19 @@ function renderOverview() {
       const locImgs = (linkedLoc.images && linkedLoc.images.length)
         ? linkedLoc.images
         : (linkedLoc.image ? [linkedLoc.image] : []);
+      // Stash images on window so onclick attrs don't embed base64 JSON
+      window._ovLocImgs = locImgs;
       // Build photo grid — max 3 tiles visible (first + 2), "+N" on last tile if more
       const maxVisible = 3;
       const visibleImgs = locImgs.slice(0, maxVisible);
       const hiddenCount = locImgs.length - maxVisible;
       const gridClass = locImgs.length === 0 ? '' : locImgs.length === 1 ? 'count-1' : locImgs.length === 2 ? 'count-2' : 'count-many';
-      const imgsJson = JSON.stringify(locImgs);
       const photoGrid = locImgs.length > 0 ? `
         <div class="loc-ov-photo-grid ${gridClass}">
           ${visibleImgs.map((src, i) => {
             const isLast = i === visibleImgs.length - 1 && hiddenCount > 0;
-            return `<div class="loc-ov-photo-tile" onclick="openLightbox(${imgsJson},${i})">
+            const openIdx = isLast ? maxVisible - 1 : i;
+            return `<div class="loc-ov-photo-tile" data-lb-idx="${openIdx}" style="cursor:pointer;">
               <img src="${src}" alt="Photo ${i+1}" />
               ${isLast ? `<div class="loc-ov-photo-more-overlay">+${hiddenCount + 1}</div>` : ''}
             </div>`;
@@ -7121,6 +7138,10 @@ function renderOverview() {
             ${linkedLoc.notes ? `<div class="loc-ov-notes">${linkedLoc.notes}</div>` : ''}
           </div>
         </div>`;
+      // Attach click listeners after render (avoids inline JSON/base64 breakage)
+      locOvEl.querySelectorAll('.loc-ov-photo-tile[data-lb-idx]').forEach(tile => {
+        tile.addEventListener('click', () => openLightbox(window._ovLocImgs, parseInt(tile.dataset.lbIdx)));
+      });
     }
   }
 
