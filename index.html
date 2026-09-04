@@ -1709,7 +1709,7 @@
   }
   /* door indicator */
   .vis-floor::after {
-    content: '🚪';
+    content: '';
     position: absolute; bottom: -10px; left: 50%;
     transform: translateX(-50%);
     font-size: 14px;
@@ -2385,31 +2385,31 @@
       <div class="nav-section">
         <div class="nav-label">Overview</div>
         <div class="nav-item active" data-page="dashboard">
-          <span class="nav-icon">🏠</span> Dashboard
+          <span class="nav-icon"></span> Dashboard
         </div>
         <div class="nav-item" data-page="overview">
-          <span class="nav-icon">🗺️</span> Full Overview
+          <span class="nav-icon"></span> Full Overview
         </div>
       </div>
       <div class="nav-section">
         <div class="nav-label">Planning</div>
         <div class="nav-item" data-page="activities">
-          <span class="nav-icon">📋</span> Activities
+          <span class="nav-icon"></span> Activities
           <span class="nav-count" id="nav-count-activities">0</span>
         </div>
         <div class="nav-item" data-page="quarters">
-          <span class="nav-icon">📅</span> By Quarter
+          <span class="nav-icon"></span> By Quarter
         </div>
         <div class="nav-item" data-page="locations">
-          <span class="nav-icon">📍</span> Locations
+          <span class="nav-icon"></span> Locations
           <span class="nav-count" id="nav-count-locations">0</span>
         </div>
         <div class="nav-item" data-page="people">
-          <span class="nav-icon">👤</span> People
+          <span class="nav-icon"></span> People
           <span class="nav-count" id="nav-count-people">0</span>
         </div>
         <div class="nav-item" data-page="survey-results">
-          <span class="nav-icon">📊</span> Survey Results
+          <span class="nav-icon"></span> Survey Results
         </div>
         <!-- Survey nav items hidden -->
         <span style="display:none;" id="survey-nav-badge"></span>
@@ -2428,7 +2428,7 @@
     <!-- Admin lock button -->
     <div style="padding:10px 14px 6px;">
       <button class="admin-lock-btn" id="admin-lock-btn" onclick="openAdminModal()" title="Configure Dashboard" style="width:100%;justify-content:center;">
-        🔒 <span id="admin-lock-label">Configure</span>
+        <span id="admin-lock-label">Configure</span>
       </button>
     </div>
 
@@ -2461,34 +2461,34 @@
       <div class="glow-line"></div>
       <div class="section-header">
         <div>
-          <div class="section-title">Welcome back 👋</div>
+          <div class="section-title">Welcome back</div>
           <div class="section-subtitle" id="dash-subtitle">Here's your engagement planning overview</div>
         </div>
       </div>
 
       <div class="stats-row" id="stats-row">
         <div class="stat-card">
-          <div class="stat-icon">📋</div>
+          <div class="stat-icon"></div>
           <div class="stat-value" id="stat-activities">0</div>
           <div class="stat-label">Total Activities</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">📍</div>
+          <div class="stat-icon"></div>
           <div class="stat-value" id="stat-locations">0</div>
           <div class="stat-label">Locations</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">🚗</div>
+          <div class="stat-icon"></div>
           <div class="stat-value" id="stat-carseats">0</div>
           <div class="stat-label">Car Seat Plans</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">🛏️</div>
+          <div class="stat-icon"></div>
           <div class="stat-value" id="stat-beds">0</div>
           <div class="stat-label">Bed Assignments</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">🎮</div>
+          <div class="stat-icon"></div>
           <div class="stat-value" id="stat-games">0</div>
           <div class="stat-label">Games Planned</div>
         </div>
@@ -2503,14 +2503,14 @@
       <!-- Quick Actions -->
       <div class="card" style="margin-bottom:16px;">
         <div class="card-header" style="margin-bottom:12px;">
-          <span class="card-title">⚡ Quick Actions</span>
+          <span class="card-title">Quick Actions</span>
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;">
-          <button class="btn btn-ghost btn-sm admin-only" onclick="openModal('modal-activity')">➕ New Activity</button>
-          <button class="btn btn-ghost btn-sm" onclick="navigate('overview')">🗺️ Full Overview</button>
-          <button class="btn btn-ghost btn-sm admin-only" onclick="openModal('modal-location')">📍 Add Location</button>
-          <button class="btn btn-ghost btn-sm" onclick="navigate('people')">👤 People</button>
-          <button class="btn btn-ghost btn-sm admin-only" onclick="openModal('modal-expense')">💸 Log Expense</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="openModal('modal-activity')">+ New Activity</button>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('overview')">Full Overview</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="openModal('modal-location')">Add Location</button>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('people')">People</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="openModal('modal-expense')">Log Expense</button>
         </div>
       </div>
 
@@ -2519,7 +2519,7 @@
         <!-- Upcoming Activities -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">📅 Upcoming Activities</span>
+            <span class="card-title">Upcoming Activities</span>
             <span class="btn btn-ghost btn-sm" style="cursor:pointer;font-size:11px;" onclick="navigate('activities')">See all →</span>
           </div>
           <div id="dash-recent-visible"></div>
@@ -2528,7 +2528,7 @@
         <!-- Budget Summary -->
         <div class="card" style="cursor:pointer;" onclick="navigate('expenses')" title="View all expenses">
           <div class="card-header">
-            <span class="card-title">💸 Budget Summary</span>
+            <span class="card-title">Budget Summary</span>
             <span style="font-size:11px;color:var(--accent2);">All activities →</span>
           </div>
           <div id="dash-budget-visible"></div>
@@ -2602,7 +2602,7 @@
           <div class="section-subtitle">Assign guests to rooms and beds</div>
         </div>
         <div style="display:flex;gap:8px;">
-          <button class="btn btn-ghost admin-only" onclick="openAddOccupantModal()">🛏️ Add Occupants</button>
+          <button class="btn btn-ghost admin-only" onclick="openAddOccupantModal()">Add Occupants</button>
           <button class="btn btn-primary admin-only" onclick="openModal('modal-bed')">＋ Add Room</button>
         </div>
       </div>
@@ -2651,7 +2651,7 @@
       <!-- Location Preview -->
       <div class="ov-panel open" id="panel-location">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-location')">
-          <div class="ov-panel-icon">📍</div>
+          <div class="ov-panel-icon"></div>
           <div class="ov-panel-title">Venue / Location</div>
           <span class="ov-panel-count" id="pcount-location">—</span>
           <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();navigate('locations')">Manage →</button>
@@ -2665,7 +2665,7 @@
       <!-- Committee -->
       <div class="ov-panel open" id="panel-committee">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-committee')">
-          <div class="ov-panel-icon">👥</div>
+          <div class="ov-panel-icon"></div>
           <div class="ov-panel-title">Organizing Committee</div>
           <span class="ov-panel-count" id="pcount-committee">0</span>
           <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();openModal('modal-committee')">＋ New</button>
@@ -2679,10 +2679,10 @@
       <!-- Attendees -->
       <div class="ov-panel open" id="panel-attendees">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-attendees')">
-          <div class="ov-panel-icon">🙋</div>
+          <div class="ov-panel-icon"></div>
           <div class="ov-panel-title">Attendees</div>
           <span class="ov-panel-count" id="pcount-attendees">0</span>
-          <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();fetchAttendeesFromSurvey()" title="Import attending respondents from survey">📋 Fetch from Survey</button>
+          <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();fetchAttendeesFromSurvey()" title="Import attending respondents from survey">Fetch from Survey</button>
           <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();openAttendeeModal()">＋ Add</button>
           <span class="ov-panel-chevron">▼</span>
         </div>
@@ -2694,7 +2694,7 @@
       <!-- Games -->
       <div class="ov-panel open" id="panel-games">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-games')">
-          <div class="ov-panel-icon">🎮</div>
+          <div class="ov-panel-icon"></div>
           <div class="ov-panel-title">Engagement Games</div>
           <span class="ov-panel-count" id="pcount-games">0</span>
           <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();openModal('modal-game')">＋ Add Game</button>
@@ -2708,11 +2708,11 @@
       <!-- Bed Plans -->
       <div class="ov-panel open" id="panel-beds">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-beds')">
-          <div class="ov-panel-icon">🛏️</div>
+          <div class="ov-panel-icon"></div>
           <div class="ov-panel-title">Bed Plans</div>
           <span class="ov-panel-count" id="pcount-beds">0</span>
           <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();openModal('modal-bed')">＋ Add Room</button>
-          <button class="btn btn-ghost btn-sm ov-panel-action" id="beds-vis-btn" onclick="event.stopPropagation();toggleBedVis()">👁 Visualize</button>
+          <button class="btn btn-ghost btn-sm ov-panel-action" id="beds-vis-btn" onclick="event.stopPropagation();toggleBedVis()">Visualize</button>
           <span class="ov-panel-chevron">▼</span>
         </div>
         <div class="ov-panel-body">
@@ -2724,11 +2724,11 @@
       <!-- Car Seat Plans -->
       <div class="ov-panel open" id="panel-cars">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-cars')">
-          <div class="ov-panel-icon">🚗</div>
+          <div class="ov-panel-icon"></div>
           <div class="ov-panel-title">Car Seat Plans</div>
           <span class="ov-panel-count" id="pcount-cars">0</span>
           <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();openModal('modal-carseat')">＋ Add Car</button>
-          <button class="btn btn-ghost btn-sm ov-panel-action" id="cars-vis-btn" onclick="event.stopPropagation();toggleCarVis()">👁 Visualize</button>
+          <button class="btn btn-ghost btn-sm ov-panel-action" id="cars-vis-btn" onclick="event.stopPropagation();toggleCarVis()">Visualize</button>
           <span class="ov-panel-chevron">▼</span>
         </div>
         <div class="ov-panel-body">
@@ -2740,7 +2740,7 @@
       <!-- Meal Plan -->
       <div class="ov-panel open" id="panel-meals">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-meals')">
-          <div class="ov-panel-icon">🍽️</div>
+          <div class="ov-panel-icon"></div>
           <div class="ov-panel-title">Meal Plan</div>
           <span class="ov-panel-count" id="pcount-meals">0</span>
           <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();navigate('mealplan')">Manage →</button>
@@ -2754,7 +2754,7 @@
       <!-- Grocery List -->
       <div class="ov-panel open" id="panel-grocery">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-grocery')">
-          <div class="ov-panel-icon">🛒</div>
+          <div class="ov-panel-icon"></div>
           <div class="ov-panel-title">Grocery List</div>
           <span class="ov-panel-count" id="pcount-grocery">0</span>
           <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();openModal('modal-grocery')">＋ Add</button>
@@ -2769,11 +2769,11 @@
       <!-- Schedule -->
       <div class="ov-panel open" id="panel-schedule">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-schedule')">
-          <div class="ov-panel-icon">🗓️</div>
+          <div class="ov-panel-icon"></div>
           <div class="ov-panel-title">Schedule of Activities</div>
           <span class="ov-panel-count" id="pcount-schedule">—</span>
           <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();openScheduleEventModal()">＋ Add Event</button>
-          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();navigate('schedule')" title="View full schedule">📋 Full Schedule</button>
+          <button class="btn btn-ghost btn-sm ov-panel-action" onclick="event.stopPropagation();navigate('schedule')" title="View full schedule">Full Schedule</button>
           <span class="ov-panel-chevron">▼</span>
         </div>
         <div class="ov-panel-body">
@@ -2784,7 +2784,7 @@
       <!-- Expenses -->
       <div class="ov-panel open" id="panel-expenses">
         <div class="ov-panel-header" onclick="toggleOvPanel('panel-expenses')">
-          <div class="ov-panel-icon">💸</div>
+          <div class="ov-panel-icon"></div>
           <div class="ov-panel-title">Expenses</div>
           <span class="ov-panel-count" id="pcount-expenses">0</span>
           <button class="btn btn-ghost btn-sm ov-panel-action admin-only" onclick="event.stopPropagation();openModal('modal-expense')">＋ Add</button>
@@ -2816,13 +2816,13 @@
       <div class="glow-line"></div>
       <div class="section-header">
         <div>
-          <div class="section-title">📊 Survey Results</div>
+          <div class="section-title">Survey Results</div>
           <div class="section-subtitle">Live attendance and date preference results from survey responses</div>
         </div>
         <div style="display:flex;gap:8px;">
-          <button class="btn btn-ghost btn-sm" onclick="syncFromMonday()" title="Pull latest responses from Monday.com">📥 Sync from Monday</button>
-          <button class="btn btn-ghost btn-sm" onclick="renderSurveyResultsPage()" title="Refresh charts">🔄 Refresh</button>
-          <button class="btn btn-ghost btn-sm" onclick="resetSurveyData()" title="Clear all synced responses and reset charts" style="color:#ef4444;">🗑️ Reset</button>
+          <button class="btn btn-ghost btn-sm" onclick="syncFromMonday()" title="Pull latest responses from Monday.com">Sync from Monday</button>
+          <button class="btn btn-ghost btn-sm" onclick="renderSurveyResultsPage()" title="Refresh charts">Refresh</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSurveyData()" title="Clear all synced responses and reset charts" style="color:#ef4444;">Reset</button>
         </div>
       </div>
       <div id="survey-results-body">
@@ -2878,9 +2878,9 @@
           <div class="section-subtitle">Day-by-day program for your engagement</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <button class="btn btn-ghost btn-sm" onclick="openSchedulePreview()" title="Display-only card view + download">👁 View Card</button>
-          <button class="btn btn-ghost btn-sm admin-only" onclick="cycleScheduleTemplate()" id="sch-tpl-btn" title="Switch card layout template">🎨 Template: Classic</button>
-          <button class="btn btn-ghost btn-sm admin-only" onclick="document.getElementById('sch-bg-input').click()" title="Change card background image — recommended 960×1440 px">🖼 Card Image</button>
+          <button class="btn btn-ghost btn-sm" onclick="openSchedulePreview()" title="Display-only card view + download">View Card</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="cycleScheduleTemplate()" id="sch-tpl-btn" title="Switch card layout template">Template: Classic</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="document.getElementById('sch-bg-input').click()" title="Change card background image — recommended 960×1440 px">Card Image</button>
           <input type="file" id="sch-bg-input" accept="image/*" style="display:none;" onchange="saveScheduleCardImage(this)" />
           <button class="btn btn-primary admin-only" onclick="openScheduleEventModal()">＋ Add Event</button>
         </div>
@@ -2906,7 +2906,7 @@
       <div class="glow-line"></div>
       <div class="section-header">
         <div>
-          <div class="section-title">📝 Engagement Planning Survey</div>
+          <div class="section-title">Engagement Planning Survey</div>
           <div class="section-subtitle">Share your feedback — takes less than 2 minutes</div>
         </div>
       </div>
@@ -2924,7 +2924,7 @@
       <div class="glow-line"></div>
       <div class="section-header">
         <div>
-          <div class="section-title">🗳️ Initial Survey</div>
+          <div class="section-title">Initial Survey</div>
           <div class="section-subtitle">Help us understand your needs before we begin planning</div>
         </div>
       </div>
@@ -2958,7 +2958,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Icon / Emoji</label>
-          <input class="form-input" id="com-icon" placeholder="👥" maxlength="4" />
+          <input class="form-input" id="com-icon" placeholder="Icon" maxlength="4" />
         </div>
       </div>
       <div class="form-group">
@@ -3035,17 +3035,17 @@
         <div class="form-group">
           <label class="form-label">Category</label>
           <select class="form-select" id="groc-cat">
-            <option value="🥩 Meat & Seafood">🥩 Meat &amp; Seafood</option>
-            <option value="🥦 Vegetables">🥦 Vegetables</option>
-            <option value="🍎 Fruits">🍎 Fruits</option>
-            <option value="🥛 Dairy & Eggs">🥛 Dairy &amp; Eggs</option>
-            <option value="🌾 Grains & Bread">🌾 Grains &amp; Bread</option>
-            <option value="🧂 Condiments & Spices">🧂 Condiments &amp; Spices</option>
-            <option value="🥤 Beverages">🥤 Beverages</option>
-            <option value="🍰 Desserts & Sweets">🍰 Desserts &amp; Sweets</option>
-            <option value="🌸 Decorations">🌸 Decorations</option>
-            <option value="🧹 Supplies">🧹 Supplies</option>
-            <option value="📦 Other">📦 Other</option>
+            <option value="Meat & Seafood">Meat &amp; Seafood</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Fruits">Fruits</option>
+            <option value="Dairy & Eggs">Dairy &amp; Eggs</option>
+            <option value="Grains & Bread">Grains &amp; Bread</option>
+            <option value="Condiments & Spices">Condiments &amp; Spices</option>
+            <option value="Beverages">Beverages</option>
+            <option value="Desserts & Sweets">Desserts &amp; Sweets</option>
+            <option value="Decorations">Decorations</option>
+            <option value="Supplies">Supplies</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div class="form-group">
@@ -3096,7 +3096,7 @@
 <div class="modal-overlay" id="modal-expense">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">💸 Add Expense</div>
+      <div class="modal-title">Add Expense</div>
       <button class="modal-close" onclick="closeModal('modal-expense')">✕</button>
     </div>
     <div class="modal-body">
@@ -3114,11 +3114,11 @@
         <div class="form-group">
           <label class="form-label">Category</label>
           <select class="form-select" id="exp-category">
-            <option value="Staycation">🏨 Staycation (DP / Full Payment)</option>
-            <option value="Food">🍽️ Food Orders</option>
-            <option value="Gas">⛽ Gas</option>
-            <option value="Grocery">🛒 Grocery</option>
-            <option value="Other">📌 Other</option>
+            <option value="Staycation">Staycation (DP / Full Payment)</option>
+            <option value="Food">Food Orders</option>
+            <option value="Gas">Gas</option>
+            <option value="Grocery">Grocery</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div class="form-group">
@@ -3210,12 +3210,12 @@
       <div class="form-group">
         <label class="form-label">Activity Theme</label>
         <div class="theme-picker" id="act-theme-picker">
-          <div class="theme-chip selected" data-theme="Party"      onclick="selectTheme('Party')">      <div class="theme-chip-swatch tc-party"></div>      🎉 Party</div>
-          <div class="theme-chip"          data-theme="Casual"     onclick="selectTheme('Casual')">     <div class="theme-chip-swatch tc-casual"></div>     ☕ Casual</div>
-          <div class="theme-chip"          data-theme="Beach"      onclick="selectTheme('Beach')">      <div class="theme-chip-swatch tc-beach"></div>      🏖️ Beach</div>
-          <div class="theme-chip"          data-theme="Indoor"     onclick="selectTheme('Indoor')">     <div class="theme-chip-swatch tc-indoor"></div>     🏠 Indoor</div>
-          <div class="theme-chip"          data-theme="Outdoor"    onclick="selectTheme('Outdoor')">    <div class="theme-chip-swatch tc-outdoor"></div>    🌿 Outdoor</div>
-          <div class="theme-chip"          data-theme="Recreation" onclick="selectTheme('Recreation')"> <div class="theme-chip-swatch tc-recreation"></div> 🏃 Recreation</div>
+          <div class="theme-chip selected" data-theme="Party"      onclick="selectTheme('Party')">      <div class="theme-chip-swatch tc-party"></div>      Party</div>
+          <div class="theme-chip"          data-theme="Casual"     onclick="selectTheme('Casual')">     <div class="theme-chip-swatch tc-casual"></div>     Casual</div>
+          <div class="theme-chip"          data-theme="Beach"      onclick="selectTheme('Beach')">      <div class="theme-chip-swatch tc-beach"></div>      Beach</div>
+          <div class="theme-chip"          data-theme="Indoor"     onclick="selectTheme('Indoor')">     <div class="theme-chip-swatch tc-indoor"></div>     Indoor</div>
+          <div class="theme-chip"          data-theme="Outdoor"    onclick="selectTheme('Outdoor')">    <div class="theme-chip-swatch tc-outdoor"></div>    Outdoor</div>
+          <div class="theme-chip"          data-theme="Recreation" onclick="selectTheme('Recreation')"> <div class="theme-chip-swatch tc-recreation"></div> Recreation</div>
         </div>
         <input type="hidden" id="act-theme" value="Party" />
       </div>
@@ -3254,7 +3254,7 @@
         <label class="form-label">Photo</label>
         <label class="loc-upload-zone" id="loc-upload-zone" for="loc-image-input">
           <input type="file" id="loc-image-input" accept="image/*" onchange="previewLocImage(this)" />
-          <div class="loc-upload-icon">🖼️</div>
+          <div class="loc-upload-icon">+</div>
           <div class="loc-upload-text">Click to upload a venue photo</div>
           <div class="loc-upload-hint">JPG, PNG, WEBP — shown on the location card and overview</div>
         </label>
@@ -3275,7 +3275,7 @@
 <div class="modal-overlay" id="modal-edit-location">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">✏️ Edit Location</div>
+      <div class="modal-title">Edit Location</div>
       <button class="modal-close" onclick="closeModal('modal-edit-location')">✕</button>
     </div>
     <div class="modal-body">
@@ -3291,7 +3291,7 @@
         <label class="form-label">Photo (leave blank to keep existing)</label>
         <label class="loc-upload-zone" id="eloc-upload-zone" for="eloc-image-input">
           <input type="file" id="eloc-image-input" accept="image/*" onchange="previewELocImage(this)" />
-          <div class="loc-upload-icon">🖼️</div>
+          <div class="loc-upload-icon">+</div>
           <div class="loc-upload-text">Click to replace venue photo</div>
           <div class="loc-upload-hint">JPG, PNG, WEBP</div>
         </label>
@@ -3463,11 +3463,11 @@
         <div class="form-group">
           <label class="form-label">Service Line *</label>
           <select class="form-select" id="person-dept">
-            <option value="SEET - Automation Sector">⚙️ SEET - Automation Sector</option>
-            <option value="SEET - Enterprise Tooling">🛠️ SEET - Enterprise Tooling</option>
-            <option value="SEET - OneInfra">☁️ SEET - OneInfra</option>
-            <option value="SEET - QE">🧪 SEET - QE</option>
-            <option value="SEET - SE">🔬 SEET - SE</option>
+            <option value="SEET - Automation Sector">SEET - Automation Sector</option>
+            <option value="SEET - Enterprise Tooling">SEET - Enterprise Tooling</option>
+            <option value="SEET - OneInfra">SEET - OneInfra</option>
+            <option value="SEET - QE">SEET - QE</option>
+            <option value="SEET - SE">SEET - SE</option>
           </select>
         </div>
       </div>
@@ -3496,7 +3496,7 @@
 <!-- Admin Passcode Modal -->
 <div class="admin-modal-overlay" id="admin-modal-overlay">
   <div class="admin-modal" onclick="event.stopPropagation()">
-    <div class="admin-modal-icon" id="admin-modal-icon">🔒</div>
+    <div class="admin-modal-icon" id="admin-modal-icon"></div>
     <div class="admin-modal-title" id="admin-modal-title">Configure Dashboard</div>
     <div class="admin-modal-sub" id="admin-modal-sub">Enter the admin passcode to continue.</div>
     <input class="admin-passcode-input" id="admin-passcode-input" type="password" maxlength="8" placeholder="••••••••" autocomplete="off" oninput="clearAdminError()" onkeydown="if(event.key==='Enter')submitAdminPasscode()" />
@@ -3619,7 +3619,7 @@
 <div class="modal-overlay" id="modal-schedule-event">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="modal-schedule-event-title">🗓️ Add Event</div>
+      <div class="modal-title" id="modal-schedule-event-title">Add Event</div>
       <button class="modal-close" onclick="closeModal('modal-schedule-event')">✕</button>
     </div>
     <div class="modal-body">
@@ -3673,8 +3673,8 @@
     <div id="sched-preview-card-wrap"></div>
     <!-- Action bar -->
     <div style="display:flex;gap:10px;">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-sched-preview')" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2);">✕ Close</button>
-      <button class="btn btn-sm" id="sched-preview-dl-btn" style="background:#fbbf24;color:#1a1200;font-weight:700;border:none;gap:6px;" onclick="downloadScheduleCard()">⬇️ Download PNG</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-sched-preview')" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2);">Close</button>
+      <button class="btn btn-sm" id="sched-preview-dl-btn" style="background:#fbbf24;color:#1a1200;font-weight:700;border:none;gap:6px;" onclick="downloadScheduleCard()">Download PNG</button>
     </div>
   </div>
 </div>
@@ -3904,15 +3904,15 @@ function openAdminModal() {
     document.body.classList.add('admin-locked');
     const btn = document.getElementById('admin-lock-btn');
     btn.classList.remove('unlocked');
-    btn.innerHTML = '🔒 <span id="admin-lock-label">Configure</span>';
-    showToast('Dashboard locked', '🔒');
+    btn.innerHTML = '<span id="admin-lock-label">Configure</span>';
+    showToast('Dashboard locked');
     return;
   }
   const overlay = document.getElementById('admin-modal-overlay');
   document.getElementById('admin-passcode-input').value = '';
   document.getElementById('admin-error-msg').textContent = '';
   document.getElementById('admin-passcode-input').classList.remove('error');
-  document.getElementById('admin-modal-icon').textContent  = '🔒';
+  document.getElementById('admin-modal-icon').textContent  = '';
   document.getElementById('admin-modal-title').textContent = 'Configure Dashboard';
   overlay.classList.add('open');
   setTimeout(() => document.getElementById('admin-passcode-input').focus(), 80);
@@ -3936,9 +3936,9 @@ function submitAdminPasscode() {
     document.body.classList.remove('admin-locked');
     const btn = document.getElementById('admin-lock-btn');
     btn.classList.add('unlocked');
-    btn.innerHTML = '🔓 <span id="admin-lock-label">Admin Mode</span>';
+    btn.innerHTML = '<span id="admin-lock-label">Admin Mode</span>';
     closeAdminModal();
-    showToast('Admin mode enabled', '🔓');
+    showToast('Admin mode enabled');
   } else {
     const errEl = document.getElementById('admin-error-msg');
     errEl.textContent = 'Incorrect passcode. Try again.';
@@ -4173,11 +4173,11 @@ document.querySelectorAll('.modal-overlay').forEach(ov => {
 // ──────────────────────────────────────────────
 // TOAST
 // ──────────────────────────────────────────────
-function showToast(msg, icon='✅') {
+function showToast(msg, icon='') {
   const c = document.getElementById('toast-container');
   const t = document.createElement('div');
   t.className = 'toast';
-  t.innerHTML = `<span class="toast-icon">${icon}</span>${msg}`;
+  t.innerHTML = `${icon ? `<span class="toast-icon">${icon}</span>` : ''}${msg}`;
   c.appendChild(t);
   setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.4s'; setTimeout(()=>t.remove(),400); }, 2800);
 }
@@ -4195,7 +4195,7 @@ function populateLocationSelect(selectId) {
   state.locations.forEach(l => {
     const opt = document.createElement('option');
     opt.value = l.id;
-    opt.textContent = `${l.icon||'📍'} ${l.name}`;
+    opt.textContent = l.name;
     sel.appendChild(opt);
   });
   if (cur) sel.value = cur;
@@ -4203,12 +4203,12 @@ function populateLocationSelect(selectId) {
 
 function getLocationName(id) {
   const l = state.locations.find(x=>x.id===id);
-  return l ? `${l.icon||'📍'} ${l.name}` : '';
+  return l ? l.name : '';
 }
 
-function emptyState(msg, sub='', icon='🗂️') {
+function emptyState(msg, sub='', icon='') {
   const subHtml = (sub && _adminUnlocked) ? `<div class="empty-sub">${sub}</div>` : '';
-  return `<div class="empty-state"><div class="empty-icon">${icon}</div><div class="empty-title">${msg}</div>${subHtml}</div>`;
+  return `<div class="empty-state">${icon ? `<div class="empty-icon">${icon}</div>` : ''}<div class="empty-title">${msg}</div>${subHtml}</div>`;
 }
 
 // ──────────────────────────────────────────────
@@ -4225,7 +4225,7 @@ function actDurationCalc() {
     const days = Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
     const fmt = d => new Date(d + 'T00:00').toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
     el.style.display = 'block';
-    el.textContent = `📅 ${fmt(s)} → ${fmt(e)}  ·  ${days} day${days !== 1 ? 's' : ''}`;
+    el.textContent = `${fmt(s)} → ${fmt(e)}  ·  ${days} day${days !== 1 ? 's' : ''}`;
   } else {
     el.style.display = 'none';
     el.textContent = '';
@@ -4245,14 +4245,14 @@ function openEditActivity(id) {
   document.getElementById('act-desc').value       = a.desc || '';
   selectTheme(a.theme || 'Party');
   actDurationCalc();
-  document.getElementById('modal-activity-title').textContent = '✏️ Edit Activity';
+  document.getElementById('modal-activity-title').textContent = 'Edit Activity';
   document.querySelector('#modal-activity .btn-primary').textContent = 'Save Changes';
   document.getElementById('modal-activity').classList.add('open');
 }
 
 function saveActivity() {
   const name = document.getElementById('act-name').value.trim();
-  if (!name) { showToast('Activity name is required.','⚠️'); return; }
+  if (!name) { showToast('Activity name is required.'); return; }
   const dateStart = document.getElementById('act-date-start').value;
   const dateEnd   = document.getElementById('act-date-end').value;
   const days = (dateStart && dateEnd && dateEnd >= dateStart)
@@ -4271,7 +4271,7 @@ function saveActivity() {
       a.days       = days;
       a.locationId = document.getElementById('act-location').value;
       a.theme      = document.getElementById('act-theme').value;
-      a.icon       = '💍';
+      a.icon       = '';
       a.desc       = document.getElementById('act-desc').value.trim();
     }
     _editActivityId = null;
@@ -4279,7 +4279,7 @@ function saveActivity() {
     closeModal('modal-activity');
     document.getElementById('modal-activity-title').textContent = 'New Engagement Activity';
     document.querySelector('#modal-activity .btn-primary').textContent = 'Save Activity';
-    showToast(`Activity "${name}" updated!`,'✏️');
+    showToast(`Activity "${name}" updated!`);
   } else {
     // — CREATE MODE —
     const entry = {
@@ -4292,7 +4292,7 @@ function saveActivity() {
       days,
       locationId: document.getElementById('act-location').value,
       theme:      document.getElementById('act-theme').value,
-      icon:       '💍',
+      icon:       '',
       desc:       document.getElementById('act-desc').value.trim(),
       createdAt:  new Date().toISOString(),
     };
@@ -4311,7 +4311,7 @@ function deleteActivity(id) {
   if (!a) return;
   state.activities = state.activities.filter(x=>x.id!==id);
   saveState();
-  showToast(`"${a.name}" removed.`,'🗑️');
+  showToast(`"${a.name}" removed.`);
   renderPage(currentPage);
   updateCounts();
   initDate();
@@ -4322,7 +4322,7 @@ function deleteActivity(id) {
 // ──────────────────────────────────────────────
 function saveLocation() {
   const name = document.getElementById('loc-name').value.trim();
-  if (!name) { showToast('Venue name is required.','⚠️'); return; }
+  if (!name) { showToast('Venue name is required.'); return; }
   const fileInput = document.getElementById('loc-image-input');
   const file = fileInput && fileInput.files[0];
   function finish(imageData) {
@@ -4382,7 +4382,7 @@ function deleteLocation(id) {
   if (!l) return;
   state.locations = state.locations.filter(x=>x.id!==id);
   saveState();
-  showToast(`"${l.name}" removed.`,'🗑️');
+  showToast(`"${l.name}" removed.`);
   renderPage(currentPage);
   updateCounts();
 }
@@ -4442,7 +4442,7 @@ function saveEditLocation() {
   const l = state.locations.find(x=>x.id===_editLocId);
   if (!l) return;
   const name = document.getElementById('eloc-name').value.trim();
-  if (!name) { showToast('Venue name is required.','⚠️'); return; }
+  if (!name) { showToast('Venue name is required.'); return; }
   const fileInput = document.getElementById('eloc-image-input');
   const file = fileInput && fileInput.files[0];
   function finish(imageData) {
@@ -4451,7 +4451,7 @@ function saveEditLocation() {
     if (imageData !== undefined) l.image = imageData; // only update if new file chosen; keep old otherwise
     saveState();
     closeModal('modal-edit-location');
-    showToast(`"${name}" updated!`,'✅');
+    showToast(`"${name}" updated!`);
     renderPage(currentPage);
     _editLocId = null;
   }
@@ -4583,7 +4583,7 @@ function autoDetectSeats() {
   );
   seatSel.value = String(closest);
   if (hint) {
-    hint.textContent = `✅ Auto-detected: ${detected}-seater (${brand} ${model})${closest !== detected ? ` — using closest option (${closest})` : ''}`;
+    hint.textContent = `Auto-detected: ${detected}-seater (${brand} ${model})${closest !== detected ? ` — using closest option (${closest})` : ''}`;
     hint.style.display = 'block';
   }
 }
@@ -4593,12 +4593,12 @@ function autoDetectSeats() {
 // ──────────────────────────────────────────────
 function saveCar() {
   const name = document.getElementById('car-name').value.trim();
-  if (!name) { showToast('Car label is required.','⚠️'); return; }
+  if (!name) { showToast('Car label is required.'); return; }
 
   // Enforce unique car label within this activity
   const existingNames = (actData().cars || []).map(c => c.name.trim().toLowerCase());
   if (existingNames.includes(name.toLowerCase())) {
-    showToast(`A car named "${name}" already exists. Use a unique label.`, '⚠️'); return;
+    showToast(`A car named "${name}" already exists. Use a unique label.`); return;
   }
 
   const seats  = parseInt(document.getElementById('car-seats').value);
@@ -4636,7 +4636,7 @@ function deleteCar(id) {
   if (!c) return;
   actData().cars = actData().cars.filter(x=>x.id!==id);
   saveState();
-  showToast(`"${c.name}" removed.`,'🗑️');
+  showToast(`"${c.name}" removed.`);
   renderPage(currentPage);
   updateCounts();
 }
@@ -4664,7 +4664,7 @@ function openAddPassengers(carId) {
   if (available === 0) {
     body.innerHTML = `
       <div style="text-align:center;padding:24px 0;">
-        <div style="font-size:32px;margin-bottom:8px;">🚗</div>
+        <div style="font-size:32px;margin-bottom:8px;"></div>
         <div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px;">${car.name} is full</div>
         <div style="font-size:12px;color:var(--muted);">All ${totalPassengerSeats} passenger seat${totalPassengerSeats!==1?'s':''} are occupied.</div>
       </div>`;
@@ -4672,7 +4672,7 @@ function openAddPassengers(carId) {
     const eligibleNames = allNames.filter(n => !inCar.has(n.toLowerCase()));
     body.innerHTML = `
       <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">
-        🚗 <strong style="color:var(--white);">${car.name}</strong>
+        <strong style="color:var(--white);">${car.name}</strong>
       </div>
       <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:14px;">
         ${available} of ${totalPassengerSeats} passenger seat${totalPassengerSeats!==1?'s':''} available
@@ -4699,7 +4699,7 @@ function limitPassengerSelection(max) {
     // Uncheck the last one that was just checked
     const last = checked[checked.length - 1];
     last.checked = false;
-    showToast(`Only ${max} passenger seat${max!==1?'s':''} available.`, '⚠️');
+    showToast(`Only ${max} passenger seat${max!==1?'s':''} available.`);
   }
 }
 
@@ -4712,7 +4712,7 @@ function confirmAddPassengers() {
     document.querySelectorAll('#passenger-pick-list input[type=checkbox]:checked')
   ).map(c => c.value);
 
-  if (!selected.length) { showToast('Select at least one passenger.', '⚠️'); return; }
+  if (!selected.length) { showToast('Select at least one passenger.'); return; }
 
   let added = 0;
   for (let i = 0; i < car.seats.length && added < selected.length; i++) {
@@ -4722,7 +4722,7 @@ function confirmAddPassengers() {
   saveState();
   closeModal('modal-passengers');
   _passengersCarId = null;
-  showToast(`${added} passenger${added!==1?'s':''} added to ${car.name}! 🚗`);
+  showToast(`${added} passenger${added!==1?'s':''} added to ${car.name}!`);
   renderPage(currentPage);
 }
 
@@ -4837,7 +4837,7 @@ function confirmAssignBed() {
 // ──────────────────────────────────────────────
 function saveBed() {
   const room = document.getElementById('bed-room').value.trim();
-  if (!room) { showToast('Room name is required.','⚠️'); return; }
+  if (!room) { showToast('Room name is required.'); return; }
   const count = parseInt(document.getElementById('bed-count').value);
   const entry = {
     id: uid(),
@@ -4858,7 +4858,7 @@ function deleteBed(id) {
   if (!b) return;
   actData().beds = actData().beds.filter(x=>x.id!==id);
   saveState();
-  showToast(`"${b.room}" removed.`,'🗑️');
+  showToast(`"${b.room}" removed.`);
   renderPage(currentPage);
   updateCounts();
 }
@@ -4868,7 +4868,7 @@ function deleteBedFromOverview(id) {
   if (!b) return;
   actData().beds = actData().beds.filter(x => x.id !== id);
   saveState();
-  showToast(`"${b.room}" removed.`, '🗑️');
+  showToast(`"${b.room}" removed.`);
   renderOverview();
   updateCounts();
 }
@@ -4877,9 +4877,9 @@ function deleteBedFromOverview(id) {
 // ADD OCCUPANTS MODAL
 // ──────────────────────────────────────────────
 function openAddOccupantModal() {
-  if (!currentActivityId) { showToast('Select an activity first.', '⚠️'); return; }
+  if (!currentActivityId) { showToast('Select an activity first.'); return; }
   const beds = actData().beds;
-  if (!beds.length) { showToast('Add a room first.', '⚠️'); return; }
+  if (!beds.length) { showToast('Add a room first.'); return; }
 
   // Populate room dropdown
   const roomSel = document.getElementById('occ-room');
@@ -4928,8 +4928,8 @@ function onOccRoomChange() {
     const raw = lines[i] || '';
     const occ = raw.replace(/^bed\s*\d+:\s*/i, '').trim();
     return `<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);">
-      <span>🛏️ Bed ${i + 1}</span>
-      <span style="font-weight:600;color:${occ ? 'var(--muted)' : 'var(--success)'};">${occ || '✅ Available'}</span>
+      <span>Bed ${i + 1}</span>
+      <span style="font-weight:600;color:${occ ? 'var(--muted)' : 'var(--success)'};">${occ || 'Available'}</span>
     </div>`;
   }).join('');
   avail.innerHTML = `<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted2);margin-bottom:6px;">Available Beds — ${b.room}</div>${availBeds}`;
@@ -4940,9 +4940,9 @@ function confirmAddOccupant() {
   const bedIdx  = document.getElementById('occ-bed').value;
   const person  = document.getElementById('occ-person').value.trim();
 
-  if (!bedId)  { showToast('Please select a room.', '⚠️'); return; }
-  if (bedIdx === '') { showToast('Please select a bed.', '⚠️'); return; }
-  if (!person) { showToast('Please select an occupant.', '⚠️'); return; }
+  if (!bedId)  { showToast('Please select a room.'); return; }
+  if (bedIdx === '') { showToast('Please select a bed.'); return; }
+  if (!person) { showToast('Please select an occupant.'); return; }
 
   const b = actData().beds.find(x => x.id === bedId);
   if (!b) return;
@@ -4954,7 +4954,7 @@ function confirmAddOccupant() {
 
   saveState();
   closeModal('modal-add-occupant');
-  showToast(`Bed ${idx + 1} in "${b.room}" assigned to ${person} 🛏️`);
+  showToast(`Bed ${idx + 1} in "${b.room}" assigned to ${person}`);
   renderPage(currentPage);
 }
 
@@ -4972,7 +4972,7 @@ function populateGameOwnerSelect() {
 
 function saveGame() {
   const name = document.getElementById('game-name').value.trim();
-  if (!name) { showToast('Game name is required.','⚠️'); return; }
+  if (!name) { showToast('Game name is required.'); return; }
   const entry = {
     id: uid(),
     name,
@@ -4993,7 +4993,7 @@ function deleteGame(id) {
   if (!g) return;
   actData().games = actData().games.filter(x=>x.id!==id);
   saveState();
-  showToast(`"${g.name}" removed.`,'🗑️');
+  showToast(`"${g.name}" removed.`);
   renderPage(currentPage);
   updateCounts();
 }
@@ -5002,17 +5002,17 @@ function deleteGame(id) {
 // RENDER HELPERS
 // ──────────────────────────────────────────────
 const THEME_META = {
-  Party:      { cls: 'theme-party',      icon: '🎉', sub: 'Activity Theme',
+  Party:      { cls: 'theme-party',      icon: '', sub: 'Activity Theme',
     svg: '<circle cx="380" cy="88" r="60" fill="rgba(255,255,255,0.07)"/><circle cx="320" cy="-10" r="40" fill="rgba(255,255,255,0.06)"/><circle cx="60" cy="80" r="36" fill="rgba(255,255,255,0.05)"/><circle cx="200" cy="100" r="24" fill="rgba(255,255,255,0.06)"/><circle cx="100" cy="10" r="14" fill="rgba(255,255,255,0.09)"/><circle cx="260" cy="20" r="8" fill="rgba(255,255,255,0.10)"/>' },
-  Casual:     { cls: 'theme-casual',     icon: '☕', sub: 'Activity Theme',
+  Casual:     { cls: 'theme-casual',     icon: '', sub: 'Activity Theme',
     svg: '<rect x="0" y="60" width="400" height="28" fill="rgba(255,255,255,0.07)"/><rect x="30" y="28" width="120" height="4" rx="2" fill="rgba(255,255,255,0.10)"/><rect x="180" y="16" width="80" height="4" rx="2" fill="rgba(255,255,255,0.09)"/><rect x="300" y="36" width="90" height="4" rx="2" fill="rgba(255,255,255,0.08)"/><circle cx="370" cy="20" r="28" fill="rgba(255,255,255,0.05)"/>' },
-  Beach:      { cls: 'theme-beach',      icon: '🏖️', sub: 'Activity Theme',
+  Beach:      { cls: 'theme-beach',      icon: '', sub: 'Activity Theme',
     svg: '<path d="M0 60 Q60 36 120 60 Q180 84 240 60 Q300 36 360 60 Q390 72 400 68 L400 88 L0 88 Z" fill="rgba(255,255,255,0.11)"/><circle cx="340" cy="18" r="22" fill="rgba(255,240,100,0.20)"/><circle cx="340" cy="18" r="12" fill="rgba(255,240,100,0.15)"/><circle cx="50" cy="70" r="30" fill="rgba(255,255,255,0.05)"/>' },
-  Indoor:     { cls: 'theme-indoor',     icon: '🏠', sub: 'Activity Theme',
+  Indoor:     { cls: 'theme-indoor',     icon: '', sub: 'Activity Theme',
     svg: '<rect x="20" y="10" width="50" height="60" rx="4" fill="rgba(255,255,255,0.07)"/><rect x="88" y="24" width="34" height="46" rx="4" fill="rgba(255,255,255,0.05)"/><rect x="136" y="4" width="60" height="66" rx="4" fill="rgba(255,255,255,0.06)"/><rect x="310" y="16" width="80" height="54" rx="4" fill="rgba(255,255,255,0.05)"/><rect x="0" y="72" width="400" height="16" fill="rgba(255,255,255,0.08)"/>' },
-  Outdoor:    { cls: 'theme-outdoor',    icon: '🌿', sub: 'Activity Theme',
+  Outdoor:    { cls: 'theme-outdoor',    icon: '', sub: 'Activity Theme',
     svg: '<path d="M0 88 Q50 30 100 56 Q150 80 200 32 Q250 0 300 44 Q340 72 400 38 L400 88 Z" fill="rgba(255,255,255,0.09)"/><circle cx="70" cy="10" r="16" fill="rgba(200,255,160,0.18)"/><circle cx="230" cy="6" r="12" fill="rgba(200,255,160,0.14)"/><circle cx="370" cy="14" r="18" fill="rgba(200,255,160,0.16)"/>' },
-  Recreation: { cls: 'theme-recreation', icon: '🏃', sub: 'Activity Theme',
+  Recreation: { cls: 'theme-recreation', icon: '', sub: 'Activity Theme',
     svg: '<line x1="0" y1="88" x2="400" y2="0" stroke="rgba(255,255,255,0.14)" stroke-width="4"/><line x1="60" y1="88" x2="400" y2="16" stroke="rgba(255,255,255,0.09)" stroke-width="3"/><line x1="140" y1="88" x2="400" y2="32" stroke="rgba(255,255,255,0.06)" stroke-width="2"/><circle cx="360" cy="16" r="24" fill="rgba(255,255,255,0.08)"/><circle cx="60" cy="60" r="14" fill="rgba(255,255,255,0.06)"/>' },
 };
 
@@ -5025,7 +5025,7 @@ function themeBanner(a) {
     <span class="theme-banner-label">
       <span class="theme-banner-name">${title || t}</span>
     </span>
-    <span class="theme-banner-icon">${m.icon}</span>
+    ${m.icon ? `<span class="theme-banner-icon">${m.icon}</span>` : ''}
   </div>`;
 }
 
@@ -5034,15 +5034,15 @@ function renderActivityItem(a) {
   const fmtD = d => new Date(d + 'T00:00').toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
   let durationStr = '';
   if (a.dateStart && a.dateEnd && a.dateEnd !== a.dateStart) {
-    durationStr = `📅 ${fmtD(a.dateStart)} → ${fmtD(a.dateEnd)}`;
+    durationStr = `${fmtD(a.dateStart)} → ${fmtD(a.dateEnd)}`;
   } else if (a.dateStart) {
-    durationStr = `📅 ${fmtD(a.dateStart)}`;
+    durationStr = fmtD(a.dateStart);
   } else if (a.date) {
-    durationStr = `📅 ${fmtD(a.date)}`;
+    durationStr = fmtD(a.date);
   }
   const daysTag = a.days > 1 ? `<span class="tag tag-purple">${a.days} days</span>` : '';
   const attendeeCount = (a.attendees||[]).length;
-  const attendeeTag = attendeeCount ? `<span class="tag" style="background:var(--surface3);color:var(--muted);font-size:10px;">🙋 ${attendeeCount}</span>` : '';
+  const attendeeTag = attendeeCount ? `<span class="tag" style="background:var(--surface3);color:var(--muted);font-size:10px;">${attendeeCount} attending</span>` : '';
   return `
   <div class="activity-card" onclick="navigateToActivity('${a.id}')" title="Open overview for this activity">
     ${themeBanner(a)}
@@ -5059,9 +5059,9 @@ function renderActivityItem(a) {
         ${a.desc?`<div style="font-size:12px;color:var(--muted);margin-top:6px;">${a.desc}</div>`:''}
       </div>
       <div class="activity-actions" onclick="event.stopPropagation()">
-        <button class="btn btn-ghost btn-sm" onclick="navigateToActivity('${a.id}')" title="View overview">🗺️ View</button>
-        <button class="btn btn-ghost btn-sm btn-icon admin-only" onclick="openEditActivity('${a.id}')" title="Edit">✏️</button>
-        <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteActivity('${a.id}')" title="Delete">🗑️</button>
+        <button class="btn btn-ghost btn-sm" onclick="navigateToActivity('${a.id}')" title="View overview">View</button>
+        <button class="btn btn-ghost btn-sm btn-icon admin-only" onclick="openEditActivity('${a.id}')" title="Edit">Edit</button>
+        <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteActivity('${a.id}')" title="Delete">Delete</button>
       </div>
     </div>
   </div>`;
@@ -5142,8 +5142,8 @@ function renderDashboard() {
       <div class="timeline-date">${a.quarter}${a.theme ? ' · ' + a.theme : ''}</div>
       <div class="timeline-content">${a.name}</div>
       ${a.dateStart
-        ? `<div class="timeline-sub">📅 ${fmtShort(a.dateStart)}${a.days > 1 ? ` <span class="tag tag-purple" style="font-size:10px;padding:1px 6px;">${a.days}d</span>` : ''}${hasFutureDate ? ' &nbsp;' + daysUntil(a.dateStart) : ''}</div>`
-        : (a.date ? `<div class="timeline-sub">📅 ${fmtShort(a.date)}</div>` : '')}
+        ? `<div class="timeline-sub">${fmtShort(a.dateStart)}${a.days > 1 ? ` <span class="tag tag-purple" style="font-size:10px;padding:1px 6px;">${a.days}d</span>` : ''}${hasFutureDate ? ' &nbsp;' + daysUntil(a.dateStart) : ''}</div>`
+        : (a.date ? `<div class="timeline-sub">${fmtShort(a.date)}</div>` : '')}
     </div>`;
   }).join('')}</div>`;
 
@@ -5174,13 +5174,12 @@ function renderDashboard() {
           catTotals['Grocery'] = (catTotals['Grocery']||0) + (isNaN(c)?0:c);
         });
       }
-      const catIcons = {Staycation:'🏨',Food:'🍽️',Gas:'⛽',Grocery:'🛒',Other:'📌'};
       const barsHtml = Object.entries(catTotals)
         .sort((a,b) => b[1]-a[1])
         .map(([cat, amt]) => {
           const pct = grand > 0 ? Math.round((amt/grand)*100) : 0;
           return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;">
-            <div style="width:90px;font-size:11px;color:var(--muted);flex-shrink:0;">${catIcons[cat]||'📌'} ${cat}</div>
+            <div style="width:90px;font-size:11px;color:var(--muted);flex-shrink:0;">${cat}</div>
             <div style="flex:1;background:var(--surface3);border-radius:4px;height:6px;overflow:hidden;">
               <div style="width:${pct}%;height:100%;background:var(--accent2);border-radius:4px;"></div>
             </div>
@@ -5200,7 +5199,7 @@ function renderDashboard() {
 // ACTIVITIES
 function renderActivities() {
   const el = document.getElementById('activities-list');
-  if (!state.activities.length) { el.innerHTML = emptyState('No activities yet','Click "+ New Activity" to get started','📋'); return; }
+  if (!state.activities.length) { el.innerHTML = emptyState('No activities yet','Click "+ New Activity" to get started'); return; }
   el.innerHTML = state.activities.map(a=>renderActivityItem(a)).join('');
 }
 
@@ -5226,7 +5225,7 @@ function renderQuarterList() {
   const el = document.getElementById('quarter-activities-list');
   const list = state.activities.filter(a=>a.quarter===selectedQuarter);
   if (!list.length) {
-    el.innerHTML = emptyState(`No activities for ${selectedQuarter}`,`Add an activity assigned to ${selectedQuarter}`,'📅');
+    el.innerHTML = emptyState(`No activities for ${selectedQuarter}`,`Add an activity assigned to ${selectedQuarter}`);
     return;
   }
   el.innerHTML = list.map(a=>renderActivityItem(a)).join('');
@@ -5235,16 +5234,16 @@ function renderQuarterList() {
 // LOCATIONS
 function renderLocations() {
   const el = document.getElementById('locations-list');
-  if (!state.locations.length) { el.innerHTML = emptyState('No locations yet','Add venues and event spots','📍'); return; }
+  if (!state.locations.length) { el.innerHTML = emptyState('No locations yet','Add venues and event spots'); return; }
   el.innerHTML = state.locations.map(l=>`
     <div class="location-card">
-      <div class="location-banner${l.image?' has-image':''}">${l.image?`<img src="${l.image}" alt="${l.name}" />`:(l.icon||'📍')}</div>
+      <div class="location-banner${l.image?' has-image':''}">${l.image?`<img src="${l.image}" alt="${l.name}" />`:''}</div>
       <div class="location-body">
         <div class="location-name">${l.name}</div>
         <div class="location-addr">${l.address||'No address'}</div>
         <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
           <span class="tag tag-blue">${l.type}</span>
-          ${l.capacity?`<span class="tag tag-purple">👥 ${l.capacity}</span>`:''}
+          ${l.capacity?`<span class="tag tag-purple">${l.capacity} capacity</span>`:''}
         </div>
         ${l.notes?`<div style="font-size:11px;color:var(--muted);margin-top:8px;">${l.notes}</div>`:''}
       </div>
@@ -5253,8 +5252,8 @@ function renderLocations() {
           ${state.activities.filter(a=>a.locationId===l.id).length} activities
         </span>
         <div style="display:flex;gap:6px;">
-          <button class="btn btn-ghost btn-sm admin-only" onclick="openEditLocation('${l.id}')">✏️ Edit</button>
-          <button class="btn btn-danger btn-sm admin-only" onclick="deleteLocation('${l.id}')">🗑️</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="openEditLocation('${l.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm admin-only" onclick="deleteLocation('${l.id}')">Delete</button>
         </div>
       </div>
     </div>`).join('');
@@ -5266,7 +5265,7 @@ function actContextBanner() {
   if (!a) return '';
   const dateStr = a.date ? ' · ' + new Date(a.date+'T00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}) : '';
   return `<div style="background:var(--accent-glow);border:1px solid rgba(37,99,235,0.2);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:18px;font-size:12px;color:var(--accent);font-weight:600;">
-    📋 Viewing: ${a.name}<span style="color:var(--muted);font-weight:400;">${dateStr}</span>
+    Viewing: ${a.name}<span style="color:var(--muted);font-weight:400;">${dateStr}</span>
     <button class="btn btn-ghost btn-sm" style="margin-left:10px;font-size:11px;" onclick="navigate('overview')">← Back to Overview</button>
   </div>`;
 }
@@ -5279,7 +5278,7 @@ function carDisplayName(car) {
 
 function renderCars() {
   const el = document.getElementById('carseats-list');
-  if (!actData().cars.length) { el.innerHTML = actContextBanner() + emptyState('No car plans yet','Assign guests to vehicles','🚗'); return; }
+  if (!actData().cars.length) { el.innerHTML = actContextBanner() + emptyState('No car plans yet','Assign guests to vehicles'); return; }
 
   el.innerHTML = actData().cars.map(car => {
     const passengerSeats = car.seatCount - 1;
@@ -5291,23 +5290,23 @@ function renderCars() {
       <div class="seat-cell ${p ? 'occupied' : 'empty-slot'}" onclick="openAssignSeat('${car.id}',${i})">
         ${p
           ? `<span style="font-size:9px;word-break:break-all;">${p}</span>`
-          : `<span class="seat-label">S${i+1}</span><span style="font-size:16px;">🪑</span>`}
+          : `<span class="seat-label">S${i+1}</span>`}
       </div>`).join('');
 
     return `
     <div class="card">
       <div class="card-header">
         <div>
-          <div style="font-size:15px;font-weight:700;color:var(--white);">🚗 ${displayName}</div>
+          <div style="font-size:15px;font-weight:700;color:var(--white);">${displayName}</div>
           <div style="font-size:11px;color:var(--muted);margin-top:2px;">${car.name}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center;">
-          <button class="btn btn-ghost btn-sm" onclick="openAddPassengers('${car.id}')">👥 Add Passengers</button>
-          <button class="btn btn-danger btn-sm admin-only" onclick="deleteCar('${car.id}')">🗑️</button>
+          <button class="btn btn-ghost btn-sm" onclick="openAddPassengers('${car.id}')">Add Passengers</button>
+          <button class="btn btn-danger btn-sm admin-only" onclick="deleteCar('${car.id}')">Delete</button>
         </div>
       </div>
       <div style="font-size:13px;color:var(--muted);margin-top:8px;margin-bottom:4px;">
-        ${car.driver ? `🧑‍✈️ <b style="color:var(--white);">${car.driver}</b>` : '<span style="color:var(--muted2);">No driver assigned</span>'}
+        ${car.driver ? `<b style="color:var(--white);">Driver: ${car.driver}</b>` : '<span style="color:var(--muted2);">No driver assigned</span>'}
       </div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">
         ${occupied}/${passengerSeats} Passenger${passengerSeats!==1?'s':''}
@@ -5328,14 +5327,14 @@ function renderCars() {
 // BEDS
 function renderBeds() {
   const el = document.getElementById('bedplan-list');
-  if (!actData().beds.length) { el.innerHTML = actContextBanner() + emptyState('No room plans yet','Assign guests to rooms and beds','🛏️'); return; }
+  if (!actData().beds.length) { el.innerHTML = actContextBanner() + emptyState('No room plans yet','Assign guests to rooms and beds'); return; }
   el.innerHTML = actContextBanner() + actData().beds.map(b=>{
     const loc = b.locationId ? getLocationName(b.locationId) : '';
     const lines = b.occupants ? b.occupants.split('\n') : [];
     const bedCards = Array.from({length:b.bedCount},(_, i)=>{
       const occ = lines[i] ? lines[i].replace(/^bed\s*\d+:\s*/i,'') : '';
       return `<div class="bed-card ${occ?'assigned':''}">
-        <div class="bed-icon">🛏️</div>
+        <div class="bed-icon"></div>
         <div class="bed-num">Bed ${i+1}</div>
         <div class="bed-person">${occ || 'Unassigned'}</div>
       </div>`;
@@ -5344,11 +5343,11 @@ function renderBeds() {
     return `
     <div class="card">
       <div class="card-header">
-        <span class="card-title">🏠 ${b.room}</span>
-        <button class="btn btn-danger btn-sm admin-only" onclick="deleteBed('${b.id}')">🗑️ Delete Room</button>
+        <span class="card-title">${b.room}</span>
+        <button class="btn btn-danger btn-sm admin-only" onclick="deleteBed('${b.id}')">Delete Room</button>
       </div>
       ${loc?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">${loc}</div>`:''}
-      ${b.notes?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">📝 ${b.notes}</div>`:''}
+      ${b.notes?`<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">${b.notes}</div>`:''}
       <div class="bed-grid">${bedCards}</div>
     </div>`;
   }).join('');
@@ -5357,20 +5356,20 @@ function renderBeds() {
 // GAMES
 function renderGames() {
   const el = document.getElementById('games-list');
-  if (!actData().games.length) { el.innerHTML = actContextBanner() + emptyState('No games yet','Add fun games for the engagement party','🎮'); return; }
+  if (!actData().games.length) { el.innerHTML = actContextBanner() + emptyState('No games yet','Add fun games for the engagement party'); return; }
   el.innerHTML = actContextBanner() + actData().games.map(g=>{
     const ownerPerson = g.owner ? (state.people||[]).find(p=>p.id===g.owner) : null;
     return `
     <div class="game-card">
-      <div class="game-emoji">${g.icon||'🎮'}</div>
+      <div class="game-emoji">${g.icon||''}</div>
       <div class="game-name">${g.name}</div>
       <div class="game-desc">${g.desc||'No description provided.'}</div>
       <div class="game-meta">
-        ${g.players?`<span class="tag tag-blue">👥 ${g.players}</span>`:''}
+        ${g.players?`<span class="tag tag-blue">${g.players} players</span>`:''}
       </div>
-      ${ownerPerson?`<div class="game-owner">🎯 Owner: <strong>${ownerPerson.name}</strong></div>`:''}
+      ${ownerPerson?`<div class="game-owner">Owner: <strong>${ownerPerson.name}</strong></div>`:''}
       <div style="margin-top:12px;text-align:right;">
-        <button class="btn btn-danger btn-sm admin-only" onclick="deleteGame('${g.id}')">🗑️ Remove</button>
+        <button class="btn btn-danger btn-sm admin-only" onclick="deleteGame('${g.id}')">Remove</button>
       </div>
     </div>`;
   }).join('');
@@ -5389,12 +5388,7 @@ function deptClass(dept) {
 }
 
 function deptIcon(dept) {
-  if (dept === 'SEET - QE')                return '🧪';
-  if (dept === 'SEET - OneInfra')          return '☁️';
-  if (dept === 'SEET - SE')                return '🔬';
-  if (dept === 'SEET - Enterprise Tooling') return '🛠️';
-  if (dept === 'SEET - Automation Sector')  return '⚙️';
-  return '📌';
+  return '';
 }
 
 let _peopleFilterDept = 'All';
@@ -5421,29 +5415,29 @@ function renderPeople() {
   const depts = ['All', ...SEET_DEPTS.filter(d => d !== 'Other')];
   if (actionsRow) {
     actionsRow.innerHTML = `
-      <button class="btn btn-ghost admin-only" onclick="importPeopleFromSurvey()" title="Import unique names from survey responses">📋 Import from Survey</button>
+      <button class="btn btn-ghost admin-only" onclick="importPeopleFromSurvey()" title="Import unique names from survey responses">Import from Survey</button>
       <button class="btn btn-primary admin-only" onclick="openModal('modal-person')">＋ Add Person</button>`;
   }
   if (filterRow) {
     filterRow.innerHTML = depts.map(d => `
-      <button class="btn btn-sm ${_peopleFilterDept===d?'btn-primary':'btn-ghost'}" onclick="_peopleFilterDept='${d}';renderPeople();">${d==='All'?'👥 All':deptIcon(d)+' '+d}</button>
+      <button class="btn btn-sm ${_peopleFilterDept===d?'btn-primary':'btn-ghost'}" onclick="_peopleFilterDept='${d}';renderPeople();">${d==='All'?'All':d}</button>
     `).join('');
   }
   const people = (state.people||[]).filter(p => _peopleFilterDept==='All' || p.dept===_peopleFilterDept);
-  if (!people.length) { el.innerHTML = emptyState('No people yet','Add team members to your People list','👤'); return; }
+  if (!people.length) { el.innerHTML = emptyState('No people yet','Add team members to your People list'); return; }
   const initials = name => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
   el.innerHTML = people.map(p => {
     const isOther = (p.dept || '').trim() === 'Other';
     const deptDisplay = isOther
       ? `<span class="people-dept" style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);display:inline-flex;align-items:center;gap:6px;">
-           ⚠️ Other — Service Line unknown
+           Other — Service Line unknown
            <select onchange="updatePersonDept('${p.id}',this.value)" onclick="event.stopPropagation()"
              style="background:var(--surface2);color:var(--white);border:1px solid var(--border2);border-radius:6px;font-size:11px;padding:2px 4px;cursor:pointer;">
              <option value="">— update dept —</option>
              ${SEET_DEPTS.filter(d=>d!=='Other').map(d=>`<option value="${d}">${d}</option>`).join('')}
            </select>
          </span>`
-      : `<span class="people-dept ${deptClass(p.dept)}">${deptIcon(p.dept)} ${p.dept}</span>`;
+      : `<span class="people-dept ${deptClass(p.dept)}">${p.dept}</span>`;
     return `
     <div class="people-card">
       <div class="people-avatar">${initials(p.name)}</div>
@@ -5451,9 +5445,9 @@ function renderPeople() {
         <div class="people-name">${p.name}</div>
         <div class="people-role">${p.role||'—'}</div>
         ${deptDisplay}
-        ${p.contact?`<div style="font-size:11px;color:var(--muted);margin-top:3px;">📞 ${p.contact}${p.email?' · ✉️ '+p.email:''}</div>`:''}
+        ${p.contact?`<div style="font-size:11px;color:var(--muted);margin-top:3px;">${p.contact}${p.email?' · '+p.email:''}</div>`:''}
       </div>
-      <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deletePerson('${p.id}')" title="Remove">🗑️</button>
+      <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deletePerson('${p.id}')" title="Remove">Remove</button>
     </div>`;
   }).join('');
 }
@@ -5464,13 +5458,13 @@ function updatePersonDept(id, dept) {
   if (!p) return;
   p.dept = dept;
   saveState();
-  showToast(`${p.name} moved to ${dept} ✅`);
+  showToast(`${p.name} moved to ${dept}`);
   renderPeople();
 }
 
 function savePerson() {
   const name = document.getElementById('person-name').value.trim();
-  if (!name) { showToast('Name is required.','⚠️'); return; }
+  if (!name) { showToast('Name is required.'); return; }
   if (!state.people) state.people = [];
   state.people.push({
     id: uid(), name,
@@ -5482,7 +5476,7 @@ function savePerson() {
   });
   saveState();
   closeModal('modal-person');
-  showToast(`${name} added!`,'👤');
+  showToast(`${name} added!`);
   renderPeople();
   updateCounts();
 }
@@ -5492,7 +5486,7 @@ function deletePerson(id) {
   if (!p) return;
   state.people = state.people.filter(x=>x.id!==id);
   saveState();
-  showToast(`${p.name} removed.`,'🗑️');
+  showToast(`${p.name} removed.`);
   renderPeople();
   updateCounts();
 }
@@ -5501,10 +5495,10 @@ function deletePerson(id) {
 // IMPORT PEOPLE FROM SURVEY
 // ──────────────────────────────────────────────
 function importPeopleFromSurvey() {
-  if (!_fbDb) { showToast('Not connected to Firestore.', '⚠️'); return; }
-  showToast('Reading survey responses…', '🔄');
+  if (!_fbDb) { showToast('Not connected to Firestore.'); return; }
+  showToast('Reading survey responses…');
   _fbDb.collection('survey').doc('engagement_survey').get().then(snap => {
-    if (!snap.exists) { showToast('No survey data found.', '⚠️'); return; }
+    if (!snap.exists) { showToast('No survey data found.'); return; }
     const responses = snap.data().responses || [];
     if (!state.people) state.people = [];
 
@@ -5546,17 +5540,17 @@ function importPeopleFromSurvey() {
       added++;
     });
     if (added === 0) {
-      showToast('All survey names are already in People.', 'ℹ️');
+      showToast('All survey names are already in People.');
       return;
     }
     saveState();
     renderPeople();
     updateCounts();
-    showToast(`${added} person${added !== 1 ? 's' : ''} imported from survey! 👤`);
+    showToast(`${added} person${added !== 1 ? 's' : ''} imported from survey!`);
     loadSidebarSurveyResults();
   }).catch(err => {
     console.error('Survey import error:', err);
-    showToast('Failed to read survey data.', '❌');
+    showToast('Failed to read survey data.');
   });
 }
 
@@ -5564,7 +5558,7 @@ function importPeopleFromSurvey() {
 // ATTENDEES
 // ──────────────────────────────────────────────
 function openAttendeeModal() {
-  if (!currentActivityId) { showToast('Select an activity first.','⚠️'); return; }
+  if (!currentActivityId) { showToast('Select an activity first.'); return; }
   renderAttendeeSelectList('');
   document.getElementById('attendee-search').value = '';
   openModal('modal-attendees');
@@ -5590,9 +5584,9 @@ function renderAttendeeSelectList(q) {
       <div class="people-avatar" style="width:32px;height:32px;font-size:12px;">${initials(p.name)}</div>
       <div style="flex:1;">
         <div style="font-size:13px;font-weight:600;color:var(--white);">${p.name}</div>
-        <div style="font-size:11px;color:var(--muted);">${deptIcon(p.dept)} ${p.dept}${p.role?' · '+p.role:''}</div>
+        <div style="font-size:11px;color:var(--muted);">${p.dept}${p.role?' · '+p.role:''}</div>
       </div>
-      ${already?`<span style="font-size:11px;color:var(--success);font-weight:600;">✓ Added</span>`:''}
+      ${already?`<span style="font-size:11px;color:var(--success);font-weight:600;">Added</span>`:''}
     </div>`;
   }).join('');
 }
@@ -5639,19 +5633,19 @@ function confirmAddAttendees() {
   const parts = [];
   if (added   > 0) parts.push(`${added} added`);
   if (skipped > 0) parts.push(`${skipped} duplicate${skipped!==1?'s':''} skipped`);
-  showToast(parts.join(' · ') || 'No changes.', '🙋');
+  showToast(parts.join(' · ') || 'No changes.');
   renderOverview();
   updateCounts();
 }
 
 // Fetch attendees from survey — reads engagement_survey, auto-adds people + marks as attendees
 function fetchAttendeesFromSurvey() {
-  if (!currentActivityId) { showToast('Select an activity first.', '⚠️'); return; }
-  if (!_fbDb) { showToast('Not connected to Firestore.', '⚠️'); return; }
-  showToast('Fetching survey respondents…', '🔄');
+  if (!currentActivityId) { showToast('Select an activity first.'); return; }
+  if (!_fbDb) { showToast('Not connected to Firestore.'); return; }
+  showToast('Fetching survey respondents…');
 
   _fbDb.collection('survey').doc('engagement_survey').get().then(snap => {
-    if (!snap.exists) { showToast('No survey data found.', '⚠️'); return; }
+    if (!snap.exists) { showToast('No survey data found.'); return; }
     const responses = snap.data().responses || [];
     const act = (state.activities||[]).find(a => a.id === currentActivityId);
     if (!act) return;
@@ -5692,7 +5686,7 @@ function fetchAttendeesFromSurvey() {
     });
 
     if (newPeople === 0 && newAttendees === 0) {
-      showToast('All survey attendees are already added.', 'ℹ️');
+      showToast('All survey attendees are already added.');
       return;
     }
     saveState();
@@ -5702,10 +5696,10 @@ function fetchAttendeesFromSurvey() {
       newPeople    > 0 ? `${newPeople} new person${newPeople!==1?'s':''} added to People`    : '',
       newAttendees > 0 ? `${newAttendees} attendee${newAttendees!==1?'s':''} added to activity` : '',
     ].filter(Boolean).join(' · ');
-    showToast(msg + ' 🙋');
+    showToast(msg);
   }).catch(err => {
     console.error('Fetch attendees from survey error:', err);
-    showToast('Failed to fetch survey data.', '❌');
+    showToast('Failed to fetch survey data.');
   });
 }
 
@@ -5742,7 +5736,7 @@ let _countdownInterval = null;
 
 function saveEngagementDate() {
   const d = document.getElementById('setdate-date').value;
-  if (!d) { showToast('Please pick a date.','⚠️'); return; }
+  if (!d) { showToast('Please pick a date.'); return; }
   state.engagement = {
     name: document.getElementById('setdate-name').value.trim() || 'Our Engagement',
     date: d,
@@ -5750,7 +5744,7 @@ function saveEngagementDate() {
   };
   saveState();
   closeModal('modal-setdate');
-  showToast(`Countdown set for ${state.engagement.name}! 🎉`);
+  showToast(`Countdown set for ${state.engagement.name}!`);
   startCountdown();
   if (currentPage === 'overview') renderOverview();
 }
@@ -5786,7 +5780,7 @@ function renderSidebarCountdown() {
     return;
   }
   if (parts.done) {
-    el.innerHTML = `<div style="font-size:12px;color:var(--success);font-weight:700;">🎉 It's today!</div>`;
+    el.innerHTML = `<div style="font-size:12px;color:var(--success);font-weight:700;">It's today!</div>`;
     return;
   }
   el.innerHTML = `
@@ -5814,7 +5808,7 @@ function openSrTile(cardId) {
   const overlay  = document.getElementById('sr-tile-overlay');
   const expanded = document.getElementById('sr-tile-expanded');
   // Clone the card's inner HTML into the expanded panel
-  expanded.innerHTML = `<button class="sr-tile-close" onclick="closeSrTile()" title="Close">✕</button>${card.innerHTML}`;
+  expanded.innerHTML = `<button class="sr-tile-close" onclick="closeSrTile()" title="Close">×</button>${card.innerHTML}`;
   // Re-suffix canvas IDs so Chart.js treats them as new instances
   expanded.querySelectorAll('canvas[id]').forEach(c => { c.id = c.id + '-exp'; });
   overlay.classList.add('open');
@@ -5893,15 +5887,15 @@ function renderSidebarSurveyResults() {
     </div>`).join('');
   el.innerHTML = `
     <div class="sidebar-srv-row">
-      <span class="sidebar-srv-label">✅ Attending</span>
+      <span class="sidebar-srv-label">Attending</span>
       <span class="sidebar-srv-val yes">${yes}</span>
     </div>
     <div class="sidebar-srv-row">
-      <span class="sidebar-srv-label">❌ Not attending</span>
+      <span class="sidebar-srv-label">Not attending</span>
       <span class="sidebar-srv-val no">${no}</span>
     </div>
     <div class="sidebar-srv-row">
-      <span class="sidebar-srv-label">📩 Total responses</span>
+      <span class="sidebar-srv-label">Total responses</span>
       <span class="sidebar-srv-val">${total}</span>
     </div>
     <div class="sidebar-srv-bar-wrap"><div class="sidebar-srv-bar" style="width:${yesPct}%"></div></div>
@@ -6092,7 +6086,7 @@ function _renderSurveyResultsFromCache() {
 
     // ── Build layout ──
     const filterPills = ['all','yes'].map(v => {
-      const labels = { all: `All (${totalAll})`, yes: `✅ Yes (${allResponses.filter(r=>(r.attend||'').trim().toLowerCase()==='yes').length})` };
+      const labels = { all: `All (${totalAll})`, yes: `Yes (${allResponses.filter(r=>(r.attend||'').trim().toLowerCase()==='yes').length})` };
       const active = _srAttendFilter === v;
       return `<button onclick="setSrAttendFilter('${v}')" style="padding:6px 16px;border-radius:20px;border:1.5px solid ${active?'var(--accent)':'rgba(255,255,255,0.12)'};background:${active?'var(--accent)':'transparent'};color:${active?'#fff':'var(--muted)'};font-size:12px;font-weight:${active?'700':'500'};cursor:pointer;transition:all .15s;">${labels[v]}</button>`;
     }).join('');
@@ -6109,7 +6103,7 @@ function _renderSurveyResultsFromCache() {
 
         <!-- Pie card -->
         <div id="sr-card-pie" class="card sr-card-expandable" onclick="openSrTile('sr-card-pie')" style="padding:28px 24px;border-top:3px solid #22c55e;background:linear-gradient(160deg,rgba(34,197,94,0.05) 0%,var(--surface) 60%);">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#22c55e;margin-bottom:6px;">📊 Attendance</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#22c55e;margin-bottom:6px;">Attendance</div>
           <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Will be attending the Yearend Party</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${total} response${total!==1?'s':''} total</div>
           <div style="position:relative;max-width:280px;margin:0 auto;">
@@ -6129,7 +6123,7 @@ function _renderSurveyResultsFromCache() {
 
         <!-- Line card -->
         <div id="sr-card-line" class="card sr-card-expandable" onclick="openSrTile('sr-card-line')" style="padding:28px 24px;border-top:3px solid #6366f1;background:linear-gradient(160deg,rgba(99,102,241,0.05) 0%,var(--surface) 60%);">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6366f1;margin-bottom:6px;">📅 Preferred Dates</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6366f1;margin-bottom:6px;">Preferred Dates</div>
           <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Preferred Dates for Yearend</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${sortedDates.length} unique date${sortedDates.length!==1?'s':''} chosen</div>
           <div style="position:relative;">
@@ -6139,7 +6133,7 @@ function _renderSurveyResultsFromCache() {
 
         <!-- Service Line Pie card -->
         <div id="sr-card-svc" class="card sr-card-expandable" onclick="openSrTile('sr-card-svc')" style="padding:28px 24px;border-top:3px solid #a855f7;background:linear-gradient(160deg,rgba(168,85,247,0.05) 0%,var(--surface) 60%);">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#a855f7;margin-bottom:6px;">🏢 Service Lines</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#a855f7;margin-bottom:6px;">Service Lines</div>
           <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Attendees per Service Line</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${
             _srAttendFilter === 'yes' ? `${total} confirmed attendee${total!==1?'s':''}` :
@@ -6163,7 +6157,7 @@ function _renderSurveyResultsFromCache() {
 
         <!-- Venue Pie card -->
         <div id="sr-card-venue" class="card sr-card-expandable" onclick="openSrTile('sr-card-venue')" style="padding:28px 24px;border-top:3px solid #06b6d4;background:linear-gradient(160deg,rgba(6,182,212,0.05) 0%,var(--surface) 60%);">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#06b6d4;margin-bottom:6px;">📍 Venue</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#06b6d4;margin-bottom:6px;">Venue</div>
           <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Top Venue Preference</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${venueLabels.length} venue${venueLabels.length!==1?'s':''} chosen across all responses</div>
           <div style="position:relative;max-width:280px;margin:0 auto;">
@@ -6179,7 +6173,7 @@ function _renderSurveyResultsFromCache() {
 
         <!-- Theme Pie card -->
         <div id="sr-card-theme" class="card sr-card-expandable" onclick="openSrTile('sr-card-theme')" style="padding:28px 24px;border-top:3px solid #ec4899;background:linear-gradient(160deg,rgba(236,72,153,0.05) 0%,var(--surface) 60%);">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#ec4899;margin-bottom:6px;">🎨 Theme</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#ec4899;margin-bottom:6px;">Theme</div>
           <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Preferred ODC SEET Yearend Party Theme</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${themeLabels.length} theme${themeLabels.length!==1?'s':''} preferred across all responses</div>
           <div style="position:relative;max-width:280px;margin:0 auto;">
@@ -6195,7 +6189,7 @@ function _renderSurveyResultsFromCache() {
 
         <!-- Day Tour vs Overnight Pie card -->
         <div id="sr-card-tour" class="card sr-card-expandable" onclick="openSrTile('sr-card-tour')" style="padding:28px 24px;border-top:3px solid #f59e0b;background:linear-gradient(160deg,rgba(245,158,11,0.05) 0%,var(--surface) 60%);">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#f59e0b;margin-bottom:6px;">🚌 Tour Type</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#f59e0b;margin-bottom:6px;">Tour Type</div>
           <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Day Tour or Overnight</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${dayTour + overnight} response${(dayTour+overnight)!==1?'s':''} · ${overnight} overnight · ${dayTour} day tour</div>
           <div style="position:relative;max-width:280px;margin:0 auto;">
@@ -6220,7 +6214,7 @@ function _renderSurveyResultsFromCache() {
 
         <!-- Plus-one stat tile -->
         <div id="sr-card-plusone" class="card sr-card-expandable" onclick="openSrTile('sr-card-plusone')" style="padding:36px 28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border-top:3px solid #a855f7;background:linear-gradient(160deg,rgba(168,85,247,0.07) 0%,var(--surface) 60%);">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#a855f7;margin-bottom:10px;">👥 Plus-One</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#a855f7;margin-bottom:10px;">Plus-One</div>
           <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Number of Additional Guests (non IBMers)</div>
           <div style="font-size:72px;font-weight:900;line-height:1;background:linear-gradient(135deg,#c084fc,#a855f7,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 12px rgba(168,85,247,0.5));">${plusOne}</div>
           <div style="font-size:12px;color:var(--muted);margin-top:12px;">attendee${plusOne!==1?'s':''} bringing a Plus&#8209;1</div>
@@ -6228,7 +6222,7 @@ function _renderSurveyResultsFromCache() {
 
         <!-- Not available for all dates stat tile -->
         <div id="sr-card-nodate" class="card sr-card-expandable" onclick="openSrTile('sr-card-nodate')" style="padding:36px 28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border-top:3px solid #ef4444;background:linear-gradient(160deg,rgba(239,68,68,0.07) 0%,var(--surface) 60%);">
-          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#ef4444;margin-bottom:10px;">🚫 Unavailable</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#ef4444;margin-bottom:10px;">Unavailable</div>
           <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Not Available for All Dates</div>
           <div style="font-size:72px;font-weight:900;line-height:1;background:linear-gradient(135deg,#fca5a5,#ef4444,#b91c1c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 12px rgba(239,68,68,0.5));">${notAvailableAll}</div>
           <div style="font-size:12px;color:var(--muted);margin-top:12px;">respondent${notAvailableAll!==1?'s':''} not available for any date</div>
@@ -6545,8 +6539,8 @@ const MONDAY_COL_MAP = {
 };
 
 function syncFromMonday() {
-  if (!_fbDb) { showToast('Not connected to Firestore.', '⚠️'); return; }
-  showToast('Fetching from Monday.com…', '🔄');
+  if (!_fbDb) { showToast('Not connected to Firestore.'); return; }
+  showToast('Fetching from Monday.com…');
 
   const query = `{
     boards(ids: [${MONDAY_BOARD_ID}]) {
@@ -6576,12 +6570,12 @@ function syncFromMonday() {
   .then(json => {
     if (json.errors) {
       console.error('Monday API errors:', json.errors);
-      showToast('Monday.com API error. Check console.', '❌');
+      showToast('Monday.com API error. Check console.');
       return;
     }
     const items = json.data?.boards?.[0]?.items_page?.items || [];
     if (!items.length) {
-      showToast('No survey responses found on Monday.com yet.', 'ℹ️');
+      showToast('No survey responses found on Monday.com yet.');
       return;
     }
 
@@ -6611,33 +6605,33 @@ function syncFromMonday() {
       { responses },
       { merge: false }
     ).then(() => {
-      showToast(`${responses.length} response${responses.length !== 1 ? 's' : ''} synced from Monday.com ✅`);
+      showToast(`${responses.length} response${responses.length !== 1 ? 's' : ''} synced from Monday.com`);
       loadSidebarSurveyResults();
       if (currentPage === 'survey-results') renderSurveyResultsPage();
     }).catch(err => {
       console.error('Firestore write error:', err);
-      showToast('Sync failed — Firestore write error.', '❌');
+      showToast('Sync failed — Firestore write error.');
     });
   })
   .catch(err => {
     console.error('Monday.com fetch error:', err);
-    showToast('Could not reach Monday.com API.', '❌');
+    showToast('Could not reach Monday.com API.');
   });
 }
 
 function resetSurveyData() {
   if (!confirm('Reset all survey data? This will clear every synced response from the charts. You can re-sync from Monday at any time.')) return;
-  if (!_fbDb) { showToast('Not connected to Firestore.', '⚠️'); return; }
+  if (!_fbDb) { showToast('Not connected to Firestore.'); return; }
   _fbDb.collection('survey').doc('engagement_survey').delete()
     .then(() => {
       _srResponsesCache = null;
       loadSidebarSurveyResults();
       if (currentPage === 'survey-results') renderSurveyResultsPage();
-      showToast('Survey data cleared. Sync from Monday to reload.', '🗑️');
+      showToast('Survey data cleared. Sync from Monday to reload.');
     })
     .catch(err => {
       console.error('Reset error:', err);
-      showToast('Reset failed — Firestore error.', '❌');
+      showToast('Reset failed — Firestore error.');
     });
 }
 
@@ -6701,7 +6695,7 @@ function renderCountdownHero(containerId) {
 
   let unitsHtml = '';
   if (!parts || parts.done) {
-    unitsHtml = `<div class="countdown-done">🎉 The day is here!</div>`;
+    unitsHtml = `<div class="countdown-done">The day is here!</div>`;
   } else {
     unitsHtml = `
       <div class="countdown-units">
@@ -6865,7 +6859,7 @@ function renderOverview() {
             <div class="act-sel-dot ${dotCls}"></div>
             <div>
               <div>${a.name}</div>
-              ${dateStr ? `<div class="act-sel-date">📅 ${dateStr}</div>` : `<div class="act-sel-date">${a.quarter}</div>`}
+              ${dateStr ? `<div class="act-sel-date">${dateStr}</div>` : `<div class="act-sel-date">${a.quarter}</div>`}
             </div>
           </button>`;
         }).join('')}
@@ -6889,28 +6883,28 @@ function renderOverview() {
   if (statsEl) {
     statsEl.innerHTML = `
       <div class="ov-stat-chip">
-        <div class="ov-stat-icon">📋</div>
+        <div class="ov-stat-icon"></div>
         <div class="ov-stat-body">
           <div class="ov-stat-value">${state.activities.length}</div>
           <div class="ov-stat-label">${state.activities.length === 1 ? 'Activity' : 'Activities'}</div>
         </div>
       </div>
       <div class="ov-stat-chip green">
-        <div class="ov-stat-icon">🛒</div>
+        <div class="ov-stat-icon"></div>
         <div class="ov-stat-body">
           <div class="ov-stat-value">${grocDone}/${grocTotal}</div>
           <div class="ov-stat-label">Grocery ${grocPct}% done</div>
         </div>
       </div>
       <div class="ov-stat-chip orange">
-        <div class="ov-stat-icon">🚗</div>
+        <div class="ov-stat-icon"></div>
         <div class="ov-stat-body">
           <div class="ov-stat-value">${actData().cars.length}</div>
           <div class="ov-stat-label">Cars · ${actData().beds.length} Room${actData().beds.length!==1?'s':''}</div>
         </div>
       </div>
       <div class="ov-stat-chip cyan">
-        <div class="ov-stat-icon">💸</div>
+        <div class="ov-stat-icon"></div>
         <div class="ov-stat-body">
           <div class="ov-stat-value">${expCount}</div>
           <div class="ov-stat-label">Expense${expCount!==1?'s':''} logged</div>
@@ -6940,7 +6934,7 @@ function renderOverview() {
       if (locPcntEl) locPcntEl.textContent = '—';
       locOvEl.innerHTML = `
         <div class="loc-ov-none">
-          <div style="font-size:32px;opacity:0.4;margin-bottom:8px;">📍</div>
+          <div style="font-size:32px;opacity:0.4;margin-bottom:8px;"></div>
           <div style="font-weight:600;color:var(--muted);margin-bottom:4px;">No venue linked</div>
           ${_adminUnlocked ? `<div style="font-size:12px;">Edit this activity and pick a location, or
             <span style="color:var(--accent);cursor:pointer;" onclick="navigate('locations')">add a location first →</span>
@@ -6948,20 +6942,19 @@ function renderOverview() {
         </div>`;
     } else {
       if (locPcntEl) locPcntEl.textContent = linkedLoc.name;
-      const typeIcon = { Indoor:'🏛️', Outdoor:'🌿', Beach:'🏖️', Garden:'🌸', Restaurant:'🍽️', Hotel:'🏨', Church:'⛪', Other:'📍' };
       locOvEl.innerHTML = `
         <div class="loc-ov-card">
           ${linkedLoc.image
             ? `<img class="loc-ov-hero" src="${linkedLoc.image}" alt="${linkedLoc.name}" />`
-            : `<div class="loc-ov-hero-placeholder">${linkedLoc.icon || typeIcon[linkedLoc.type] || '📍'}</div>`}
+            : `<div class="loc-ov-hero-placeholder">${linkedLoc.name[0] || ''}</div>`}
           <div class="loc-ov-body">
-            <div class="loc-ov-name">${linkedLoc.icon ? linkedLoc.icon + ' ' : ''}${linkedLoc.name}</div>
-            ${linkedLoc.address ? `<div class="loc-ov-addr">📌 ${linkedLoc.address}</div>` : ''}
+            <div class="loc-ov-name">${linkedLoc.name}</div>
+            ${linkedLoc.address ? `<div class="loc-ov-addr">${linkedLoc.address}</div>` : ''}
             <div class="loc-ov-meta">
-              <span class="tag tag-blue">${typeIcon[linkedLoc.type] || '📍'} ${linkedLoc.type}</span>
-              ${linkedLoc.capacity ? `<span class="tag tag-purple">👥 ${linkedLoc.capacity} capacity</span>` : ''}
+              <span class="tag tag-blue">${linkedLoc.type}</span>
+              ${linkedLoc.capacity ? `<span class="tag tag-purple">${linkedLoc.capacity} capacity</span>` : ''}
             </div>
-            ${linkedLoc.notes ? `<div class="loc-ov-notes">📝 ${linkedLoc.notes}</div>` : ''}
+            ${linkedLoc.notes ? `<div class="loc-ov-notes">${linkedLoc.notes}</div>` : ''}
           </div>
         </div>`;
     }
@@ -6970,7 +6963,7 @@ function renderOverview() {
   // 2 — activities (sorted by date, then by quarter)
   const actEl = document.getElementById('overview-activities');
   if (!state.activities.length) {
-    actEl.innerHTML = emptyState('No activities yet','Add activities in the Activities section','📋');
+    actEl.innerHTML = emptyState('No activities yet','Add activities in the Activities section');
   } else {
     const sorted = [...state.activities].sort((a,b) => {
       if (a.date && b.date) return new Date(a.date) - new Date(b.date);
@@ -6996,8 +6989,8 @@ function renderOverview() {
               <div class="ov-item-name">${a.name}</div>
               <div class="ov-item-meta">
                 <span class="tag tag-blue">${a.quarter}</span>
-                ${dateStr?`<span>📅 ${dateStr}</span>`:''}
-                ${a.time?`<span>⏰ ${a.time}</span>`:''}
+                ${dateStr?`<span>${dateStr}</span>`:''}
+                ${a.time?`<span>${a.time}</span>`:''}
                 ${loc?`<span>${loc}</span>`:''}
               </div>
               ${a.desc?`<div style="font-size:11px;color:var(--muted);margin-top:4px;">${a.desc}</div>`:''}
@@ -7010,7 +7003,7 @@ function renderOverview() {
   // 3 — car seat visual
   const carEl = document.getElementById('overview-cars');
   if (!actData().cars.length) {
-    carEl.innerHTML = emptyState('No car plans yet','Add cars in the Car Seat Plan section','🚗');
+    carEl.innerHTML = emptyState('No car plans yet','Add cars in the Car Seat Plan section');
   } else {
     carEl.innerHTML = actData().cars.map(car => {
       const seats = car.seats;
@@ -7019,11 +7012,11 @@ function renderOverview() {
       function seatCell(idx, isDriver) {
         const name = isDriver ? car.driver : seats[idx];
         const cls = isDriver ? 'driver' : (name ? 'occupied' : 'empty');
-        const icon = isDriver ? '🧑‍✈️' : '🪑';
+        const icon = isDriver ? '' : '';
         const label = name || (isDriver ? 'Driver' : `S${idx+1}`);
         const clickIdx = isDriver ? -1 : idx;
         return `<div class="seat-vis ${cls}" style="cursor:pointer;" title="${isDriver?'Edit driver':'Edit seat '+(idx+1)}" onclick="openAssignSeat('${car.id}',${clickIdx})">
-          <div class="seat-vis-icon">${icon}</div>
+          ${icon ? `<div class="seat-vis-icon">${icon}</div>` : ''}
           <div class="seat-vis-name">${label}</div>
         </div>`;
       }
@@ -7050,10 +7043,10 @@ function renderOverview() {
       return `
         <div class="car-overview-card">
           <div class="car-overview-header">
-            <div class="car-overview-icon">🚗</div>
+            <div class="car-overview-icon"></div>
             <div class="car-overview-meta">
               <div class="car-overview-name">${displayName}</div>
-              <div class="car-overview-sub">${car.driver ? '🧑‍✈️ ' + car.driver : 'No driver'} · ${passOccupied}/${passengerSeats} Passenger${passengerSeats!==1?'s':''}</div>
+              <div class="car-overview-sub">${car.driver ? 'Driver: ' + car.driver : 'No driver'} · ${passOccupied}/${passengerSeats} Passenger${passengerSeats!==1?'s':''}</div>
             </div>
           </div>
           <div class="car-seat-visual">
@@ -7066,7 +7059,7 @@ function renderOverview() {
   // 4 — bed plan visual
   const bedEl = document.getElementById('overview-beds');
   if (!actData().beds.length) {
-    bedEl.innerHTML = emptyState('No room plans yet','Add rooms in the Bed Plan section','🛏️');
+    bedEl.innerHTML = emptyState('No room plans yet','Add rooms in the Bed Plan section');
   } else {
     bedEl.innerHTML = actData().beds.map(b => {
       const lines = b.occupants ? b.occupants.split('\n') : [];
@@ -7076,7 +7069,7 @@ function renderOverview() {
         const occ = raw.replace(/^bed\s*\d+:\s*/i, '').trim();
         return `
           <div class="bed-vis ${occ ? 'occupied' : 'empty'}" style="cursor:pointer;" onclick="openAssignBed('${b.id}', ${i})">
-            <div class="bed-vis-head">🛏️ Bed ${i+1}</div>
+            <div class="bed-vis-head">Bed ${i+1}</div>
             <div class="bed-vis-body">${occ || 'Unassigned'}</div>
           </div>`;
       }).join('');
@@ -7084,13 +7077,13 @@ function renderOverview() {
         <div class="room-overview-card">
           <div class="room-overview-header" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="font-size:24px;">🏠</div>
+              <div style="font-size:24px;"></div>
               <div>
                 <div style="font-size:14px;font-weight:700;color:var(--white);">${b.room}</div>
                 <div style="font-size:12px;color:var(--muted);">${b.bedCount} bed${b.bedCount>1?'s':''}${loc?' · '+loc:''}${b.notes?' · '+b.notes:''}</div>
               </div>
             </div>
-            <button class="btn btn-danger btn-sm admin-only" onclick="deleteBedFromOverview('${b.id}')">🗑️ Delete Room</button>
+            <button class="btn btn-danger btn-sm admin-only" onclick="deleteBedFromOverview('${b.id}')">Delete Room</button>
           </div>
           <div class="bed-visual-grid">${bedsHtml}</div>
         </div>`;
@@ -7100,15 +7093,15 @@ function renderOverview() {
   // 5 — games
   const gamesEl = document.getElementById('overview-games');
   if (!actData().games.length) {
-    gamesEl.innerHTML = emptyState('No games yet','Click "+ Add Game" to get started','🎮');
+    gamesEl.innerHTML = emptyState('No games yet','Click "+ Add Game" to get started');
   } else {
     gamesEl.innerHTML = actData().games.map(g => `
       <div class="game-ov-card">
-        <div class="game-ov-icon">🎮</div>
+        <div class="game-ov-icon">${g.icon||''}</div>
         <div>
           <div class="game-ov-name">${g.name}</div>
           <div class="game-ov-meta">
-            ${g.players?`👥 ${g.players}`:''}
+            ${g.players?`${g.players} players`:''}
           </div>
         </div>
       </div>`).join('');
@@ -7118,7 +7111,7 @@ function renderOverview() {
   const comEl = document.getElementById('overview-committee');
   const committees = actData().committees || [];
   if (!committees.length) {
-    comEl.innerHTML = emptyState('No committees yet','Click "+ New Committee" to create one','👥');
+    comEl.innerHTML = emptyState('No committees yet','Click "+ New Committee" to create one');
   } else {
     const initials = (name) => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     comEl.innerHTML = committees.map(c => {
@@ -7128,10 +7121,10 @@ function renderOverview() {
               <div class="member-avatar">${initials(m.name)}</div>
               <div class="member-info">
                 <div class="member-name">${m.name}</div>
-                ${m.role?`<div class="member-role">🏷️ ${m.role}</div>`:''}
-                ${m.contact?`<div class="member-contact">📞 ${m.contact}${m.email?' · '+m.email:''}</div>`:(m.email?`<div class="member-contact">✉️ ${m.email}</div>`:'')}
+                ${m.role?`<div class="member-role">${m.role}</div>`:''}
+                ${m.contact?`<div class="member-contact">${m.contact}${m.email?' · '+m.email:''}</div>`:(m.email?`<div class="member-contact">${m.email}</div>`:'')}
               </div>
-              <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteMember('${c.id}','${m.id}');renderOverview();" title="Remove">🗑️</button>
+              <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteMember('${c.id}','${m.id}');renderOverview();" title="Remove">Remove</button>
             </div>`).join('')}
           </div>`
         : `<div style="font-size:12px;color:var(--muted2);font-style:italic;padding:6px 0;">No members yet</div>`;
@@ -7146,10 +7139,10 @@ function renderOverview() {
           </div>
           <div class="committee-body">${membersHtml}</div>
           <div class="committee-footer">
-            <span style="font-size:12px;color:var(--muted);">👤 ${c.members.length} member${c.members.length!==1?'s':''}</span>
+            <span style="font-size:12px;color:var(--muted);">${c.members.length} member${c.members.length!==1?'s':''}</span>
             <div style="display:flex;gap:6px;">
               <button class="btn btn-ghost btn-sm admin-only" onclick="openAddMember('${c.id}')">＋ Add Member</button>
-              <button class="btn btn-danger btn-sm admin-only" onclick="deleteCommittee('${c.id}');renderOverview();">🗑️</button>
+              <button class="btn btn-danger btn-sm admin-only" onclick="deleteCommittee('${c.id}');renderOverview();">Delete</button>
             </div>
           </div>
         </div>`;
@@ -7164,7 +7157,7 @@ function renderOverview() {
   const attendeePeople = attendeeIds.map(id=>(state.people||[]).find(p=>p.id===id)).filter(Boolean);
   if (attendeesPcountEl) attendeesPcountEl.textContent = attendeePeople.length;
   if (!attendeePeople.length) {
-    attendeesEl.innerHTML = emptyState('No attendees yet','Click "+ Add" to add people from the People list','🙋');
+    attendeesEl.innerHTML = emptyState('No attendees yet','Click "+ Add" to add people from the People list');
   } else {
     const initials = name => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     attendeesEl.innerHTML = `<div class="attendee-grid">${attendeePeople.map(p=>`
@@ -7172,7 +7165,7 @@ function renderOverview() {
         <div class="attendee-chip-avatar">${initials(p.name)}</div>
         <div>
           <div>${p.name}</div>
-          <div style="font-size:10px;color:var(--muted);font-weight:400;">${deptIcon(p.dept)} ${p.dept}</div>
+          <div style="font-size:10px;color:var(--muted);font-weight:400;">${p.dept}</div>
         </div>
         <span class="attendee-chip-remove admin-only" onclick="removeAttendee('${p.id}')" title="Remove">✕</span>
       </div>`).join('')}
@@ -7185,14 +7178,14 @@ function renderOverview() {
   const grocery = actData().grocery || [];
   if (!grocery.length) {
     grocProgEl.innerHTML = '';
-    grocEl.innerHTML = emptyState('No grocery items yet','Click "+ Add Item" to start your list','🛒');
+    grocEl.innerHTML = emptyState('No grocery items yet','Click "+ Add Item" to start your list');
   } else {
     const total = grocery.length;
     const done = grocery.filter(x=>x.checked).length;
     const pct = Math.round((done/total)*100);
     grocProgEl.innerHTML = `
       <div class="grocery-progress">
-        <div style="font-size:13px;font-weight:600;color:var(--white);white-space:nowrap;">🛒 ${done}/${total} bought</div>
+        <div style="font-size:13px;font-weight:600;color:var(--white);white-space:nowrap;">${done}/${total} bought</div>
         <div class="grocery-progress-bar-wrap">
           <div class="grocery-progress-bar" style="width:${pct}%"></div>
         </div>
@@ -7200,15 +7193,15 @@ function renderOverview() {
       </div>`;
     const grouped = {};
     grocery.forEach(item => {
-      const cat = item.category || '📦 Other';
+      const cat = item.category || 'Other';
       if (!grouped[cat]) grouped[cat] = [];
       grouped[cat].push(item);
     });
     grocEl.innerHTML = Object.entries(grouped).map(([cat, items]) => `
       <div class="grocery-category-block">
         <div class="grocery-cat-header">
-          <span class="grocery-cat-icon">${cat.split(' ')[0]}</span>
-          <span>${cat.split(' ').slice(1).join(' ')}</span>
+          <span class="grocery-cat-icon"></span>
+          <span>${cat}</span>
           <span style="margin-left:auto;font-size:11px;color:var(--muted);">${items.filter(i=>i.checked).length}/${items.length}</span>
         </div>
         ${items.map(item => `
@@ -7219,9 +7212,9 @@ function renderOverview() {
             <div class="grocery-item-name">${item.name}</div>
             ${item.qty?`<div class="grocery-qty">${item.qty}</div>`:''}
             ${item.cost?`<div class="grocery-qty" style="color:var(--warning);">${item.cost}</div>`:''}
-            <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteGrocery('${item.id}');renderOverview();" title="Remove">🗑️</button>
-          </div>
-          ${item.note?`<div class="grocery-note" style="margin-left:42px;margin-top:-4px;margin-bottom:4px;">📝 ${item.note}</div>`:''}`).join('')}
+            <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteGrocery('${item.id}');renderOverview();" title="Remove">×</button>
+            </div>
+            ${item.note?`<div class="grocery-note" style="margin-left:42px;margin-top:-4px;margin-bottom:4px;">${item.note}</div>`:''}`).join('')}
       </div>`).join('');
   }
 
@@ -7230,7 +7223,6 @@ function renderOverview() {
   const ovDays   = activityDays(_ovAct);
   if (!ovDays.length) {
     mealsEl.innerHTML = `<div class="meal-no-duration" style="padding:16px;">
-      <div style="font-size:22px;margin-bottom:6px;">📅</div>
       <div>No duration set — edit this activity to add Start &amp; End dates.</div>
     </div>`;
   } else {
@@ -7244,18 +7236,18 @@ function renderOverview() {
         return `
           <div class="meal-slot-card${slot.menu?' has-menu':''}${_adminUnlocked?'':' meal-slot-readonly'}" ${_adminUnlocked ? `style="cursor:pointer;" onclick="navigateToActivity('${currentActivityId||''}');setTimeout(()=>{navigate('mealplan');selectMealDay('${d}');openMealSlot('${d}','${s.key}');},120);"` : ''}>
             <div class="meal-slot-card-header">
-              <span class="meal-slot-emoji">${s.emoji}</span>
+              <span class="meal-slot-emoji"></span>
               <span class="meal-slot-name">${s.label}</span>
             </div>
             ${slot.menu
               ? `<div class="meal-slot-menu-text">${slot.menu.replace(/\n/g,'<br>')}</div>`
-              : (_adminUnlocked ? `<div class="meal-slot-menu-empty">➕ Add menu</div>` : `<div class="meal-slot-menu-empty" style="color:var(--muted2);">No menu set</div>`)}
-            ${assignee ? `<div class="meal-slot-assignee">👤 ${assignee.name}</div>` : ''}
+              : (_adminUnlocked ? `<div class="meal-slot-menu-empty">+ Add menu</div>` : `<div class="meal-slot-menu-empty" style="color:var(--muted2);">No menu set</div>`)}
+            ${assignee ? `<div class="meal-slot-assignee">${assignee.name}</div>` : ''}
           </div>`;
       }).join('');
       return `
         <div style="margin-bottom:18px;">
-          <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:10px;">🍽️ Day ${i+1} — ${dateLabel}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:10px;">Day ${i+1} — ${dateLabel}</div>
           <div class="meal-slots-grid">${slotsHtml}</div>
         </div>`;
     }).join('');
@@ -7275,12 +7267,12 @@ let _memberCtx = null; // committee id for pending member add
 
 function saveCommittee() {
   const name = document.getElementById('com-name').value.trim();
-  if (!name) { showToast('Committee name is required.','⚠️'); return; }
+  if (!name) { showToast('Committee name is required.'); return; }
   actData().committees = actData().committees || [];
   const entry = {
     id: uid(),
     name,
-    icon: document.getElementById('com-icon').value || '👥',
+    icon: document.getElementById('com-icon').value || '',
     desc: document.getElementById('com-desc').value.trim(),
     members: [],
   };
@@ -7297,7 +7289,7 @@ function deleteCommittee(id) {
   if (!c) return;
   actData().committees = actData().committees.filter(x=>x.id!==id);
   saveState();
-  showToast(`"${c.name}" removed.`,'🗑️');
+  showToast(`"${c.name}" removed.`);
   if (currentPage === 'overview') renderOverview(); else renderCommittee();
   updateCounts();
 }
@@ -7311,7 +7303,7 @@ function openAddMember(committeeId) {
 
 function saveMember() {
   const name = document.getElementById('mem-name').value.trim();
-  if (!name) { showToast('Member name is required.','⚠️'); return; }
+  if (!name) { showToast('Member name is required.'); return; }
   if (!_memberCtx) return;
   const c = (actData().committees||[]).find(x=>x.id===_memberCtx);
   if (!c) return;
@@ -7338,14 +7330,14 @@ function deleteMember(committeeId, memberId) {
   if (!m) return;
   c.members = c.members.filter(x=>x.id!==memberId);
   saveState();
-  showToast(`${m.name} removed.`,'🗑️');
+  showToast(`${m.name} removed.`);
   if (currentPage === 'overview') renderOverview(); else renderCommittee();
 }
 
 function renderCommittee() {
   const el = document.getElementById('committee-list');
   if (!actData().committees.length) {
-    el.innerHTML = actContextBanner() + emptyState('No committees yet','Create a committee like "Events Team" or "Catering"','👥');
+    el.innerHTML = actContextBanner() + emptyState('No committees yet','Create a committee like "Events Team" or "Catering"');
     return;
   }
   el.innerHTML = actContextBanner() + actData().committees.map(c => {
@@ -7356,11 +7348,11 @@ function renderCommittee() {
             <div class="member-avatar">${initials(m.name)}</div>
             <div class="member-info">
               <div class="member-name">${m.name}</div>
-              ${m.role ? `<div class="member-role">🏷️ ${m.role}</div>` : ''}
-              ${m.contact ? `<div class="member-contact">📞 ${m.contact}${m.email ? ' · ' + m.email : ''}</div>` : (m.email ? `<div class="member-contact">✉️ ${m.email}</div>` : '')}
-              ${m.notes ? `<div class="member-contact">📝 ${m.notes}</div>` : ''}
+              ${m.role ? `<div class="member-role">${m.role}</div>` : ''}
+              ${m.contact ? `<div class="member-contact">${m.contact}${m.email ? ' · ' + m.email : ''}</div>` : (m.email ? `<div class="member-contact">${m.email}</div>` : '')}
+              ${m.notes ? `<div class="member-contact">${m.notes}</div>` : ''}
             </div>
-            <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteMember('${c.id}','${m.id}')" title="Remove">🗑️</button>
+            <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteMember('${c.id}','${m.id}')" title="Remove">Remove</button>
           </div>`).join('')}
         </div>`
       : `<div style="font-size:12px;color:var(--muted2);font-style:italic;padding:8px 0;">No members yet</div>`;
@@ -7378,10 +7370,10 @@ function renderCommittee() {
           ${membersHtml}
         </div>
         <div class="committee-footer">
-          <span style="font-size:12px;color:var(--muted);">👤 ${c.members.length} member${c.members.length!==1?'s':''}</span>
+          <span style="font-size:12px;color:var(--muted);">${c.members.length} member${c.members.length!==1?'s':''}</span>
           <div style="display:flex;gap:6px;">
             <button class="btn btn-ghost btn-sm admin-only" onclick="openAddMember('${c.id}')">＋ Add Member</button>
-            <button class="btn btn-danger btn-sm admin-only" onclick="deleteCommittee('${c.id}')">🗑️</button>
+            <button class="btn btn-danger btn-sm admin-only" onclick="deleteCommittee('${c.id}')">Delete</button>
           </div>
         </div>
       </div>`;
@@ -7393,7 +7385,7 @@ function renderCommittee() {
 // ──────────────────────────────────────────────
 function saveGrocery() {
   const name = document.getElementById('groc-name').value.trim();
-  if (!name) { showToast('Item name is required.','⚠️'); return; }
+  if (!name) { showToast('Item name is required.'); return; }
   actData().grocery = actData().grocery || [];
   const entry = {
     id: uid(),
@@ -7425,7 +7417,7 @@ function deleteGrocery(id) {
   if (!item) return;
   actData().grocery = actData().grocery.filter(x=>x.id!==id);
   saveState();
-  showToast(`"${item.name}" removed.`,'🗑️');
+  showToast(`"${item.name}" removed.`);
   if (currentPage === 'overview') renderOverview(); else renderGrocery();
   updateCounts();
 }
@@ -7437,7 +7429,7 @@ function renderGrocery() {
 
   if (!grocery.length) {
     progressWrap.innerHTML = actContextBanner();
-    el.innerHTML = emptyState('No grocery items yet','Start adding everything you need to buy','🛒');
+    el.innerHTML = emptyState('No grocery items yet','Start adding everything you need to buy');
     return;
   }
   const total = grocery.length;
@@ -7446,7 +7438,7 @@ function renderGrocery() {
 
   progressWrap.innerHTML = actContextBanner() + `
     <div class="grocery-progress">
-      <div style="font-size:13px;font-weight:600;color:var(--white);white-space:nowrap;">🛒 ${done}/${total} bought</div>
+      <div style="font-size:13px;font-weight:600;color:var(--white);white-space:nowrap;">${done}/${total} bought</div>
       <div class="grocery-progress-bar-wrap">
         <div class="grocery-progress-bar" style="width:${pct}%"></div>
       </div>
@@ -7456,7 +7448,7 @@ function renderGrocery() {
   // Group by category
   const grouped = {};
   grocery.forEach(item => {
-    const cat = item.category || '📦 Other';
+    const cat = item.category || 'Other';
     if (!grouped[cat]) grouped[cat] = [];
     grouped[cat].push(item);
   });
@@ -7464,21 +7456,21 @@ function renderGrocery() {
   el.innerHTML = Object.entries(grouped).map(([cat, items]) => `
     <div class="grocery-category-block">
       <div class="grocery-cat-header">
-        <span class="grocery-cat-icon">${cat.split(' ')[0]}</span>
-        <span>${cat.split(' ').slice(1).join(' ')}</span>
+        <span class="grocery-cat-icon"></span>
+        <span>${cat}</span>
         <span style="margin-left:auto;font-size:11px;color:var(--muted);">${items.filter(i=>i.checked).length}/${items.length}</span>
       </div>
       ${items.map(item => `
         <div class="grocery-item ${item.checked?'checked':''}">
           <div class="grocery-check ${item.checked?'done':''}" onclick="toggleGrocery('${item.id}')">
-            ${item.checked ? '✓' : ''}
+            ${item.checked ? '✓' : ' '}
           </div>
           <div class="grocery-item-name">${item.name}</div>
           ${item.qty ? `<div class="grocery-qty">${item.qty}</div>` : ''}
           ${item.cost ? `<div class="grocery-qty" style="color:var(--warning);">${item.cost}</div>` : ''}
-          <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteGrocery('${item.id}')" title="Remove">🗑️</button>
+          <button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteGrocery('${item.id}')" title="Remove">×</button>
         </div>
-        ${item.note ? `<div class="grocery-note" style="margin-left:42px;margin-top:-4px;margin-bottom:4px;">📝 ${item.note}</div>` : ''}
+        ${item.note ? `<div class="grocery-note" style="margin-left:42px;margin-top:-4px;margin-bottom:4px;">${item.note}</div>` : ''}
       `).join('')}
     </div>`).join('');
 }
@@ -7539,7 +7531,7 @@ function openMealSlot(dateStr, slotKey) {
   _mealSlotCtx = { dateStr, slotKey };
   const meta = MEAL_SLOTS.find(s => s.key === slotKey);
   document.getElementById('modal-mealslot-title').textContent =
-    `${meta ? meta.emoji + ' ' + meta.label : slotKey} — ${new Date(dateStr + 'T00:00').toLocaleDateString('default', { weekday: 'short', month: 'short', day: 'numeric' })}`;
+    `${meta ? meta.label : slotKey} — ${new Date(dateStr + 'T00:00').toLocaleDateString('default', { weekday: 'short', month: 'short', day: 'numeric' })}`;
   document.getElementById('mealslot-menu').value = slot.menu || '';
   openModal('modal-mealslot');
   // pre-select existing assignee after populate
@@ -7567,7 +7559,7 @@ function saveMealSlot() {
   saveState();
   closeModal('modal-mealslot');
   const meta = MEAL_SLOTS.find(s => s.key === slotKey);
-  showToast(`${meta ? meta.label : slotKey} saved!`, '🍽️');
+  showToast(`${meta ? meta.label : slotKey} saved!`);
   if (currentPage === 'overview') renderOverview(); else renderMealPlan();
   _mealSlotCtx = null;
 }
@@ -7581,17 +7573,17 @@ function renderMealSlotCards(dateStr) {
       const assignee = slot.assigneeId ? (state.people || []).find(p => p.id === slot.assigneeId) : null;
       return `
         <div class="meal-slot-card${hasMenu ? ' has-menu' : ''}${_adminUnlocked ? '' : ' meal-slot-readonly'}" ${_adminUnlocked ? `onclick="openMealSlot('${dateStr}','${s.key}')"` : ''}>
-          ${_adminUnlocked ? `<span class="meal-slot-edit-hint">✏️ Edit</span>` : ''}
+          ${_adminUnlocked ? `<span class="meal-slot-edit-hint">Edit</span>` : ''}
           <div class="meal-slot-card-header">
-            <span class="meal-slot-emoji">${s.emoji}</span>
+            <span class="meal-slot-emoji"></span>
             <span class="meal-slot-name">${s.label}</span>
           </div>
           ${hasMenu
             ? `<div class="meal-slot-menu-text">${slot.menu.replace(/\n/g, '<br>')}</div>`
-            : (_adminUnlocked ? `<div class="meal-slot-menu-empty">➕ Tap to add menu</div>` : `<div class="meal-slot-menu-empty" style="color:var(--muted2);">No menu set</div>`)}
+            : (_adminUnlocked ? `<div class="meal-slot-menu-empty">+ Tap to add menu</div>` : `<div class="meal-slot-menu-empty" style="color:var(--muted2);">No menu set</div>`)}
           <div class="meal-slot-assignee">
             ${assignee
-              ? `👤 ${assignee.name}`
+              ? assignee.name
               : `<span style="color:var(--muted2);font-weight:400;">No assignee</span>`}
           </div>
         </div>`;
@@ -7612,7 +7604,7 @@ function renderSchedule() {
   if (!currentActivityId) {
     const activities = (state.activities || []).filter(a => a.dateStart);
     if (!activities.length) {
-      el.innerHTML = emptyState('No activities with dates yet', 'Create an activity with a Start Date first.', '🗓️');
+      el.innerHTML = emptyState('No activities with dates yet', 'Create an activity with a Start Date first.');
       return;
     }
     // Auto-select first activity with dates
@@ -7625,7 +7617,6 @@ function renderSchedule() {
   if (!days.length) {
     el.innerHTML = actContextBanner() + `
       <div class="meal-no-duration">
-        <div style="font-size:32px;margin-bottom:10px;">📅</div>
         <div><strong>No duration set for "${act ? act.name : 'this activity'}"</strong></div>
         <div style="margin-top:6px;">Edit the activity and set a <strong>Start Date</strong> and <strong>End Date</strong> to generate schedule days.</div>
       </div>`;
@@ -7666,13 +7657,13 @@ function renderSchedule() {
   const _tpl = actData().scheduleCardTemplate || 'classic';
   let eventsListHtml;
   if (!dayEvents.length) {
-    eventsListHtml = `<div class="schedule-events-list" style="justify-content:center;align-items:center;">${emptyState('No events yet', 'Use "＋ Add Event" to add items to this day.', '🗓️')}</div>`;
+    eventsListHtml = `<div class="schedule-events-list" style="justify-content:center;align-items:center;">${emptyState('No events yet', 'Use "+ Add Event" to add items to this day.')}</div>`;
   } else {
     const rows = dayEvents.map(ev => {
       const metaParts = [];
-      if (ev.emcee)   metaParts.push(`🎤 Emcee: ${ev.emcee}`);
-      if (ev.speaker) metaParts.push(`🗣️ Speaker: ${ev.speaker}`);
-      if (ev.notes)   metaParts.push(`📝 ${ev.notes}`);
+      if (ev.emcee)   metaParts.push(`Emcee: ${ev.emcee}`);
+      if (ev.speaker) metaParts.push(`Speaker: ${ev.speaker}`);
+      if (ev.notes)   metaParts.push(ev.notes);
       const metaHtml = metaParts.length ? `<div class="schedule-event-meta">${metaParts.join(' · ')}</div>` : '';
       const timeLabel = ev.time
         ? new Date('1970-01-01T' + ev.time).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' })
@@ -7684,8 +7675,8 @@ function renderSchedule() {
           ${metaHtml}
         </div>
         <div class="schedule-event-actions admin-only">
-          <button class="btn btn-ghost btn-sm btn-icon" onclick="openScheduleEventModal('${ev.id}')" title="Edit">✏️</button>
-          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteScheduleEvent('${ev.id}')" title="Delete">🗑️</button>
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="openScheduleEventModal('${ev.id}')" title="Edit">Edit</button>
+          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteScheduleEvent('${ev.id}')" title="Delete">Delete</button>
         </div>
       </div>`;
     }).join('');
@@ -7721,7 +7712,7 @@ function renderSchedule() {
   const _cardEl = el.querySelector('.schedule-bg-card');
   if (_cardEl) _applyPaletteToCard(_cardEl, actData().scheduleCardPalette || null);
   const _tplBtn = document.getElementById('sch-tpl-btn');
-  if (_tplBtn) _tplBtn.textContent = `🎨 Template: ${_tpl.charAt(0).toUpperCase()+_tpl.slice(1)}`;
+  if (_tplBtn) _tplBtn.textContent = `Template: ${_tpl.charAt(0).toUpperCase()+_tpl.slice(1)}`;
 }
 
 function selectScheduleDay(dateStr) {
@@ -7743,7 +7734,7 @@ function openScheduleEventModal(id) {
   if (id) {
     const ev = (actData().schedule || []).find(e => e.id === id);
     if (!ev) return;
-    document.getElementById('modal-schedule-event-title').textContent = '✏️ Edit Event';
+    document.getElementById('modal-schedule-event-title').textContent = 'Edit Event';
     document.getElementById('sch-name').value    = ev.name    || '';
     document.getElementById('sch-time').value    = ev.time    || '';
     document.getElementById('sch-emcee').value   = ev.emcee   || '';
@@ -7752,7 +7743,7 @@ function openScheduleEventModal(id) {
     dayEl.value = ev.day || (days[0] || '');
     document.getElementById('modal-schedule-event').dataset.editId = id;
   } else {
-    document.getElementById('modal-schedule-event-title').textContent = '🗓️ Add Event';
+    document.getElementById('modal-schedule-event-title').textContent = 'Add Event';
     document.getElementById('sch-name').value    = '';
     document.getElementById('sch-time').value    = '';
     document.getElementById('sch-emcee').value   = '';
@@ -7767,7 +7758,7 @@ function openScheduleEventModal(id) {
 
 function saveScheduleEvent() {
   const name = document.getElementById('sch-name').value.trim();
-  if (!name) { showToast('Event name is required.', '⚠️'); return; }
+  if (!name) { showToast('Event name is required.'); return; }
 
   actData().schedule = actData().schedule || [];
   const editId = document.getElementById('modal-schedule-event').dataset.editId;
@@ -7802,7 +7793,7 @@ function deleteScheduleEvent(id) {
   if (!ev) return;
   actData().schedule = actData().schedule.filter(e => e.id !== id);
   saveState();
-  showToast(`"${ev.name}" removed.`, '🗑️');
+  showToast(`"${ev.name}" removed.`);
   renderSchedule();
   if (currentPage === 'overview') renderOverviewSchedule();
 }
@@ -7913,7 +7904,7 @@ function saveScheduleCardImage(input) {
       // Keep theme field for legacy compat
       actData().scheduleCardTheme   = 'dark';
       saveState();
-      showToast('Card image updated — palette extracted 🎨', '✅');
+      showToast('Card image updated — palette extracted');
       renderSchedule();
     });
   };
@@ -7931,7 +7922,7 @@ function cycleScheduleTemplate() {
   actData().scheduleCardTemplate = next;
   _saveImages(); // persist locally (template stored alongside image data)
   renderSchedule();
-  showToast(`Template: ${next.charAt(0).toUpperCase() + next.slice(1)}`, '🎨');
+  showToast(`Template: ${next.charAt(0).toUpperCase() + next.slice(1)}`);
 }
 
 
@@ -7952,9 +7943,9 @@ function _buildScheduleCardHtml(dateStr, dayIdx, actName, bgStyle, themeAttr, ev
         ? new Date('1970-01-01T' + ev.time).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' })
         : '—';
       const metaParts = [];
-      if (ev.emcee)   metaParts.push(`🎤 Emcee: ${ev.emcee}`);
-      if (ev.speaker) metaParts.push(`🗣️ Speaker: ${ev.speaker}`);
-      if (ev.notes)   metaParts.push(`📝 ${ev.notes}`);
+      if (ev.emcee)   metaParts.push(`Emcee: ${ev.emcee}`);
+      if (ev.speaker) metaParts.push(`Speaker: ${ev.speaker}`);
+      if (ev.notes)   metaParts.push(ev.notes);
       return `<div class="schedule-event-row">
         <div class="schedule-time-badge">${timeLabel}</div>
         <div style="flex:1;">
@@ -8012,7 +8003,7 @@ function _renderSchedulePreviewDay(dateStr) {
 function openSchedulePreview() {
   const act  = currentActivityId ? (state.activities || []).find(a => a.id === currentActivityId) : null;
   const days = activityDays(act);
-  if (!days.length) { showToast('Set a Start & End Date on the activity first.', '⚠️'); return; }
+  if (!days.length) { showToast('Set a Start & End Date on the activity first.'); return; }
   const day = (_scheduleSelectedDay && days.includes(_scheduleSelectedDay)) ? _scheduleSelectedDay : days[0];
   _renderSchedulePreviewDay(day);
   openModal('modal-sched-preview');
@@ -8025,7 +8016,7 @@ function downloadScheduleCard() {
   const days = activityDays(act);
   const idx  = _schedPreviewDay ? days.indexOf(_schedPreviewDay) : 0;
   const btn  = document.getElementById('sched-preview-dl-btn');
-  if (btn) { btn.textContent = '⏳ Generating…'; btn.disabled = true; }
+  if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
 
   html2canvas(card, {
     scale: 2,
@@ -8039,11 +8030,11 @@ function downloadScheduleCard() {
     link.download = `${actName}_Day${idx + 1}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
-    if (btn) { btn.textContent = '⬇️ Download PNG'; btn.disabled = false; }
+    if (btn) { btn.textContent = 'Download PNG'; btn.disabled = false; }
   }).catch(err => {
     console.error('Download failed:', err);
-    showToast('Download failed. Try again.', '❌');
-    if (btn) { btn.textContent = '⬇️ Download PNG'; btn.disabled = false; }
+    showToast('Download failed. Try again.');
+    if (btn) { btn.textContent = 'Download PNG'; btn.disabled = false; }
   });
 }
 
@@ -8101,9 +8092,9 @@ function openDayScheduleModal(dateStr, dayNum) {
         ? new Date('1970-01-01T' + ev.time).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' })
         : '—';
       const metaParts = [];
-      if (ev.emcee)   metaParts.push(`🎤 ${ev.emcee}`);
-      if (ev.speaker) metaParts.push(`🗣️ ${ev.speaker}`);
-      if (ev.notes)   metaParts.push(`📝 ${ev.notes}`);
+      if (ev.emcee)   metaParts.push(ev.emcee);
+      if (ev.speaker) metaParts.push(ev.speaker);
+      if (ev.notes)   metaParts.push(ev.notes);
       return `<div class="schedule-event-row">
         <div class="schedule-time-badge">${timeLabel}</div>
         <div style="flex:1;">
@@ -8111,8 +8102,8 @@ function openDayScheduleModal(dateStr, dayNum) {
           ${metaParts.length ? `<div class="schedule-event-meta">${metaParts.join(' · ')}</div>` : ''}
         </div>
         <div class="schedule-event-actions admin-only">
-          <button class="btn btn-ghost btn-sm btn-icon" onclick="_scheduleSelectedDay='${dateStr}';closeModal('modal-day-schedule');openScheduleEventModal('${ev.id}')" title="Edit">✏️</button>
-          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteScheduleEventFromOverview('${ev.id}','${dateStr}',${dayNum})" title="Delete">🗑️</button>
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="_scheduleSelectedDay='${dateStr}';closeModal('modal-day-schedule');openScheduleEventModal('${ev.id}')" title="Edit">Edit</button>
+          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteScheduleEventFromOverview('${ev.id}','${dateStr}',${dayNum})" title="Delete">Delete</button>
         </div>
       </div>`;
     }).join('');
@@ -8120,12 +8111,12 @@ function openDayScheduleModal(dateStr, dayNum) {
   }
 
   const adminActionsHtml = `<div class="admin-only" style="flex-shrink:0;margin-top:12px;display:flex;gap:8px;justify-content:center;">
-    <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-day-schedule')" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">✕ Close</button>
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-day-schedule')" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">Close</button>
     <button class="btn btn-sm" onclick="_scheduleSelectedDay='${dateStr}';closeModal('modal-day-schedule');openScheduleEventModal();" style="background:#fbbf24;color:#1a1200;font-weight:700;border:none;">＋ Add Event</button>
   </div>`;
 
   const userCloseHtml = `<div class="admin-locked-show" style="flex-shrink:0;margin-top:12px;text-align:center;">
-    <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-day-schedule')" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">✕ Close</button>
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-day-schedule')" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">Close</button>
   </div>`;
 
   const _schBg2 = actData().scheduleCardImage || null;
@@ -8161,7 +8152,7 @@ function deleteScheduleEventFromOverview(id, dateStr, dayNum) {
   if (!confirm(`Remove "${ev.name}"?`)) return;
   actData().schedule = actData().schedule.filter(e => e.id !== id);
   saveState();
-  showToast(`"${ev.name}" removed.`, '🗑️');
+  showToast(`"${ev.name}" removed.`);
   // Refresh the modal content in place, then re-render overview panel
   openDayScheduleModal(dateStr, dayNum);
   renderOverviewSchedule();
@@ -8177,7 +8168,6 @@ function renderMealPlan() {
   if (!days.length) {
     el.innerHTML = actContextBanner() + `
       <div class="meal-no-duration">
-        <div style="font-size:32px;margin-bottom:10px;">📅</div>
         <div><strong>No duration set for this activity</strong></div>
         <div style="margin-top:6px;">Edit the activity and set a <strong>Start Date</strong> and <strong>End Date</strong> to generate meal plan days.</div>
       </div>`;
@@ -8206,8 +8196,8 @@ function renderMealPlan() {
 function saveExpense() {
   const label = document.getElementById('exp-label').value.trim();
   const amount = parseFloat(document.getElementById('exp-amount').value);
-  if (!label) { showToast('Description is required.','⚠️'); return; }
-  if (!amount || amount <= 0) { showToast('Enter a valid amount.','⚠️'); return; }
+  if (!label) { showToast('Description is required.'); return; }
+  if (!amount || amount <= 0) { showToast('Enter a valid amount.'); return; }
   actData().expenses = actData().expenses || [];
   const entry = {
     id: uid(),
@@ -8232,7 +8222,7 @@ function deleteExpense(id) {
   if (!e) return;
   actData().expenses = actData().expenses.filter(x=>x.id!==id);
   saveState();
-  showToast(`"${e.label}" removed.`,'🗑️');
+  showToast(`"${e.label}" removed.`);
   if (currentPage === 'overview') renderOverview();
   else if (currentPage === 'expenses') renderExpensesPage();
   updateCounts();
@@ -8256,11 +8246,11 @@ function renderExpenses(containerId) {
   }
 
   const catMeta = {
-    Staycation: { label:'Staycation', css:'exp-cat-staycation', icon:'🏨' },
-    Food:       { label:'Food Orders', css:'exp-cat-food', icon:'🍽️' },
-    Gas:        { label:'Gas', css:'exp-cat-gas', icon:'⛽' },
-    Grocery:    { label:'Grocery', css:'exp-cat-grocery', icon:'🛒' },
-    Other:      { label:'Other', css:'exp-cat-other', icon:'📌' },
+    Staycation: { label:'Staycation', css:'exp-cat-staycation', icon:'' },
+    Food:       { label:'Food Orders', css:'exp-cat-food', icon:'' },
+    Gas:        { label:'Gas', css:'exp-cat-gas', icon:'' },
+    Grocery:    { label:'Grocery', css:'exp-cat-grocery', icon:'' },
+    Other:      { label:'Other', css:'exp-cat-other', icon:'' },
   };
 
   // Group manual entries by category
@@ -8289,7 +8279,7 @@ function renderExpenses(containerId) {
     grandTotal += subtotal;
 
     // Category group header
-    tableBody += `<tr class="exp-group-head"><td colspan="6"><span class="exp-cat-pill ${meta.css}">${meta.icon} ${meta.label}</span></td></tr>`;
+    tableBody += `<tr class="exp-group-head"><td colspan="6"><span class="exp-cat-pill ${meta.css}">${meta.label}</span></td></tr>`;
 
     items.forEach(e => {
       rowNum++;
@@ -8297,7 +8287,7 @@ function renderExpenses(containerId) {
       const amtDisplay = e.amountDisplay || ('₱' + fmt(e.amount));
       const deleteBtn = e._grocItem
         ? `<td><span class="exp-source-tag">via grocery</span></td>`
-        : `<td><button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteExpense('${e.id}')">🗑️</button></td>`;
+        : `<td><button class="btn btn-danger btn-sm btn-icon admin-only" onclick="deleteExpense('${e.id}')">×</button></td>`;
       tableBody += `
         <tr class="exp-row">
           <td class="exp-num">${rowNum}</td>
@@ -8329,11 +8319,11 @@ function renderExpenses(containerId) {
 
   // Per-category summary chips
   const catMeta2 = {
-    Staycation: { icon:'🏨' },
-    Food:       { icon:'🍽️' },
-    Gas:        { icon:'⛽' },
-    Grocery:    { icon:'🛒' },
-    Other:      { icon:'📌' },
+    Staycation: { icon:'' },
+    Food:       { icon:'' },
+    Gas:        { icon:'' },
+    Grocery:    { icon:'' },
+    Other:      { icon:'' },
   };
   const catSummary = {};
   manual.forEach(e => {
@@ -8350,9 +8340,8 @@ function renderExpenses(containerId) {
     .sort((a,b)=>b[1]-a[1])
     .map(([cat, amt]) => {
       const pct = grandTotal > 0 ? Math.round((amt/grandTotal)*100) : 0;
-      const ico = (catMeta2[cat]||catMeta2.Other).icon;
       return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;min-width:120px;flex:1;">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">${ico} ${cat}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">${cat}</div>
         <div style="font-size:15px;font-weight:700;color:var(--white);">₱${fmt(amt)}</div>
         <div style="font-size:10px;color:var(--muted2);margin-top:2px;">${pct}% of total</div>
       </div>`;
@@ -8361,7 +8350,7 @@ function renderExpenses(containerId) {
   el.innerHTML = `
     <div class="exp-ledger">
       <div class="exp-ledger-header">
-        <div class="exp-ledger-title">📒 Expense Ledger</div>
+        <div class="exp-ledger-title">Expense Ledger</div>
         <div class="exp-ledger-summary">
           <div class="exp-ledger-sum-item">
             <div class="exp-ledger-sum-label">Entries</div>
@@ -8419,7 +8408,7 @@ function toggleBedVis() {
     listEl.style.display = 'none';
     visEl.style.display  = 'block';
     btn.classList.add('vis-btn-active');
-    btn.textContent = '📋 List View';
+    btn.textContent = 'List View';
     renderBedVisualize();
     // open panel if collapsed
     document.getElementById('panel-beds').classList.add('open');
@@ -8427,7 +8416,7 @@ function toggleBedVis() {
     listEl.style.display = 'block';
     visEl.style.display  = 'none';
     btn.classList.remove('vis-btn-active');
-    btn.textContent = '👁 Visualize';
+    btn.textContent = 'Visualize';
   }
 }
 
@@ -8441,7 +8430,7 @@ function toggleCarVis() {
     listEl.style.display = 'none';
     visEl.style.display  = 'block';
     btn.classList.add('vis-btn-active');
-    btn.textContent = '📋 List View';
+    btn.textContent = 'List View';
     _selectedCarId = actData().cars.length ? actData().cars[0].id : null;
     renderCarVisualize();
     document.getElementById('panel-cars').classList.add('open');
@@ -8449,7 +8438,7 @@ function toggleCarVis() {
     listEl.style.display = 'block';
     visEl.style.display  = 'none';
     btn.classList.remove('vis-btn-active');
-    btn.textContent = '👁 Visualize';
+    btn.textContent = 'Visualize';
   }
 }
 
@@ -8463,7 +8452,7 @@ function renderBedVisualize() {
   }
 
   const roomTypeIcons = {
-    Master:'🛏️', Single:'🛏', Twin:'🛏🛏', Suite:'🌟', Common:'🏠', Other:'📦'
+    Master:'', Single:'', Twin:'', Suite:'', Common:'', Other:''
   };
 
   el.innerHTML = `<div class="vis-wrap"><div class="vis-rooms-grid">${beds.map(b => {
@@ -8491,12 +8480,12 @@ function renderBedVisualize() {
     return `
       <div class="vis-room">
         <div class="vis-room-label">
-          ${icon} ${b.room}
+          ${b.room}
           <span class="vis-room-type-badge">${rtype}</span>
-          ${loc ? `<span class="vis-room-type-badge">📍 ${loc}</span>` : ''}
+          ${loc ? `<span class="vis-room-type-badge">${loc}</span>` : ''}
         </div>
         <div class="vis-floor">${bedsHtml}</div>
-        ${b.notes ? `<div style="font-size:11px;color:var(--muted);margin-top:10px;">📝 ${b.notes}</div>` : ''}
+        ${b.notes ? `<div style="font-size:11px;color:var(--muted);margin-top:10px;">${b.notes}</div>` : ''}
       </div>`;
   }).join('')}</div></div>`;
 }
@@ -8516,12 +8505,12 @@ function renderCarVisualize() {
     const passTot = c.seatCount - 1;
     return `
     <div class="vis-car-list-item${c.id===_selectedCarId?' selected':''}" onclick="selectVisCar('${c.id}')">
-      <div class="vis-car-list-icon">🚗</div>
+      <div class="vis-car-list-icon"></div>
       <div style="flex:1;min-width:0;">
         <div style="font-weight:600;">${dn}</div>
         <div class="vis-car-list-sub">${c.driver||'No driver'} · ${passOcc}/${passTot} Passengers</div>
       </div>
-      <button class="btn btn-danger btn-sm admin-only" style="flex-shrink:0;" onclick="event.stopPropagation();deleteCar('${c.id}')">🗑️</button>
+      <button class="btn btn-danger btn-sm admin-only" style="flex-shrink:0;" onclick="event.stopPropagation();deleteCar('${c.id}')">Delete</button>
     </div>`;
   }).join('');
 
@@ -8611,7 +8600,7 @@ function buildCarDiagram(car) {
   const displayName = carDisplayName(car);
   return `
     <div class="vis-car-body">
-      <div class="vis-car-name-plate">🚗 ${displayName} <span>(Side view — front left)</span></div>
+      <div class="vis-car-name-plate">${displayName} <span>(Side view — front left)</span></div>
       <div class="vis-car-horiz">
         <div class="vis-car-bonnet">FRONT</div>
         <div class="vis-car-shell-h">${shellInner}</div>
