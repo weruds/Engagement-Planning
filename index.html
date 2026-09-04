@@ -1027,19 +1027,7 @@
   }
 
   /* ─── GLOW LINE ─── */
-  .glow-line {
-    height: 4px;
-    background: linear-gradient(90deg, #4f46e5, #9333ea, #ec4899, #06b6d4, #10b981);
-    background-size: 200% 100%;
-    margin-bottom: 28px;
-    border-radius: 4px;
-    opacity: 0.75;
-    animation: glow-line-shimmer 4s linear infinite;
-  }
-  @keyframes glow-line-shimmer {
-    0%   { background-position: 0% 0%; }
-    100% { background-position: 200% 0%; }
-  }
+  .glow-line { display: none; }
 
   /* Timeline */
   .timeline { position: relative; padding-left: 24px; }
