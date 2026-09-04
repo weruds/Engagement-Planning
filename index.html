@@ -5646,7 +5646,7 @@ function renderPeople() {
   const people = (state.people||[]).filter(p => _peopleFilterDept==='All' || p.dept===_peopleFilterDept);
   if (!people.length) { el.innerHTML = emptyState('No people yet','Add team members to your People list'); return; }
   const initials = name => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-  el.innerHTML = people.map(p => {
+  el.innerHTML = people.map((p, i) => {
     const isOther = (p.dept || '').trim() === 'Other';
     const deptDisplay = isOther
       ? `<span class="people-dept" style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);display:inline-flex;align-items:center;gap:6px;">
