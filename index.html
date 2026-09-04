@@ -5631,7 +5631,9 @@ function renderPeople() {
       <button class="btn btn-sm ${_peopleFilterDept===d?'btn-primary':'btn-ghost'}" onclick="_peopleFilterDept='${d}';renderPeople();">${d==='All'?'All':d}</button>
     `).join('');
   }
-  const people = (state.people||[]).filter(p => _peopleFilterDept==='All' || p.dept===_peopleFilterDept);
+  const people = (state.people||[])
+    .filter(p => _peopleFilterDept==='All' || p.dept===_peopleFilterDept)
+    .sort((a, b) => a.name.localeCompare(b.name));
   if (!people.length) { el.innerHTML = emptyState('No people yet','Add team members to your People list'); return; }
   const initials = name => name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
   el.innerHTML = people.map((p, i) => {
